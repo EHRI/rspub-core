@@ -1,4 +1,4 @@
-from distutils.core import setup
+from setuptools import setup
 
 setup(
     name='rspub-core',
@@ -8,5 +8,6 @@ setup(
     license='Apache License 2.0',
     author='henk van den berg',
     author_email='henk.van.den.berg at dans.knaw.nl',
-    description='Core Python library for ResourceSync publishing'
+    description='Core Python library for ResourceSync publishing',
+    install_requires=['resync-ehri']
 )
