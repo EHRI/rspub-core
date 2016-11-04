@@ -1,4 +1,4 @@
 --index-url https://pypi.python.org/simple/
 
--e git+https://github.com/EHRI/resync.git@ehribranch#egg=resync_ehri
+-e git+https://github.com/EHRI/resync.git@ehribranch#egg=resync-ehri
 -e .
