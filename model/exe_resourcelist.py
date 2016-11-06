@@ -14,9 +14,8 @@ class ResourceListExecutor(Executor):
     A ResourceListExecutor clears the metadata directory and creates new resourcelist(s) every time
     the executor runs (and is_saving_sitemaps).
     """
-
     def prepare_metadata_dir(self):
-        if self.is_saving_sitemaps:
+        if self.para.is_saving_sitemaps:
             self.clear_metadata_dir()
 
     def generate_rs_documents(self, filenames: iter)  -> [SitemapData]:
@@ -33,9 +32,9 @@ class ResourceListExecutor(Executor):
             resourcelist_index.sitemapindex = True
             resourcelist_index.md_at = self.date_start_processing
             resourcelist_index.md_completed = self.date_end_processing
-            index_path = self.abs_metadata_path("resourcelist-index.xml")
-            rel_index_path = os.path.relpath(index_path, self.abs_resource_dir())
-            index_url = self.valid_url_prefix() + defaults.sanitize_url_path(rel_index_path)
+            index_path = self.para.abs_metadata_path("resourcelist-index.xml")
+            rel_index_path = os.path.relpath(index_path, self.para.resource_dir)
+            index_url = self.para.url_prefix + defaults.sanitize_url_path(rel_index_path)
             resourcelist_index.link_set(rel="up", href=self.current_capabilitylist_url())
 
             for sitemap_data in sitemap_data_iter:
@@ -64,7 +63,7 @@ class ResourceListExecutor(Executor):
                 resourcelist.add(resource)
 
                 # under conditions: yield the current resourcelist
-                if resource_count % self.max_items_in_list == 0:
+                if resource_count % self.para.max_items_in_list == 0:
                     ordinal += 1
                     doc_end = defaults.w3c_now()
                     resourcelist.md_completed = doc_end

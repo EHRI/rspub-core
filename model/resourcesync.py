@@ -1,46 +1,36 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
-import json
 import logging
 import os
 from glob import glob
 
-from model.executor_changelist import NewChangelistExecutor, IncrementalChangelistExecutor
-from model.executor_resourcelist import ResourceListExecutor
-from model.executors import ExecutorParameters
+from model.exe_changelist import NewChangelistExecutor, IncrementalChangelistExecutor
+from model.exe_resourcelist import ResourceListExecutor
 from model.rs_enum import Strategy
-from util.observe import Observable, Observer, EventObserver
+from model.rs_paras import RsParameters
+from util.observe import Observable, EventObserver
 
 LOG = logging.getLogger(__name__)
 
-CLASS_NAME_RESOURCE_GATE_BUILDER = "ResourceGateBuilder"
 
-
-class ResourceSync(Observable, ExecutorParameters):
+class ResourceSync(Observable, RsParameters):
 
     def __init__(self, **kwargs):
         Observable.__init__(self)
-        ExecutorParameters.__init__(self, **kwargs)
-        self.register(ExecutionHistory(self.abs_history_dir()))
-
-    def abs_history_dir(self):
-        if os.path.isabs(self.history_dir):
-            return self.history_dir
-        else:
-            return self.abs_metadata_path(self.history_dir)
+        RsParameters.__init__(self, **kwargs)
 
     def execute(self, filenames: iter, start_new=False):
-        resourcelist_files = sorted(glob(os.path.join(self.abs_metadata_dir(), "resourcelist_*.xml")))
+        resourcelist_files = sorted(glob(self.abs_metadata_path("resourcelist_*.xml")))
         start_new = start_new or len(resourcelist_files) == 0
-
+        paras = RsParameters(**self.__dict__)
         executor = None
-        valid_strategy = self.valid_strategy()
-        if valid_strategy == Strategy.new_resourcelist or start_new:
-            executor = ResourceListExecutor(**self.__dict__)
-        elif valid_strategy == Strategy.new_changelist:
-            executor = NewChangelistExecutor(**self.__dict__)
-        elif valid_strategy == Strategy.inc_changelist:
-            executor = IncrementalChangelistExecutor(**self.__dict__)
+
+        if self.strategy == Strategy.new_resourcelist or start_new:
+            executor = ResourceListExecutor(paras)
+        elif self.strategy == Strategy.new_changelist:
+            executor = NewChangelistExecutor(paras)
+        elif self.strategy == Strategy.inc_changelist:
+            executor = IncrementalChangelistExecutor(paras)
 
         if executor:
             executor.register(*self.observers)
@@ -61,4 +51,4 @@ class ExecutionHistory(EventObserver):
         pass
 
     def inform_execution_start(self, *args, **kwargs):
-        pass
+        print(args, kwargs)

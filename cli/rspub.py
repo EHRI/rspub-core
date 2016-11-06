@@ -109,11 +109,11 @@ class Configure(SuperCmd):
         print("=========================================================================")
         print("Configuration for Metadata Publishing")
         print("=========================================================================")
-        print("resource_dir \t", self.config.core_resource_dir())
-        print("metadata_dir \t", self.config.core_metadata_dir())
+        print("resource_dir \t", self.config.resource_dir())
+        print("metadata_dir \t", self.config.metadata_dir())
         print("description \t", self.config.core_sourcedesc())
-        print("url_prefix \t", self.config.core_url_prefix())
-        print("strategy \t", self.config.core_strategy())
+        print("url_prefix \t", self.config.url_prefix())
+        print("strategy \t", self.config.strategy())
         print("=========================================================================")
 
     def do_reset(self, line):
@@ -129,12 +129,12 @@ class Configure(SuperCmd):
                    ]))
 
     def do_resource_dir(self, path):
-        print("Was:" if path else "Current:", self.config.core_resource_dir())
+        print("Was:" if path else "Current:", self.config.resource_dir())
         if path:
             try:
-                self.config.set_core_resource_dir(path)
+                self.config.set_resource_dir(path)
                 self.config.persist()
-                print("Now:", self.config.core_resource_dir())
+                print("Now:", self.config.resource_dir())
             except ValueError as err:
                 print("\nIllegal argument: {0}".format(err))
 
@@ -147,12 +147,12 @@ class Configure(SuperCmd):
                    ]))
 
     def do_metadata_dir(self, path):
-        print("Was:" if path else "Current:", self.config.core_metadata_dir())
+        print("Was:" if path else "Current:", self.config.metadata_dir())
         if path:
             try:
-                self.config.set_core_metadata_dir(path)
+                self.config.set_metadata_dir(path)
                 self.config.persist()
-                print("Now:", self.config.core_metadata_dir())
+                print("Now:", self.config.metadata_dir())
             except ValueError as err:
                 print("\nIllegal argument: {0}".format(err))
 
@@ -186,12 +186,12 @@ class Configure(SuperCmd):
                    ]))
 
     def do_url_prefix(self, url):
-        print("Was:" if url else "Current:", self.config.core_url_prefix())
+        print("Was:" if url else "Current:", self.config.url_prefix())
         if url:
             try:
-                self.config.set_core_url_prefix(url)
+                self.config.set_url_prefix(url)
                 self.config.persist()
-                print("Now:", self.config.core_url_prefix())
+                print("Now:", self.config.url_prefix())
             except ValueError as err:
                 print("\nIllegal argument: {0}".format(err))
 
@@ -205,12 +205,12 @@ class Configure(SuperCmd):
                    ]))
 
     def do_strategy(self, name):
-        print("Was:" if name else "Current:", self.config.core_strategy())
+        print("Was:" if name else "Current:", self.config.strategy())
         if name:
             try:
-                self.config.set_core_strategy(name)
+                self.config.set_strategy(name)
                 self.config.persist()
-                print("Now:", self.config.core_strategy())
+                print("Now:", self.config.strategy())
             except ValueError as err:
                 print("\nIllegal argument: {0}".format(err))
                 self.help_strategy()
@@ -239,7 +239,7 @@ class Select(SuperCmd):
 
     def complete_directory(self, text, line, begidx, endidx):
         if line == "directory ":
-            return [self.config.core_resource_dir()]
+            return [self.config.resource_dir()]
         else:
             return self.__complete_path__(text, line, begidx, endidx)
 

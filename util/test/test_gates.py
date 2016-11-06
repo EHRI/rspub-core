@@ -285,6 +285,7 @@ class TestGates(unittest.TestCase):
             return kormal in kwargs
         return arg_kw_args
 
+    @unittest.skip("u d'nt wanna c all err msgs")
     def test_is_all_predicate(self):
         previous_value = set_stop_on_creation_error(False)
 
@@ -312,25 +313,6 @@ class TestGates(unittest.TestCase):
         set_stop_on_creation_error(previous_value)
 
 
-class TestPluggedInGateBuilder(unittest.TestCase):
-
-    @unittest.skip("no automated test")
-    def test_init_(self):
-        root = logging.getLogger()
-        root.setLevel(logging.DEBUG)
-
-        ch = logging.StreamHandler(sys.stdout)
-        ch.setLevel(logging.DEBUG)
-        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-        ch.setFormatter(formatter)
-        root.addHandler(ch)
-
-        builder_name = "ResourceGateBuilder"
-        plugin_directory = os.path.join(os.path.expanduser("~"), "tmp/plugins")
-        builder = PluggedInGateBuilder(builder_name, plugin_directory)
-        resourcegate = builder.build_gate()
-        print(resourcegate)
-        print(resourcegate("x"))
 
 
 

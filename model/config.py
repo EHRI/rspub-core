@@ -1,27 +1,27 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import logging, os, platform
+import logging
+import os
+import platform
 from configparser import ConfigParser
+
 from model.rs_enum import Strategy
-from util import defaults
 
 # Location for configuration files on Windows: ﻿
-# os.path.expanduser("~")\AppData\Local\Programs\rsync\rsync.cfg
+# os.path.expanduser("~")\AppData\Local\Programs\rspub\rspub-core.cfg
 #
 # Location for configuration files on unix-based systems:
-# os.path.expanduser("~")/.config/rsync/rsync.cfg
+# os.path.expanduser("~")/.config/rspub/rspub-core.cfg
 #
 # platform.system() returns
 # Mac:      'Darwin'
 # Windows:  ﻿'Windows'
 # CentOS:   'Linux'
 
-CFG_FILENAME = "resyto.cfg"
+CFG_FILENAME = "rspub-core.cfg"
 SECTION_CORE = "core"
-SECTION_I18N = "i18n"
-SECTION_WINDOW = "window"
-SECTION_EXPLORER = "explorer"
+
 
 class Configuration(object):
 
@@ -45,6 +45,12 @@ class Configuration(object):
         return Configuration._configuration_filename
 
     @staticmethod
+    def reset():
+        Configuration._instance = None
+        Configuration._configuration_filename = None
+        Configuration.__get__logger().info("Configuration was reset.")
+
+    @staticmethod
     def _get_config_path():
 
         c_path = os.path.expanduser("~")
@@ -61,24 +67,11 @@ class Configuration(object):
             if not os.path.exists(lin_path): os.makedirs(lin_path)
             if os.path.exists(lin_path): c_path = lin_path
 
-        c_path = os.path.join(c_path, "resyto")
-        if not os.path.exists(c_path): os.makedirs(c_path)
+        c_path = os.path.join(c_path, "rspub")
+        if not os.path.exists(c_path):
+            os.makedirs(c_path)
         Configuration.__get__logger().info("Configuration directory: %s", c_path)
         return c_path
-
-    @staticmethod
-    def _create_config_file(parser, location):
-        f = open(location, "w")
-        parser.read_dict({SECTION_CORE: {"resource_dir": os.path.expanduser("~"),
-                                     "resync_dir": os.path.expanduser("~"),
-                                     "sourcedesc": "/.well-known/resourcesync",
-                                     "urlprefix": "http://www.example.com/"
-                                     },
-                          SECTION_I18N: {"language": "en-US"}
-                          })
-        parser.write(f)
-        f.close()
-        Configuration.__get__logger().info("Initial configuration file created at %s", location)
 
     _instance = None
 
@@ -89,12 +82,8 @@ class Configuration(object):
             cls.config_path = cls._get_config_path()
             cls.config_file = os.path.join(cls.config_path, Configuration._get_configuration_filename())
             cls.parser = ConfigParser()
-            if not os.path.exists(cls.config_file):
-                cls._create_config_file(cls.parser, cls.config_file)
-            else:
-                Configuration.__get__logger().info("Reading configuration file: %s", cls.config_file)
+            if os.path.exists(cls.config_file):
                 cls.parser.read(cls.config_file)
-
         return cls._instance
 
     def config_path(self):
@@ -112,7 +101,24 @@ class Configuration(object):
     def __set_option__(self, section, option, value):
         if not self.parser.has_section(section):
             self.parser.add_section(section)
-        self.parser.set(section, option, value)
+        if value is None:
+            self.parser.remove_option(section, option)
+        else:
+            self.parser.set(section, option, value)
+
+    def __get_int__(self, section, option, fallback=0):
+        value = self.parser.get(section, option, fallback=str(fallback))
+        return int(value)
+
+    def __set_int__(self, section, option, value):
+        self.__set_option__(section, option, str(value))
+
+    def __get_boolean__(self, section, option, fallback=True):
+        value = self.parser.get(section, option, fallback=str(fallback))
+        return not(value == "False" or value == "None")
+
+    def __set_boolean__(self, section, option, value):
+        self.__set_option__(section, option, str(value))
 
     def core_items(self):
         return self.parser.items(SECTION_CORE)
@@ -121,78 +127,68 @@ class Configuration(object):
         self.parser.remove_section(SECTION_CORE)
 
     # core settings
-    def core_resource_dir(self):
-        return self.parser.get(SECTION_CORE, "resource_dir", fallback=os.path.expanduser("~"))
+    def resource_dir(self, fallback=os.path.expanduser("~")):
+        return self.parser.get(SECTION_CORE, "resource_dir", fallback=fallback)
 
-    def set_core_resource_dir(self, resource_dir):
-        self.__set_option__(SECTION_CORE, "resource_dir", defaults.sanitize_directory_path(resource_dir))
+    def set_resource_dir(self, resource_dir):
+        self.__set_option__(SECTION_CORE, "resource_dir", resource_dir)
 
-    def core_metadata_dir(self):
-        return self.parser.get(SECTION_CORE, "metadata_dir", fallback="metadata")
+    def metadata_dir(self, fallback="metadata"):
+        return self.parser.get(SECTION_CORE, "metadata_dir", fallback=fallback)
 
-    def set_core_metadata_dir(self, metadata_dir):
+    def set_metadata_dir(self, metadata_dir):
         self.__set_option__(SECTION_CORE, "metadata_dir", metadata_dir)
 
-    def core_plugin_dir(self):
-        return self.parser.get(SECTION_CORE, "plugin_dir", fallback="")
+    def plugin_dir(self, fallback=None):
+        return self.parser.get(SECTION_CORE, "plugin_dir", fallback=fallback)
 
-    def set_core_plugin_dir(self, plugin_dir):
-        self.__set_option__(SECTION_CORE, "plugin_dir", defaults.sanitize_directory_path(plugin_dir))
+    def set_plugin_dir(self, plugin_dir):
+        self.__set_option__(SECTION_CORE, "plugin_dir", plugin_dir)
 
-    def core_history_dir(self):
-        return self.parser.get(SECTION_CORE, "history_dir", fallback="history")
+    def history_dir(self, fallback=None):
+        return self.parser.get(SECTION_CORE, "history_dir", fallback=fallback)
 
-    def set_core_history_dir(self, history_dir):
+    def set_history_dir(self, history_dir):
         self.__set_option__(SECTION_CORE, "history_dir", history_dir)
 
-    def core_sourcedesc(self):
-        return self.parser.get(SECTION_CORE, "sourcedesc", fallback="/.well-known/resourcesync")
+    def url_prefix(self, fallback="http://www.example.com"):
+        return self.parser.get(SECTION_CORE, "url_prefix", fallback=fallback)
 
-    def set_core_sourcedesc(self, sourcedesc):
-        self.__set_option__(SECTION_CORE, "sourcedesc", defaults.sanitize_source_desc(sourcedesc))
+    def set_url_prefix(self, urlprefix):
+        self.__set_option__(SECTION_CORE, "url_prefix", urlprefix)
 
-    def core_url_prefix(self):
-        return self.parser.get(SECTION_CORE, "url_prefix", fallback="http://www.example.com/")
+    def strategy(self, fallback=Strategy.new_resourcelist.name):
+        return Strategy[self.parser.get(SECTION_CORE, "strategy", fallback=fallback)]
 
-    def set_core_url_prefix(self, urlprefix):
-        self.__set_option__(SECTION_CORE, "url_prefix", defaults.sanitize_url_prefix(urlprefix))
+    def set_strategy(self, strategy):
+        self.__set_option__(SECTION_CORE, "strategy", strategy.name)
 
-    def core_strategy(self):
-        return Strategy[self.parser.get(SECTION_CORE, "strategy", fallback=Strategy.new_resourcelist.name)]
+    def max_items_in_list(self, fallback=50000):
+        return self.__get_int__(SECTION_CORE, "max_items_in_list", fallback)
 
-    def set_core_strategy(self, name):
-        self.__set_option__(SECTION_CORE, "strategy", Strategy.sanitize(name))
+    def set_max_items_in_list(self, max_items):
+        self.__set_int__(SECTION_CORE, "max_items_in_list", max_items)
 
-    # i18n settings
-    def settings_language(self):
-        return self.parser.get(SECTION_I18N, "language", fallback="en-US")
+    def zero_fill_filename(self, fallback=4):
+        return self.__get_int__(SECTION_CORE, "zero_fill_filename", fallback)
 
-    def set_settings_language(self, language):
-        # ToDo: sanitize language string
-        self.__set_option__(SECTION_I18N, "language", language)
+    def set_zero_fill_filename(self, zfill):
+        self.__set_int__(SECTION_CORE, "zero_fill_filename", zfill)
 
-    # window settings
-    def window_width(self):
-        return int(self.parser.get(SECTION_WINDOW, "width", fallback="700"))
+    def is_saving_pretty_xml(self, fallback=True):
+        return self.__get_boolean__(SECTION_CORE, "is_saving_pretty_xml", fallback)
 
-    def set_window_width(self, width):
-        self.__set_option__(SECTION_WINDOW, "width", str(width))
+    def set_is_saving_pretty_xml(self, p_xml):
+        self.__set_boolean__(SECTION_CORE, "is_saving_pretty_xml", p_xml)
 
-    def window_height(self):
-        return int(self.parser.get(SECTION_WINDOW, "height", fallback="400"))
+    def is_saving_sitemaps(self, fallback=True):
+        return self.__get_boolean__(SECTION_CORE, "is_saving_sitemaps", fallback)
 
-    def set_window_height(self, height):
-        self.__set_option__(SECTION_WINDOW, "height", str(height))
+    def set_is_saving_sitemaps(self, is_saving):
+        self.__set_boolean__(SECTION_CORE, "is_saving_sitemaps", is_saving)
 
-    # explorer settings
-    def explorer_width(self):
-        return int(self.parser.get(SECTION_EXPLORER, "width", fallback="630"))
+    def has_wellknown_at_root(self, fallback=True):
+        return self.__get_boolean__(SECTION_CORE, "has_wellknown_at_root", fallback)
 
-    def set_explorer_width(self, width):
-        self.__set_option__(SECTION_EXPLORER, "width", str(width))
-
-    def explorer_height(self):
-        return int(self.parser.get(SECTION_EXPLORER, "height", fallback="400"))
-
-    def set_explorer_height(self, height):
-        self.__set_option__(SECTION_EXPLORER, "height", str(height))
+    def set_has_wellknown_at_root(self, at_root):
+        self.__set_boolean__(SECTION_CORE, "has_wellknown_at_root", at_root)

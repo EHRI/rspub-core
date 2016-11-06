@@ -6,6 +6,7 @@ from glob import glob
 
 from model.executors import Executor, SitemapData, ExecutorEvent
 from model.rs_enum import Capability
+from model.rs_paras import RsParameters
 from resync import ChangeList
 from resync import Resource
 from resync import ResourceList
@@ -17,8 +18,8 @@ class ChangelistExecutor(Executor, metaclass=ABCMeta):
     def generate_rs_documents(self, filenames: iter) -> [SitemapData]:
         pass
 
-    def __init__(self, **kwargs):
-        Executor.__init__(self, **kwargs)
+    def __init__(self, rs_parameters: RsParameters=None):
+        Executor.__init__(self, rs_parameters)
 
         # next parameters will all be set in the method update_previous_state
         self.previous_resources = None
@@ -29,23 +30,23 @@ class ChangelistExecutor(Executor, metaclass=ABCMeta):
         ##
 
     def create_index(self, sitemap_data_iter: iter) -> SitemapData:
-        changelist_index_path = self.abs_metadata_path("changelist-index.xml")
-        changelist_index_uri = self.uri_from_path(changelist_index_path)
+        changelist_index_path = self.para.abs_metadata_path("changelist-index.xml")
+        changelist_index_uri = self.para.uri_from_path(changelist_index_path)
         if os.path.exists(changelist_index_path):
             os.remove(changelist_index_path)
 
-        changelist_files = sorted(glob(os.path.join(self.metadata_dir, "changelist_*.xml")))
+        changelist_files = sorted(glob(self.para.abs_metadata_path("changelist_*.xml")))
         if len(changelist_files) > 1:
             changelist_index = ChangeList()
             changelist_index.sitemapindex = True
             changelist_index.md_from = self.date_resourcelist_completed
             for cl_file in changelist_files:
                 changelist = self.read_sitemap(cl_file, ChangeList())
-                uri = self.uri_from_path(cl_file)
+                uri = self.para.uri_from_path(cl_file)
                 changelist_index.resources.append(Resource(uri=uri, md_from=changelist.md_from,
                                                            md_until=changelist.md_until))
 
-                if self.is_saving_sitemaps:
+                if self.para.is_saving_sitemaps:
                     index_link = changelist.link("index")
                     if index_link is None:
                         changelist.link_set(rel="index", href=changelist_index_uri)
@@ -58,7 +59,7 @@ class ChangelistExecutor(Executor, metaclass=ABCMeta):
             self.previous_resources = {}
 
             # search for resourcelists
-            self.resourcelist_files = sorted(glob(self.abs_metadata_path("resourcelist_*.xml")))
+            self.resourcelist_files = sorted(glob(self.para.abs_metadata_path("resourcelist_*.xml")))
             for rl_file_name in self.resourcelist_files:
                 resourcelist = ResourceList()
                 with open(rl_file_name, "r") as rl_file:
@@ -72,7 +73,7 @@ class ChangelistExecutor(Executor, metaclass=ABCMeta):
                 self.previous_resources.update({resource.uri: resource for resource in resourcelist.resources})
 
             # search for changelists
-            self.changelist_files = sorted(glob(self.abs_metadata_path("changelist_*.xml")))
+            self.changelist_files = sorted(glob(self.para.abs_metadata_path("changelist_*.xml")))
             for cl_file_name in self.changelist_files:
                 changelist = ChangeList()
                 with open(cl_file_name, "r") as cl_file:
@@ -111,7 +112,7 @@ class ChangelistExecutor(Executor, metaclass=ABCMeta):
             if changelist:
                 ordinal -= 1
                 resource_count = len(changelist)
-                if resource_count >= self.max_items_in_list:
+                if resource_count >= self.para.max_items_in_list:
                     changelist = None
                     ordinal += 1
                     resource_count = 0
@@ -128,7 +129,7 @@ class ChangelistExecutor(Executor, metaclass=ABCMeta):
                     resource_count += 1
 
                     # under conditions: yield the current changelist
-                    if resource_count % self.max_items_in_list == 0:
+                    if resource_count % self.para.max_items_in_list == 0:
                         ordinal += 1
                         sitemap_data = self.finish_sitemap(ordinal, changelist)
                         yield sitemap_data, changelist
@@ -166,7 +167,7 @@ class NewChangelistExecutor(ChangelistExecutor):
     def post_process_documents(self, sitemap_data_iter: iter):
         # change md:until value of older changelists - if we created new changelists.
         # self.changelist_files was globed before new documents were generated (self.update_previous_state).
-        if len(sitemap_data_iter) > 0 and self.is_saving_sitemaps:
+        if len(sitemap_data_iter) > 0 and self.para.is_saving_sitemaps:
             for filename in self.changelist_files:
                 changelist = self.read_sitemap(filename, ChangeList())
                 if changelist.md_until is None:
