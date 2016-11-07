@@ -17,11 +17,10 @@ The default behavior after detection of a wrong argument is to throw a GateCreat
 """
 import inspect
 import logging
-import util.plugg as plugg
 from abc import ABCMeta, abstractmethod
 from itertools import takewhile
 
-
+import rspub.util.plugg as plugg
 
 LOG = logging.getLogger(__name__)
 

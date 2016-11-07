@@ -3,14 +3,13 @@
 import os
 from abc import ABCMeta
 from glob import glob
-
-from model.executors import Executor, SitemapData, ExecutorEvent
-from model.rs_enum import Capability
-from model.rs_paras import RsParameters
 from resync import ChangeList
 from resync import Resource
 from resync import ResourceList
 from resync.sitemap import Sitemap
+from rspub.core.executors import Executor, SitemapData, ExecutorEvent
+from rspub.core.rs_enum import Capability
+from rspub.core.rs_paras import RsParameters
 
 
 class ChangeListExecutor(Executor, metaclass=ABCMeta):

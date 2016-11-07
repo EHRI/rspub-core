@@ -1,10 +1,6 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
-import os
 import unittest
-
-import util.plugg as plugg
-from util.gates import nor_
 
 
 class TestInspector(unittest.TestCase):

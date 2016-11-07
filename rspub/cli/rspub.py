@@ -1,7 +1,8 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import sys, os
+import os
+import sys
 
 # Start this module from anywhere on the system: append root directory of project.
 sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))

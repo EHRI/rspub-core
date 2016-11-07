@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 import unittest
 
-from model.rs_enum import Strategy
+from rspub.core.rs_enum import Strategy
 
 
 class Test_Strategy(unittest.TestCase):

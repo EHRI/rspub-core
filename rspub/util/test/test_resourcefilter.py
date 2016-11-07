@@ -3,7 +3,7 @@
 import os
 import unittest
 
-import util.resourcefilter as rf
+import rspub.util.resourcefilter as rf
 
 
 class TestPredicates(unittest.TestCase):

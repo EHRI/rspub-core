@@ -7,17 +7,17 @@ from abc import ABCMeta, abstractmethod
 from enum import Enum
 from glob import glob
 
-from model.rs_enum import Capability
-from model.rs_paras import RsParameters
-from pluggable.gate import ResourceGateBuilder
 from resync import CapabilityList
 from resync import Resource
 from resync import SourceDescription
 from resync.list_base_with_index import ListBaseWithIndex
 from resync.sitemap import Sitemap
-from util import defaults
-from util.gates import PluggedInGateBuilder
-from util.observe import Observable, ObserverInterruptException
+from rspub.core.rs_enum import Capability
+from rspub.core.rs_paras import RsParameters
+from rspub.pluggable.gate import ResourceGateBuilder
+from rspub.util import defaults
+from rspub.util.gates import PluggedInGateBuilder
+from rspub.util.observe import Observable, ObserverInterruptException
 
 LOG = logging.getLogger(__name__)
 WELL_KNOWN_PATH = os.path.join(".well-known", "resourcesync")

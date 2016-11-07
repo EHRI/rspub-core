@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 import unittest
 
-from model.exe_resourcelist import ResourceListExecutor
+from rspub.core.exe_resourcelist import ResourceListExecutor
 
 
 class TestExecutor(unittest.TestCase):

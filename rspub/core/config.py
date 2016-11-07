@@ -5,21 +5,22 @@ import logging
 import os
 import platform
 from configparser import ConfigParser
+from rspub.core.rs_enum import Strategy
 
-from model.rs_enum import Strategy
 
 # Location for configuration files on Windows: ﻿
-# os.path.expanduser("~")\AppData\Local\Programs\rspub\rspub-core.cfg
+# os.path.expanduser("~")\AppData\Local\Programs\rspub\rspub_core.cfg
 #
 # Location for configuration files on unix-based systems:
-# os.path.expanduser("~")/.config/rspub/rspub-core.cfg
+# os.path.expanduser("~")/.config/rspub/rspub_core.cfg
 #
 # platform.system() returns
 # Mac:      'Darwin'
 # Windows:  ﻿'Windows'
 # CentOS:   'Linux'
 
-CFG_FILENAME = "rspub-core.cfg"
+
+CFG_FILENAME = "rspub_core.cfg"
 SECTION_CORE = "core"
 
 
@@ -47,7 +48,6 @@ class Configuration(object):
     @staticmethod
     def reset():
         Configuration._instance = None
-        Configuration._configuration_filename = None
         Configuration.__get__logger().info("Configuration was reset.")
 
     @staticmethod

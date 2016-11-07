@@ -1,13 +1,7 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
-import inspect
-import logging
 import os
 import re
-from abc import ABCMeta, abstractmethod
-
-from util.gates import or_, and_, gate, is_one_arg_predicate, GateCreationException
-from util.plugg import Inspector, has_function
 
 
 def hidden_file_predicate():

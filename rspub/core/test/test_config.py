@@ -6,7 +6,7 @@ import platform
 import sys
 import unittest
 
-from model.config import Configuration
+from rspub.core.config import Configuration
 
 
 class TestConfiguration(unittest.TestCase):
@@ -24,16 +24,16 @@ class TestConfiguration(unittest.TestCase):
         # print("\n>>> Testing set_test_config")
         Configuration._set_configuration_filename(None)
         assert not Configuration._configuration_filename
-        assert Configuration._get_configuration_filename() == "rspub-core.cfg"
+        assert Configuration._get_configuration_filename() == "rspub_core.cfg"
 
         Configuration._set_configuration_filename("foo.bar")
         assert Configuration._get_configuration_filename() == "foo.bar"
         Configuration._set_configuration_filename(None)
-        assert Configuration._get_configuration_filename() == "rspub-core.cfg"
+        assert Configuration._get_configuration_filename() == "rspub_core.cfg"
 
     def test02_instance(self):
         # print("\n>>> Testing _instance")
-        Configuration._set_configuration_filename("rspub-core.cfg")
+        Configuration._set_configuration_filename("rspub_core.cfg")
 
         config1 = Configuration()
         config2 = Configuration()
@@ -102,7 +102,6 @@ class TestConfiguration(unittest.TestCase):
 
         cfg.persist()
         self.assertTrue(os.path.exists(cfg.config_file))
-        Configuration.reset()
         #time.sleep(1)
 
         Configuration._set_configuration_filename(filename)
@@ -110,7 +109,7 @@ class TestConfiguration(unittest.TestCase):
         self.assertEquals(42, cfg2.max_items_in_list())
         self.assertEquals(False, cfg2.is_saving_pretty_xml())
 
-        Configuration.reset()
+        #Configuration.reset()
 
 
 

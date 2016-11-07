@@ -3,7 +3,7 @@
 import base64
 import hashlib
 import mimetypes
-import os, time
+import time
 import urllib.parse
 import urllib.request
 from datetime import datetime

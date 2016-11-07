@@ -3,7 +3,7 @@ from setuptools import setup
 setup(
     name='rspub-core',
     version='0.1',
-    packages=['util', 'pluggable', 'model'],
+    packages=['rspub.util', 'rspub.pluggable', 'rspub.core', 'rspub.cli'],
     url='https://github.com/EHRI/rspub-core',
     license='Apache License 2.0',
     author='henk van den berg',

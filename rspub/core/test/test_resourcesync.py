@@ -6,9 +6,10 @@ import os
 import sys
 import unittest
 
-from model.resourcesync import ResourceSync
-from model.rs_enum import Strategy
-from util.observe import EventLogger
+from rspub.core.config import Configuration
+from rspub.core.resourcesync import ResourceSync
+from rspub.core.rs_enum import Strategy
+from rspub.util.observe import EventLogger
 
 
 def resource_dir():
@@ -48,11 +49,14 @@ class TestResourceSync(unittest.TestCase):
         formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(name)s - %(message)s')
         ch.setFormatter(formatter)
         root.addHandler(ch)
+        #Configuration().persist()
+        Configuration.reset()
 
     def test_strategy_new_resourcelist(self):
         rs = ResourceSync(resource_dir=resource_dir(), metadata_dir=metadata_dir())
         rs.register(EventLogger(logging_level=logging.INFO))
         #rs.max_items_in_list = 3
+
         rs.strategy = Strategy.new_resourcelist
 
         filenames = [test_resource()]

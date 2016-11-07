@@ -1,7 +1,7 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
-from util.gates import GateBuilder, not_
-from util.resourcefilter import directory_pattern_predicate, hidden_file_predicate
+from rspub.util.gates import GateBuilder, not_
+from rspub.util.resourcefilter import directory_pattern_predicate, hidden_file_predicate
 
 
 class ResourceGateBuilder(GateBuilder):

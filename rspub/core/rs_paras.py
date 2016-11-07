@@ -5,9 +5,9 @@ import urllib.parse
 from numbers import Number
 
 import validators
-from model.config import Configuration
-from model.rs_enum import Strategy
-from util import defaults
+from rspub.core.config import Configuration
+from rspub.core.rs_enum import Strategy
+from rspub.util import defaults
 
 WELL_KNOWN_PATH = os.path.join(".well-known", "resourcesync")
 

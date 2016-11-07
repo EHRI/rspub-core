@@ -2,11 +2,11 @@
 # -*- coding: utf-8 -*-
 import os
 
-from model.executors import Executor, SitemapData
-from model.rs_enum import Capability
 from resync import Resource
 from resync import ResourceList
-from util import defaults
+from rspub.core.executors import Executor, SitemapData
+from rspub.core.rs_enum import Capability
+from rspub.util import defaults
 
 
 class ResourceListExecutor(Executor):

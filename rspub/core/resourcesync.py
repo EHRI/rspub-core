@@ -4,11 +4,11 @@ import logging
 import os
 from glob import glob
 
-from model.exe_changelist import NewChangeListExecutor, IncrementalChangeListExecutor
-from model.exe_resourcelist import ResourceListExecutor
-from model.rs_enum import Strategy
-from model.rs_paras import RsParameters
-from util.observe import Observable, EventObserver
+from rspub.core.exe_changelist import NewChangeListExecutor, IncrementalChangeListExecutor
+from rspub.core.exe_resourcelist import ResourceListExecutor
+from rspub.core.rs_enum import Strategy
+from rspub.core.rs_paras import RsParameters
+from rspub.util.observe import Observable, EventObserver
 
 LOG = logging.getLogger(__name__)
 

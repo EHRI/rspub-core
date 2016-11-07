@@ -1,9 +1,8 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
-import os
 import unittest
 
-from util import defaults
+from rspub.util import defaults
 
 
 class TestDefaults(unittest.TestCase):

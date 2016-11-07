@@ -3,9 +3,9 @@
 import os
 import unittest
 
-from model.config import Configuration
-from model.rs_enum import Strategy
-from model.rs_paras import RsParameters
+from rspub.core.config import Configuration
+from rspub.core.rs_enum import Strategy
+from rspub.core.rs_paras import RsParameters
 
 
 class TestRsParameters(unittest.TestCase):
