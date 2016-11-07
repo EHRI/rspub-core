@@ -13,7 +13,7 @@ from resync import ResourceList
 from resync.sitemap import Sitemap
 
 
-class ChangelistExecutor(Executor, metaclass=ABCMeta):
+class ChangeListExecutor(Executor, metaclass=ABCMeta):
 
     def generate_rs_documents(self, filenames: iter) -> [SitemapData]:
         pass
@@ -144,9 +144,9 @@ class ChangelistExecutor(Executor, metaclass=ABCMeta):
         return generator
 
 
-class NewChangelistExecutor(ChangelistExecutor):
+class NewChangeListExecutor(ChangeListExecutor):
     """ Implements the new changelist strategy.
-    A NewChangelistExecutor creates new changelists every time the executor runs (and is_saving_sitemaps).
+    A NewChangeListExecutor creates new changelists every time the executor runs (and is_saving_sitemaps).
     If there are previous changelists that are not closed (md:until is not set) this executor will close
     those previous changelists by setting their md:until value to now (start_of_processing)
     """
@@ -175,9 +175,9 @@ class NewChangelistExecutor(ChangelistExecutor):
                     self.save_sitemap(changelist, filename)
 
 
-class IncrementalChangelistExecutor(ChangelistExecutor):
+class IncrementalChangeListExecutor(ChangeListExecutor):
     """ Implements the incremental changelist strategy.
-    A IncrementalChangelistExecutor adds changes to an already existing changelist every time the executor runs
+    A IncrementalChangeListExecutor adds changes to an already existing changelist every time the executor runs
     (and is_saving_sitemaps).
     """
     def generate_rs_documents(self, filenames: iter):

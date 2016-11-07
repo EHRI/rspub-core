@@ -4,7 +4,7 @@ import logging
 import os
 from glob import glob
 
-from model.exe_changelist import NewChangelistExecutor, IncrementalChangelistExecutor
+from model.exe_changelist import NewChangeListExecutor, IncrementalChangeListExecutor
 from model.exe_resourcelist import ResourceListExecutor
 from model.rs_enum import Strategy
 from model.rs_paras import RsParameters
@@ -28,9 +28,9 @@ class ResourceSync(Observable, RsParameters):
         if self.strategy == Strategy.new_resourcelist or start_new:
             executor = ResourceListExecutor(paras)
         elif self.strategy == Strategy.new_changelist:
-            executor = NewChangelistExecutor(paras)
+            executor = NewChangeListExecutor(paras)
         elif self.strategy == Strategy.inc_changelist:
-            executor = IncrementalChangelistExecutor(paras)
+            executor = IncrementalChangeListExecutor(paras)
 
         if executor:
             executor.register(*self.observers)
