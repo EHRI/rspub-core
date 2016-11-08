@@ -25,7 +25,7 @@ class ResourceSync(Observable, RsParameters):
         paras = RsParameters(**self.__dict__)
         executor = None
 
-        if self.strategy == Strategy.new_resourcelist or start_new:
+        if self.strategy == Strategy.resourcelist or start_new:
             executor = ResourceListExecutor(paras)
         elif self.strategy == Strategy.new_changelist:
             executor = NewChangeListExecutor(paras)

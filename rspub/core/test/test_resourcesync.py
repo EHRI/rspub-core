@@ -57,7 +57,7 @@ class TestResourceSync(unittest.TestCase):
         rs.register(EventLogger(logging_level=logging.INFO))
         #rs.max_items_in_list = 3
 
-        rs.strategy = Strategy.new_resourcelist
+        rs.strategy = Strategy.resourcelist
 
         filenames = [test_resource()]
         rs.execute(filenames)

@@ -1,6 +1,10 @@
 # rspub-core
 Core Python library for ResourceSync publishing
 
+## Overview
+
+![Overview](docs/img/rspub.png)
+
 ## Quick install
 
 ### Running from source

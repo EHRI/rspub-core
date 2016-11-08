@@ -125,7 +125,7 @@ class TestRsParameters(unittest.TestCase):
         # defaults to configuration defaults
         Configuration().core_clear()
         rsp = RsParameters()
-        self.assertEquals(Strategy.new_resourcelist, rsp.strategy)
+        self.assertEquals(Strategy.resourcelist, rsp.strategy)
 
         rsp = RsParameters(strategy=Strategy.inc_changelist)
         self.assertEquals(Strategy.inc_changelist, rsp.strategy)

@@ -6,7 +6,7 @@ from enum import Enum, unique
 
 @unique
 class Strategy(Enum):
-    new_resourcelist = 0
+    resourcelist = 0
     new_changelist = 1
     inc_changelist = 2
     resourcedump = 3

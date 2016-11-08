@@ -157,7 +157,7 @@ class Configuration(object):
     def set_url_prefix(self, urlprefix):
         self.__set_option__(SECTION_CORE, "url_prefix", urlprefix)
 
-    def strategy(self, fallback=Strategy.new_resourcelist.name):
+    def strategy(self, fallback=Strategy.resourcelist.name):
         return Strategy[self.parser.get(SECTION_CORE, "strategy", fallback=fallback)]
 
     def set_strategy(self, strategy):
