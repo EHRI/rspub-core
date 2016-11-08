@@ -4,6 +4,7 @@ Core Python library for ResourceSync publishing
 ---
 - The component in this repository is intended to be used by developers.
 - In case of questions [contact](https://github.com/EHRI/rspub-core/issues/new) the EHRI team.
+
 ---
 ## Introduction
 The [ResourceSync specification](http://www.openarchives.org/rs/1.0.9/resourcesync) describes 
