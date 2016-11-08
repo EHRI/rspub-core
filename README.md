@@ -1,9 +1,26 @@
 # rspub-core
 Core Python library for ResourceSync publishing
 
+---
+- The component in this repository is intended to be used by developers.
+- In case of questions [contact](https://github.com/EHRI/rspub-core/issues/new) the EHRI team.
+---
+## Introduction
+The [ResourceSync specification](http://www.openarchives.org/rs/1.0.9/resourcesync) describes 
+a synchronization framework for the web consisting of various capabilities that allow third-party systems to remain synchronized with a server's evolving resources.
+More precisely the ResourceSync Framework describes the communication between `source` and `destination` aimed at
+synchronizing one or more resources. Communication uses `http` and an extension on 
+the [Sitemap protocol](http://www.sitemaps.org/protocol.html), an xml-based format for expressing metadata, relevant for synchronization.
+
+The software in the `rspub-core` library handles the `source`-side implementation of the framework.
+Given a bunch of resources it analyzes these resources and the differences over time and creates
+the necessary sitemap-documents that describe the resources and the changes. 
+
 ## Overview
 
 ![Overview](docs/img/rspub.png)
+
+_Fig. 1. Overview of the main features of rspub-core._
 
 ## Quick install
 
