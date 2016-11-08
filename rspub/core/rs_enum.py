@@ -19,7 +19,7 @@ class Strategy(Enum):
         :return: List<str> of names
         """
         names = dir(Strategy)
-        # = ['__class__', '__doc__', '__members__', '__module__', 'changedump', 'changelist', 'resourcedump', 'resourcelist']
+
         del names[0:4]
         return names # ['changedump', 'changelist', 'resourcedump', 'resourcelist']
 

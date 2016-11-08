@@ -4,3 +4,4 @@
 git+https://github.com/EHRI/resync.git@ehribranch#egg=resync
 validators
 -e .
+

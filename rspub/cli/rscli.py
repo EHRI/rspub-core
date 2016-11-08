@@ -5,11 +5,14 @@ import os
 import sys
 
 # Start this module from anywhere on the system: append root directory of project.
-sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__)))))
+#                rspub-core         rspub           cli               rscli.py
+from rspub.core.config import Configuration
+from rspub.core.rs_enum import Strategy
+
 
 import cmd, glob
-from model.config import Configuration
-from model.rs_enum import Strategy
+
 
 # Set up gnureadline as readline if installed.
 try:
