@@ -5,6 +5,8 @@ import logging
 import os
 import platform
 from configparser import ConfigParser
+from glob import glob
+
 from rspub.core.rs_enum import Strategy
 
 
@@ -19,9 +21,47 @@ from rspub.core.rs_enum import Strategy
 # Windows:  ﻿'Windows'
 # CentOS:   'Linux'
 
-
 CFG_FILENAME = "rspub_core.cfg"
 SECTION_CORE = "core"
+EXT = ".cfg"
+
+
+class Configurations(object):
+
+    @staticmethod
+    def list_configurations():
+        config_path = Configuration._get_config_path()
+        config_files = sorted(glob(os.path.join(config_path, "*" + EXT)))
+        return map(lambda x: os.path.splitext(os.path.basename(x))[0], config_files)
+
+    @staticmethod
+    def load_configuration(name: str):
+        if name not in Configurations.list_configurations():
+            raise ValueError("No configuration named '%s'" % name)
+        Configuration.reset()
+        Configuration._set_configuration_filename(name + EXT)
+        return Configuration()
+
+    @staticmethod
+    def save_configuration_as(name: str):
+        if name is None or name == "":
+            raise ValueError("Invalid configuration name '%s'", name)
+        nam = os.path.splitext(name)[0]
+        config_path = Configuration._get_config_path()
+        config_file = os.path.join(config_path, nam + EXT)
+        current_cfg = Configuration()
+        current_cfg.config_file = config_file
+        current_cfg.persist()
+
+    @staticmethod
+    def remove_configuration(name: str):
+        if name is None or name == "":
+            raise ValueError("Invalid configuration name '%s'", name)
+        nam = os.path.splitext(name)[0]
+        config_path = Configuration._get_config_path()
+        config_file = os.path.join(config_path, nam + EXT)
+        if os.path.exists(config_file):
+            os.remove(config_file)
 
 
 class Configuration(object):
@@ -48,6 +88,7 @@ class Configuration(object):
     @staticmethod
     def reset():
         Configuration._instance = None
+        Configuration._set_configuration_filename(None)
         Configuration.__get__logger().info("Configuration was reset.")
 
     @staticmethod
@@ -91,6 +132,9 @@ class Configuration(object):
 
     def config_file(self):
         return self.config_file
+
+    def name(self):
+        return os.path.splitext(os.path.basename(self.config_file))[0]
 
     def persist(self):
         f = open(self.config_file, "w")

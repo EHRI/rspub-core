@@ -3,6 +3,7 @@ Core Python library for ResourceSync publishing
 
 ---
 - The component in this repository is intended to be used by developers.
+- Source location: [https://github.com/EHRI/rspub-core](https://github.com/EHRI/rspub-core)
 - In case of questions [contact](https://github.com/EHRI/rspub-core/issues/new) the EHRI team.
 
 ---
@@ -22,6 +23,15 @@ the necessary sitemap-documents that describe the resources and the changes.
 ![Overview](docs/img/rspub.png)
 
 _Fig. 1. Overview of the main features of rspub-core._
+
+In essence rspub-core is a one-class, one-method library: class _ResourceSync_, method _execute_.
+But there is more:
+
+- RsParameters control the conditions under which the execution takes place. Parameters can
+be saved as configuration and restored from disk.
+- The selection of resources is done by a ResourceGate that works with one-argument
+predicates. How exactly the ResourceGate is 
+
 
 ## Quick install
 

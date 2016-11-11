@@ -6,7 +6,56 @@ import platform
 import sys
 import unittest
 
-from rspub.core.config import Configuration
+from rspub.core import config
+from rspub.core.config import Configuration, Configurations
+
+
+class TestConfigurations(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        root = logging.getLogger()
+        root.setLevel(logging.DEBUG)
+        ch = logging.StreamHandler(sys.stdout)
+        ch.setLevel(logging.DEBUG)
+        formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(name)s - %(message)s')
+        ch.setFormatter(formatter)
+        root.addHandler(ch)
+
+    def test_list_configurations(self):
+        configurations = Configurations()
+        for c in configurations.list_configurations():
+            print(c)
+
+    def test_load_configuration(self):
+        Configurations.remove_configuration("test_load_1")
+        Configurations.remove_configuration("test_load_2")
+        Configuration.reset()
+
+        cfg1 = Configuration()
+        cfg2 = Configuration()
+        self.assertIs(cfg1, cfg2)
+        self.assertEquals(os.path.splitext(config.CFG_FILENAME)[0], cfg1.name())
+        self.assertEquals(os.path.splitext(config.CFG_FILENAME)[0], cfg2.name())
+
+        Configurations.save_configuration_as("test_load_1")
+        self.assertEquals("test_load_1", cfg1.name())
+        Configuration.reset()
+
+        cfg3 = Configuration()
+        self.assertIsNot(cfg1, cfg3)
+        self.assertEquals(os.path.splitext(config.CFG_FILENAME)[0], cfg3.name())
+
+        Configurations.save_configuration_as("test_load_2")
+        self.assertEquals("test_load_1", cfg1.name())
+        self.assertEquals("test_load_1", cfg2.name())
+        self.assertEquals("test_load_2", cfg3.name())
+
+        Configurations.load_configuration("test_load_1")
+        cfg4 = Configuration()
+        self.assertEquals("test_load_1", cfg1.name())
+        self.assertEquals("test_load_1", cfg2.name())
+        self.assertEquals("test_load_2", cfg3.name())
+        self.assertEquals("test_load_1", cfg4.name())
 
 
 class TestConfiguration(unittest.TestCase):

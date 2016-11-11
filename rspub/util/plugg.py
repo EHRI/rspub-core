@@ -6,7 +6,7 @@ import logging
 import os, sys
 
 
-APPLICATION_HOME = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+APPLICATION_HOME = os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 
 LOG = logging.getLogger(__name__)
 
@@ -14,10 +14,11 @@ LOG = logging.getLogger(__name__)
 class Inspector(object):
 
     def __init__(self, stop_on_error=False):
-         self.stop_on_error = stop_on_error
+        self.stop_on_error = stop_on_error
 
     @staticmethod
     def list_py_files(*directories):
+        # LOG.info("Application home is '%s'", APPLICATION_HOME)
         for di in directories:
             if di:
                 abs_dir = os.path.join(APPLICATION_HOME, di)

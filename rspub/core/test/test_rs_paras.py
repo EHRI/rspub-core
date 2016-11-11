@@ -3,12 +3,34 @@
 import os
 import unittest
 
-from rspub.core.config import Configuration
+from rspub.core.config import Configuration, Configurations
 from rspub.core.rs_enum import Strategy
 from rspub.core.rs_paras import RsParameters
 
 
 class TestRsParameters(unittest.TestCase):
+
+    def setUp(self):
+        Configuration._set_configuration_filename("test_rs_paras.cfg")
+
+    def tearDown(self):
+        Configuration._set_configuration_filename(None)
+
+    def test_load_configuration(self):
+        rsp = RsParameters()
+        rsp.max_items_in_list=5566
+        rsp.save_configuration_as("realy_not_a_name_for_config")
+
+        rsp = RsParameters(config_name="realy_not_a_name_for_config")
+        self.assertEquals(5566, rsp.max_items_in_list)
+
+        self.assertTrue("realy_not_a_name_for_config" in Configurations.list_configurations())
+
+        Configurations.remove_configuration("realy_not_a_name_for_config")
+
+        with self.assertRaises(Exception) as context:
+            RsParameters(config_name="realy_not_a_name_for_config")
+        self.assertIsInstance(context.exception, ValueError)
 
     def test_resource_dir(self):
         user_home = os.path.expanduser("~")

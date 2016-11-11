@@ -1,7 +1,8 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Logical functions. Each logical function takes a one-argument predicate or a list of one-argument predicates.
+""" Logical functions and helper classes.
+
+Each logical function takes a one-argument predicate or a list of one-argument predicates.
 Each logical function returns a one_argument predicate that is the chain of, or the negation of its arguments.
 There are functions to chain predicates along NOT, AND, OR, NAND, NOR, XOR and XNOR.
 

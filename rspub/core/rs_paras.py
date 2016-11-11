@@ -5,7 +5,7 @@ import urllib.parse
 from numbers import Number
 
 import validators
-from rspub.core.config import Configuration
+from rspub.core.config import Configuration, Configurations
 from rspub.core.rs_enum import Strategy
 from rspub.util import defaults
 
@@ -17,7 +17,7 @@ config = None
 class RsParameters(object):
     def __init__(self, resource_dir=config, metadata_dir=config, url_prefix=config, strategy=config, plugin_dir=config,
                  history_dir=config, max_items_in_list=config, zero_fill_filename=config, is_saving_pretty_xml=config,
-                 is_saving_sitemaps=config, has_wellknown_at_root=config, **kwargs):
+                 is_saving_sitemaps=config, has_wellknown_at_root=config, config_name=None, **kwargs):
         kwargs.update({
             "resource_dir": resource_dir,
             "metadata_dir": metadata_dir,
@@ -31,7 +31,10 @@ class RsParameters(object):
             "is_saving_sitemaps": is_saving_sitemaps,
             "has_wellknown_at_root": has_wellknown_at_root
         })
-        cfg = Configuration()
+        if config_name:
+            cfg = Configurations.load_configuration(config_name)
+        else:
+            cfg = Configuration()
 
         self._resource_dir = None
         _resource_dir_ = self.__arg__("_resource_dir", cfg.resource_dir(), **kwargs)
@@ -213,6 +216,10 @@ class RsParameters(object):
 
         if on_disk:
             cfg.persist()
+
+    def save_configuration_as(self, name: str):
+        self.save_configuration(False)
+        Configurations.save_configuration_as(name)
 
     # # derived properties
     def abs_metadata_path(self, filename):
