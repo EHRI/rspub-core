@@ -11,7 +11,7 @@ Utility modules
 ## Overview
 
 - [defaults.py](defaults.py) - Various utility functions.
-- [Module gates](http://htmlpreview.github.com/?https://github.com/EHRI/rspub-core/blob/master/docs/rspub/util/gates.m.html) - Logical functions and helper classes.
+- [Module gates](http://htmlpreview.github.com/?https://github.com/EHRI/rspub-core/blob/master/docs/rspub/util/gates.m.html){:target="_blank"} - Logical functions and helper classes.
 
 ## Module defaults
 
