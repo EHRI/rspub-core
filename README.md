@@ -7,6 +7,7 @@ Core Python library for ResourceSync publishing
 - In case of questions [contact](https://github.com/EHRI/rspub-core/issues/new) the EHRI team.
 
 ---
+
 ## Introduction
 The [ResourceSync specification](http://www.openarchives.org/rs/1.0.9/resourcesync) describes 
 a synchronization framework for the web consisting of various capabilities that allow third-party systems to remain synchronized with a server's evolving resources.

@@ -20,7 +20,7 @@ k;k;
 ## Module gates
 
 k;k;
-[not_](docs/gates.html#-not_)
+[not_](docs/gates.html)
 m;m;
 
 ## Module observe
