@@ -13,6 +13,7 @@ from rspub.core.rs_enum import Strategy
 
 
 # Set up gnureadline as readline if installed.
+__GNU_READLINE__ = False
 try:
     import gnureadline
     sys.modules['readline'] = gnureadline
