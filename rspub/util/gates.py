@@ -290,6 +290,11 @@ class GateBuilder(metaclass=ABCMeta):
 
 class PluggedInGateBuilder(GateBuilder):
     """ Builds pluggable gates.
+
+    The PluggedInGateBuilder can be given one or multiple directories where it will recursively look for
+    GateBuilders of the given name. It will then instantiate the builder and give it the opportunity to
+    determine the list of including predicates and the list of excluding predicates by calling
+    :func:`build_includes` and :func:`build_excludes` on the plugged-in builder.
     """
 
     def __init__(self, builder_name: str, first_builder: GateBuilder = None, *plugin_directories: str):
