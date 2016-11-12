@@ -91,4 +91,6 @@ ENV/
 # editor files
 .idea/
 
+# other files
+zee_notes.txt
 
