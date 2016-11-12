@@ -6,6 +6,8 @@ Subpackages
 
 .. toctree::
 
+    rspub.pluggable.test
+
 Submodules
 ----------
 

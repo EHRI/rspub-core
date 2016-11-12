@@ -114,7 +114,6 @@ class EventLogger(Observer):
         return True
 
 
-
 class SelectiveEventPrinter(Observer):
 
     def __init__(self, *events):
