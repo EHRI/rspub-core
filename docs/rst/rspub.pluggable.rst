@@ -6,19 +6,12 @@ Subpackages
 
 .. toctree::
 
-    rspub.pluggable.test
-
 Submodules
 ----------
 
-rspub.pluggable.gate module
----------------------------
+.. toctree::
 
-.. automodule:: rspub.pluggable.gate
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
+   rspub.pluggable.gate
 
 Module contents
 ---------------
