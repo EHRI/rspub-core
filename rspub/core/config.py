@@ -35,7 +35,7 @@ class Configurations(object):
         return map(lambda x: os.path.splitext(os.path.basename(x))[0], config_files)
 
     @staticmethod
-    def load_configuration(name: 'str'):
+    def load_configuration(name):
         if name not in Configurations.list_configurations():
             raise ValueError("No configuration named '%s'" % name)
         Configuration.reset()
@@ -43,7 +43,7 @@ class Configurations(object):
         return Configuration()
 
     @staticmethod
-    def save_configuration_as(name: 'str'):
+    def save_configuration_as(name):
         if name is None or name == "":
             raise ValueError("Invalid configuration name '%s'", name)
         nam = os.path.splitext(name)[0]
@@ -54,7 +54,7 @@ class Configurations(object):
         current_cfg.persist()
 
     @staticmethod
-    def remove_configuration(name: 'str'):
+    def remove_configuration(name):
         if name is None or name == "":
             raise ValueError("Invalid configuration name '%s'", name)
         nam = os.path.splitext(name)[0]
