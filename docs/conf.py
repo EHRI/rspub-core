@@ -22,6 +22,10 @@ import os
 import sys
 sys.path.insert(0, os.path.abspath('.'))
 
+# test
+print(sys.version_info)
+if sys.version_info[0] < 3:
+    raise RuntimeError("Your Python has version 2. Use easier2.py")
 
 # -- Callbacks ------------------------------------------------------------
 def skip(app, what, name, obj, skip, options):
@@ -38,6 +42,7 @@ def setup(app):
 # If your documentation needs a minimal Sphinx version, state it here.
 #
 # needs_sphinx = '1.0'
+needs_sphinx = '1.4.8'
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
