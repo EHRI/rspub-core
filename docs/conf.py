@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 #
 # rspub-core documentation build configuration file, created by
-# sphinx-quickstart on Sat Nov 12 15:28:10 2016.
+# sphinx-quickstart on Fri Nov 11 20:08:11 2016.
 #
 # This file is execfile()d with the current directory set to its
 # containing dir.
@@ -17,9 +17,21 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-# import os
-# import sys
-# sys.path.insert(0, os.path.abspath('.'))
+import sphinx_rtd_theme
+import os
+import sys
+sys.path.insert(0, os.path.abspath('.'))
+
+
+# -- Callbacks ------------------------------------------------------------
+def skip(app, what, name, obj, skip, options):
+    if name == "__init__":
+        return False
+    return skip
+
+
+def setup(app):
+    app.connect("autodoc-skip-member", skip)
 
 # -- General configuration ------------------------------------------------
 
@@ -33,6 +45,7 @@
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.viewcode',
+    'sphinx.ext.autosummary'
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -53,7 +66,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'rspub-core'
-copyright = '2016, hvdb'
+copyright = '2016, DANS-KNAW'
 author = 'hvdb'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -84,7 +97,7 @@ language = None
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This patterns also effect to html_static_path and html_extra_path
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
+exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', '**/*test*']
 
 # The reST default role (used for this markup: `text`) to use for all
 # documents.
@@ -123,7 +136,8 @@ todo_include_todos = False
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'alabaster'
+# html_theme = 'alabaster'
+html_theme = "sphinx_rtd_theme"
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -133,6 +147,7 @@ html_theme = 'alabaster'
 
 # Add any paths that contain custom themes here, relative to this directory.
 # html_theme_path = []
+html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 
 # The name for this set of Sphinx documents.
 # "<project> v<release> documentation" by default.
@@ -264,7 +279,7 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
     (master_doc, 'rspub-core.tex', 'rspub-core Documentation',
-     'hvdb', 'manual'),
+     'h', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
