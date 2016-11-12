@@ -3,6 +3,5 @@
 # Cannot name next requirement resync-ehri or something. Chaining requirements from other modules will not work.
 git+https://github.com/EHRI/resync.git@ehribranch#egg=resync
 validators
-gnureadline
 -e .
 
