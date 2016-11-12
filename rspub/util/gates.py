@@ -298,7 +298,7 @@ class PluggedInGateBuilder(GateBuilder):
     """
 
     def __init__(self, builder_name: str, first_builder: GateBuilder = None, *plugin_directories: str):
-        """ Constructor.
+        """ Initialize a PluggedInGateBuilder.
 
         :param builder_name: the class name (either simple or qualified) of the class implementing the GateBuilder methods.
         :param first_builder: builder of default or initial predicates, may be **None**
