@@ -4,9 +4,14 @@ rspub.cli package
 Submodules
 ----------
 
-.. toctree::
+rspub.cli.rscli module
+----------------------
 
-   rspub.cli.rscli
+.. automodule:: rspub.cli.rscli
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 
 Module contents
 ---------------
