@@ -19,6 +19,9 @@ class TestInspector(unittest.TestCase):
         ch.setFormatter(formatter)
         root.addHandler(ch)
 
+    def test_nothing(self):
+        pass
+
     def test_application_home(self):
         application_home = plugg.APPLICATION_HOME
         self.assertTrue(application_home.endswith("rspub-core"))
@@ -30,8 +33,17 @@ class TestInspector(unittest.TestCase):
             if py_file.endswith(me):
                 found_myself = True
                 break
-
         self.assertTrue(found_myself, "Could not find %s in a py-file search from %s" % (me, plugg.APPLICATION_HOME))
+
+    def test_list_classes(self):
+        me = self.__class__
+        found_myself = False
+        inspector = plugg.Inspector(stop_on_error=True)
+        for cls in inspector.list_classes(plugg.APPLICATION_HOME):
+            if cls == me:
+                found_myself = True
+                break
+        self.assertTrue(found_myself, "Could not find %s in a classes search from %s" % (me, plugg.APPLICATION_HOME))
 
     # def test_list_py_files(self):
     #     user_home = os.path.expanduser("~")
@@ -53,12 +65,6 @@ class TestInspector(unittest.TestCase):
     #     user_home = os.path.expanduser("~")
     #     for module in inspector.load_modules("plugins", os.path.join(user_home, "tmp")):
     #         print(module)
-    #
-    # def test_list_classes(self):
-    #     inspector = plugg.Inspector(stop_on_error=False)
-    #     user_home = os.path.expanduser("~")
-    #     for cls in inspector.list_classes("plugins", os.path.join(user_home, "tmp")):
-    #         print(cls)
     #
     # def test_list_classes_filtered(self):
     #     inspector = plugg.Inspector(stop_on_error=False)

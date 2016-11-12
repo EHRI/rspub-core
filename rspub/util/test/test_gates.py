@@ -11,6 +11,14 @@ LOG = logging.getLogger(__name__)
 
 
 class TestGates(unittest.TestCase):
+    def test_some(self):
+        spamm = lambda word : word.startswith("spam")
+        eggs = lambda word: word.endswith("eggs")
+        ampersand = lambda word: len(word.split("&")) > 1
+        spam_and_eggs = and_(spamm, eggs, ampersand)
+        self.assertTrue(spam_and_eggs("spam & eggs"))
+        self.assertFalse(spam_and_eggs("spamming leggs"))
+
     def test_not_(self):
         is_zero = lambda x: x == 0
         not_zero = not_(is_zero)

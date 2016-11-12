@@ -21,7 +21,7 @@ the necessary sitemap-documents that describe the resources and the changes.
 
 ## Overview
 
-![Overview](docs/img/rspub.png)
+![Overview](img/rspub.png)
 
 _Fig. 1. Overview of the main features of rspub-core._
 
