@@ -1,5 +1,13 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
+""" Parameters for ResourceSync publication.
+
+-------
+
+Class RsParameters
+------------------
+
+"""
 import os
 import urllib.parse
 from numbers import Number
