@@ -1,10 +1,20 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
+""" Py-module and -class inspector.
+
+
+-------
+
+Classes and functions
+---------------------
+
+"""
 import importlib
 import inspect
 import logging
 import os, sys
 
+#: :samp:`The absolute path to the directory that is the application home or root directory.`
 APPLICATION_HOME = os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 
 LOG = logging.getLogger(__name__)

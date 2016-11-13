@@ -22,10 +22,11 @@ import os
 import sys
 sys.path.insert(0, os.path.abspath('.'))
 
-# test
+# test python version
 print(sys.version_info)
 if sys.version_info[0] < 3:
     raise RuntimeError("Your Python has version 2. This project is Python 3.x.")
+
 
 # -- Callbacks ------------------------------------------------------------
 def skip(app, what, name, obj, skip, options):
@@ -52,6 +53,11 @@ extensions = [
     'sphinx.ext.viewcode',
     'sphinx.ext.autosummary'
 ]
+
+# This value selects if automatically documented members are sorted alphabetical
+# (value 'alphabetical'), by member type (value 'groupwise') or by source order
+# (value 'bysource'). The default is alphabetical.
+autodoc_member_order = 'bysource'
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']

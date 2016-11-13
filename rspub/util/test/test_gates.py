@@ -4,10 +4,13 @@ import importlib
 import logging
 import unittest
 
+from rspub.util import gates
 from rspub.util.gates import not_, or_, nor_, and_, nand_, xor_, xnor_, gate, is_one_arg_predicate, \
-    set_stop_on_creation_error
+    set_stop_on_creation_error, PluggedInGateBuilder
 
 LOG = logging.getLogger(__name__)
+
+
 
 
 class TestGates(unittest.TestCase):
