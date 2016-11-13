@@ -1,6 +1,6 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
-""" Parameters for ResourceSync publication.
+""" Parameters for ResourceSync publishing.
 
 -------
 
@@ -91,7 +91,7 @@ class RsParameters(object):
         return value
 
     @staticmethod
-    def assert_directory(path, arg):
+    def _assert_directory(path, arg):
         if not os.path.isabs(path):
             path = os.path.abspath(path)
         if not os.path.exists(path):
@@ -101,7 +101,7 @@ class RsParameters(object):
         return path
 
     @staticmethod
-    def assert_number(n, min, max, arg):
+    def _assert_number(n, min, max, arg):
         if not isinstance(n, Number):
             raise ValueError("Invalid value for %s: not a number %s" % (arg, n))
         if not min <= n <= max:
@@ -114,7 +114,7 @@ class RsParameters(object):
     @resource_dir.setter
     def resource_dir(self, path):
         assert isinstance(path, str)
-        path = self.assert_directory(path, "resource_dir")
+        path = self._assert_directory(path, "resource_dir")
         if not path.endswith(os.path.sep):
             path += os.path.sep
         self._resource_dir = path
@@ -186,7 +186,7 @@ class RsParameters(object):
     @plugin_dir.setter
     def plugin_dir(self, path):
         if path:
-            path = self.assert_directory(path, "plugin_dir")
+            path = self._assert_directory(path, "plugin_dir")
         self._plugin_dir = path
 
     @property
@@ -195,7 +195,7 @@ class RsParameters(object):
 
     @max_items_in_list.setter
     def max_items_in_list(self, max_items):
-        self.assert_number(max_items, 1, 50000, "max_items_in_list")
+        self._assert_number(max_items, 1, 50000, "max_items_in_list")
         self._max_items_in_list = max_items
 
     @property
@@ -204,7 +204,7 @@ class RsParameters(object):
 
     @zero_fill_filename.setter
     def zero_fill_filename(self, zfill):
-        self.assert_number(zfill, 1, 200, "zero_fill_filename")
+        self._assert_number(zfill, 1, 200, "zero_fill_filename")
         self._zero_fill_filename = zfill
 
     def save_configuration(self, on_disk=True):

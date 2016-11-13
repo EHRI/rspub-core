@@ -44,8 +44,9 @@ class Inspector(object):
         :samp:`Generator of py filenames.`
 
         Walks the given directories one-by-one recursively and yields each py-file it encounters. A file
-        is considered py-file when its filename ends with `.py`. Files `__init__.py` and
-        `setup.py` are neglected.
+        is considered py-file when its filename ends with `.py`.
+
+        Files `__init__.py` and `setup.py` are neglected.
 
         :param str directories: directories to search
         :return: yields absolute filenames of py-files
