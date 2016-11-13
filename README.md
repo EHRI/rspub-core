@@ -1,6 +1,5 @@
-[![Documentation Status](http://readthedocs.org/projects/rspub-core/badge/?version=latest)](http://rspub-core.readthedocs.io/en/latest/?badge=latest)
-
 # rspub-core
+[![Documentation Status](http://readthedocs.org/projects/rspub-core/badge/?version=latest)](http://rspub-core.readthedocs.io/en/latest/?badge=latest)
 Core Python library for ResourceSync publishing
 
 ---
