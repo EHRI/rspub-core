@@ -1,11 +1,6 @@
 rspub.pluggable package
 =======================
 
-Subpackages
------------
-
-.. toctree::
-
 Submodules
 ----------
 

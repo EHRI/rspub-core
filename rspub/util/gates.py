@@ -3,7 +3,6 @@
 """ Logical functions, gate and gate builders.
 
 Logical functions
------------------
 
 Each logical function takes a one-argument predicate or a list of one-argument predicates. In turn
 each logical function returns a one-argument predicate that is the chain of, or the negation of its arguments.
@@ -47,14 +46,12 @@ and use the assembled predicates::
 Of course your closures and lambda's all need to be able to handle the type of argument given.
 
 Gate
-----
 
 The function :func:`gate` takes two lists of predicates, *includes* and *excludes*.
 Includes is the list of predicates that can
 permit `x` through the gate; excludes is the list of predicates that can prevent `x` from passing the gate.
 
 Building gates
---------------
 
 The abstract class :class:`GateBuilder` defines the methods to construct a GateBuilder. The concrete class
 :class:`PluggedInGateBuilder` walks a plugin directory looking for specifically named builders
@@ -62,10 +59,7 @@ in order to build a customized :func:`gate`.
 
 If :class:`GateBuilder` s are chained, a builder can overrule `includes` and `excludes` from previous builders.
 
--------
-
 Classes and functions
----------------------
 
 """
 import inspect

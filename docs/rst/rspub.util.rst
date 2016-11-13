@@ -1,11 +1,6 @@
 rspub.util package
 ==================
 
-Subpackages
------------
-
-.. toctree::
-
 Submodules
 ----------
 
