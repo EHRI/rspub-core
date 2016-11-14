@@ -6,7 +6,6 @@ import unittest
 from rspub.core.config import Configuration, Configurations
 from rspub.core.rs_enum import Strategy
 from rspub.core.rs_paras import RsParameters
-from rspub.util import plugg
 
 
 class TestRsParameters(unittest.TestCase):
@@ -102,6 +101,27 @@ class TestRsParameters(unittest.TestCase):
         # #print(context.exception)
         # self.assertIsInstance(context.exception, ValueError)
 
+        self.save_configuration_test(rsp)
+
+    def test_description_dir(self):
+        # defaults to configuration defaults
+        Configuration().core_clear()
+        rsp = RsParameters()
+        self.assertIsNone(rsp.description_dir)
+
+        rsp.description_dir = "."
+        self.assertEquals(os.getcwd(), rsp.description_dir)
+
+        # contamination test
+        rsp2 = RsParameters(**rsp.__dict__)
+        self.assertEquals(os.getcwd(), rsp2.description_dir)
+
+        with self.assertRaises(Exception) as context:
+            rsp.description_dir = "/foo/bar"
+        #print(context.exception)
+        self.assertIsInstance(context.exception, ValueError)
+
+        self.assertEquals(os.getcwd(), rsp.description_dir)
         self.save_configuration_test(rsp)
 
     def test_url_prefix(self):
@@ -280,9 +300,9 @@ class TestRsParameters(unittest.TestCase):
         self.assertEquals(10, rsp.zero_fill_filename)
 
         # contamination test
-        rsp.zero_fill_filename = 123
+        rsp.zero_fill_filename = 8
         rsp2 = RsParameters(**rsp.__dict__)
-        self.assertEquals(123, rsp2.zero_fill_filename)
+        self.assertEquals(8, rsp2.zero_fill_filename)
 
         self.save_configuration_test(rsp)
 

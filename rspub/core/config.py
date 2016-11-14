@@ -195,6 +195,12 @@ class Configuration(object):
     def set_metadata_dir(self, metadata_dir):
         self.__set_option__(SECTION_CORE, "metadata_dir", metadata_dir)
 
+    def description_dir(self, fallback=None):
+        return self.parser.get(SECTION_CORE, "description_dir", fallback=fallback)
+
+    def set_description_dir(self, common_file):
+        self.__set_option__(SECTION_CORE, "description_dir", common_file)
+
     def plugin_dir(self, fallback=None):
         return self.parser.get(SECTION_CORE, "plugin_dir", fallback=fallback)
 

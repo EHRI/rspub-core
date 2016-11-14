@@ -74,7 +74,10 @@ class Executor(Observable, metaclass=ABCMeta):
 
     def resource_gate(self):
         if self.passes_resource_gate is None:
-            default_builder = ResourceGateBuilder(self.para.resource_dir, self.para.abs_metadata_dir(), self.para.plugin_dir)
+            default_builder = ResourceGateBuilder(resource_dir=self.para.resource_dir,
+                                                  metadata_dir=self.para.abs_metadata_dir(),
+                                                  description_dir= self.para.description_dir,
+                                                  plugin_dir=self.para.plugin_dir)
             gate_builder = PluggedInGateBuilder(CLASS_NAME_RESOURCE_GATE_BUILDER, default_builder, self.para.plugin_dir)
             self.passes_resource_gate = gate_builder.build_gate()
         return self.passes_resource_gate
@@ -130,7 +133,7 @@ class Executor(Observable, metaclass=ABCMeta):
         return self.finish_sitemap(-1, capabilitylist)
 
     def update_resource_sync(self, capabilitylist_data):
-        src_desc_path = self.para.abs_metadata_path(WELL_KNOWN_PATH)
+        src_desc_path = self.para.abs_description_path()
         well_known_dir = os.path.dirname(src_desc_path)
         os.makedirs(well_known_dir, exist_ok=True)
 

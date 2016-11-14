@@ -58,6 +58,7 @@ class TestResourceSync(unittest.TestCase):
         #rs.max_items_in_list = 3
 
         rs.strategy = Strategy.resourcelist
+        rs.description_dir = "/Users/Shared/foo"
 
         filenames = [test_resource()]
         rs.execute(filenames)
@@ -69,7 +70,11 @@ class TestResourceSync(unittest.TestCase):
         rs.register(EventLogger(logging_level=logging.INFO))
         #rs.max_items_in_list = 3
         #rs.is_saving_sitemaps = False
+        rs.zero_fill_filename = 4
         rs.strategy = Strategy.new_changelist
+
+        rs.metadata_dir = "tmp/rs/md1"
+        rs.description_dir = "/Users/Shared/foo"
 
         filenames = [test_resource()]
         rs.execute(filenames)

@@ -6,10 +6,11 @@ from rspub.util.resourcefilter import directory_pattern_predicate, hidden_file_p
 
 class ResourceGateBuilder(GateBuilder):
 
-    def __init__(self, resource_dir=None, metadata_dir=None, plugin_dir=None):
+    def __init__(self, resource_dir=None, metadata_dir=None, plugin_dir=None, description_dir=None):
         self.resource_dir = resource_dir
         self.metadata_dir = metadata_dir
         self.plugin_dir = plugin_dir
+        self.description_dir = description_dir
 
     def build_includes(self, includes: list):
         if self.resource_dir:
@@ -24,9 +25,13 @@ class ResourceGateBuilder(GateBuilder):
 
         excludes.append(hidden_file_predicate())
 
-        # exclude metadata dir and plugin dir (in case they happen to be on the search path and within resource dir).
+        # exclude metadata dir, description_dir and plugin dir
+        # (in case they happen to be on the search path and within resource dir).
         if self.metadata_dir:
             excludes.append(directory_pattern_predicate(("^" + self.metadata_dir)))
+
+        if self.description_dir:
+            excludes.append(directory_pattern_predicate(("^" + self.description_dir)))
 
         if self.plugin_dir:
             excludes.append(directory_pattern_predicate(("^" + self.plugin_dir)))

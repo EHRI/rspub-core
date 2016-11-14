@@ -9,8 +9,8 @@ class Strategy(Enum):
     resourcelist = 0
     new_changelist = 1
     inc_changelist = 2
-    resourcedump = 3
-    changedump = 4
+    # resourcedump = 3 # not implemented
+    # changedump = 4 # not implemented
 
     @staticmethod
     def names():
@@ -19,9 +19,7 @@ class Strategy(Enum):
         :return: List<str> of names
         """
         names = dir(Strategy)
-
-        del names[0:4]
-        return names # ['changedump', 'changelist', 'resourcedump', 'resourcelist']
+        return [x for x in names if not x.startswith("_")]
 
     @staticmethod
     def sanitize(name):

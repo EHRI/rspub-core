@@ -10,7 +10,7 @@ class Test_Strategy(unittest.TestCase):
     def test_names(self):
         names = Strategy.names()
         self.assertIsInstance(names, list)
-        self.assertEqual(names, ['changedump', 'inc_changelist', 'new_changelist', 'resourcedump', 'resourcelist'])
+        self.assertEqual(names, ['inc_changelist', 'new_changelist', 'resourcelist'])
 
     def test_ordinal(self):
         # get the int value of an enum
@@ -22,8 +22,7 @@ class Test_Strategy(unittest.TestCase):
         # get a enum by value
         self.assertIs(Strategy(0), Strategy.resourcelist)
         self.assertIs(Strategy(1), Strategy.new_changelist)
-        self.assertIs(Strategy(3), Strategy.resourcedump)
-        self.assertIs(Strategy(4), Strategy.changedump)
+        self.assertIs(Strategy(2), Strategy.inc_changelist)
 
     def test_name(self):
         # get the name of a strategy
