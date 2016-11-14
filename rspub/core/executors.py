@@ -74,7 +74,7 @@ class Executor(Observable, metaclass=ABCMeta):
 
     def resource_gate(self):
         if self.passes_resource_gate is None:
-            default_builder = ResourceGateBuilder(self.para.resource_dir, self.para.metadata_dir, self.para.plugin_dir)
+            default_builder = ResourceGateBuilder(self.para.resource_dir, self.para.abs_metadata_dir(), self.para.plugin_dir)
             gate_builder = PluggedInGateBuilder(CLASS_NAME_RESOURCE_GATE_BUILDER, default_builder, self.para.plugin_dir)
             self.passes_resource_gate = gate_builder.build_gate()
         return self.passes_resource_gate
@@ -82,8 +82,8 @@ class Executor(Observable, metaclass=ABCMeta):
     def execute(self, filenames: iter):
         self.date_start_processing = defaults.w3c_now()
         self.observers_inform(self, ExecutorEvent.execution_start, filenames=filenames, parameters=self.para.__dict__)
-        if not os.path.exists(self.para.metadata_dir):
-            os.makedirs(self.para.metadata_dir)
+        if not os.path.exists(self.para.abs_metadata_dir()):
+            os.makedirs(self.para.abs_metadata_dir())
 
         self.prepare_metadata_dir()
         sitemap_data_iter = self.generate_rs_documents(filenames)
@@ -151,15 +151,15 @@ class Executor(Observable, metaclass=ABCMeta):
     # # Execution steps - end
 
     def clear_metadata_dir(self):
-        ok = self.observers_confirm(self, ExecutorEvent.clear_metadata_directory, metadata_dir=self.para.metadata_dir)
+        ok = self.observers_confirm(self, ExecutorEvent.clear_metadata_directory, metadata_dir=self.para.abs_metadata_dir())
         if not ok:
             raise ObserverInterruptException("Process interrupted by observer: event: %s, metadata directory: %s"
-                                             % (ExecutorEvent.clear_metadata_directory, self.para.metadata_dir))
+                                             % (ExecutorEvent.clear_metadata_directory, self.para.abs_metadata_dir()))
         xml_files = glob(self.para.abs_metadata_path("*.xml"))
         for xml_file in xml_files:
             os.remove(xml_file)
 
-        wellknown = os.path.join(self.para.metadata_dir, WELL_KNOWN_PATH)
+        wellknown = os.path.join(self.para.abs_metadata_dir(), WELL_KNOWN_PATH)
         if os.path.exists(wellknown):
             os.remove(wellknown)
 

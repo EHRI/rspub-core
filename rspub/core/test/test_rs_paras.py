@@ -6,6 +6,7 @@ import unittest
 from rspub.core.config import Configuration, Configurations
 from rspub.core.rs_enum import Strategy
 from rspub.core.rs_paras import RsParameters
+from rspub.util import plugg
 
 
 class TestRsParameters(unittest.TestCase):
@@ -48,6 +49,7 @@ class TestRsParameters(unittest.TestCase):
         # contamination test
         rsp2 = RsParameters(**rsp.__dict__)
         self.assertEquals(rsp2.resource_dir, resource_dir + os.sep)
+        assert(rsp.__dict__ == rsp2.__dict__)
 
         with self.assertRaises(Exception) as context:
             rsp.resource_dir = "/foo/bar"
@@ -56,39 +58,49 @@ class TestRsParameters(unittest.TestCase):
 
         self.save_configuration_test(rsp)
 
+    def test_relative_resource_dir(self):
+        resource_dir = "."
+        rsp = RsParameters(resource_dir=resource_dir)
+        self.assertEquals(os.path.abspath(".") + os.sep, rsp.resource_dir)
+        #print(">>>>>>>>>>>>>> resource_dir according to rsparas=%s" % rsp.resource_dir)
+        self.assertEquals(os.getcwd() + os.sep, rsp.resource_dir)
+
     def test_metadata_dir(self):
         user_home = os.path.expanduser("~")
 
         # defaults to configuration defaults
         Configuration().core_clear()
         rsp = RsParameters()
-        self.assertEquals(rsp.metadata_dir, os.path.join(user_home, "metadata"))
+        self.assertEquals("metadata", rsp.metadata_dir)
+        self.assertEquals(rsp.abs_metadata_dir(), os.path.join(user_home, "metadata"))
 
         resource_dir = user_home
 
         rsp = RsParameters(metadata_dir="foo/md1", resource_dir=resource_dir)
-        self.assertEquals(rsp.metadata_dir, os.path.join(resource_dir, "foo", "md1"))
+        self.assertEquals(rsp.abs_metadata_dir(), os.path.join(resource_dir, "foo", "md1"))
         # @ToDo test for windows pathnames: 'foo\md1', 'C:foo\bar\baz'
 
         here = os.path.dirname(__file__)
         rsp.resource_dir = here
-        self.assertEquals(rsp.metadata_dir, os.path.join(here, "foo", "md1"))
+        self.assertEquals(rsp.abs_metadata_dir(), os.path.join(here, "foo", "md1"))
 
         # contamination test
         rsp2 = RsParameters(**rsp.__dict__)
-        self.assertEquals(rsp2.metadata_dir, os.path.join(here, "foo", "md1"))
-
+        self.assertEquals(rsp2.abs_metadata_dir(), os.path.join(here, "foo", "md1"))
 
         with self.assertRaises(Exception) as context:
             rsp.metadata_dir = "/foo/bar"
-        #print(context.exception)
+            # print(context.exception)
+        self.assertEquals("Invalid value for metadata_dir: path should not be absolute: /foo/bar",
+                              context.exception.args[0])
         self.assertIsInstance(context.exception, ValueError)
 
-        this = os.path.basename(__file__)
-        with self.assertRaises(Exception) as context:
-            rsp.metadata_dir = this
-        #print(context.exception)
-        self.assertIsInstance(context.exception, ValueError)
+        # cannot check if metadata_dir will be a directory, because relative to resource_dir
+        # this = os.path.basename(__file__)
+        # with self.assertRaises(Exception) as context:
+        #     rsp.metadata_dir = this
+        # #print(context.exception)
+        # self.assertIsInstance(context.exception, ValueError)
 
         self.save_configuration_test(rsp)
 
@@ -183,7 +195,7 @@ class TestRsParameters(unittest.TestCase):
         rsp2 = RsParameters(**rsp.__dict__)
         self.assertEquals("foo/bar/baz", rsp2.history_dir)
 
-        expected = os.path.join(rsp.metadata_dir, "foo/bar/baz")
+        expected = os.path.join(rsp.abs_metadata_dir(), "foo/bar/baz")
         self.assertEquals(expected, rsp.abs_history_dir())
 
         rsp.history_dir = None

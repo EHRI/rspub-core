@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 """ Parameters for ResourceSync publishing.
 
--------
-
 Class RsParameters
 ------------------
 
@@ -17,15 +15,70 @@ from rspub.core.config import Configuration, Configurations
 from rspub.core.rs_enum import Strategy
 from rspub.util import defaults
 
-WELL_KNOWN_PATH = os.path.join(".well-known", "resourcesync")
 
+WELL_KNOWN_PATH = os.path.join(".well-known", "resourcesync")
 config = None
 
 
 class RsParameters(object):
+    """
+    :samp:`Class capturing the core parameters for ResourceSync publishing.`
+
+    Parameters can be set in the :func:`__init__` method of this class and as properties. Each parameter gets a
+    screening on validity and a `ValueError` will be raised if it is not valid. Parameters can be saved collectively
+    as a configuration. Multiple named configurations can be stored by using the method :func:`save_configuration_as`.
+    Named configurations can be restored by giving the `config_name` at initialisation::
+
+        # paras is an instance of RsParameters with configuration adequately set for set 1
+        # it is saved as 'set_1_config':
+        paras.save_configuration_as("set_1_config")
+
+        # ...
+        # Later on it is restored...
+        paras = RsParameters(config_name="set_1_config")
+
+    Note that the class :class:`rspub.core.Configurations` has a method for listing saved configurations by name.
+
+    RsParameters can be cloned::
+
+        # paras1 is an instance of RsParameters
+        paras2 = RsParameters(**paras1.__dict__)
+        paras1 == paras2    # False
+        paras1.__dict__ == paras2.__dict__  # True
+
+    Besides parameters the RsParameters class also has methods for derived properties.
+
+    .. seealso:: :doc:`Configuration <rspub.core.config>`
+
+    """
     def __init__(self, resource_dir=config, metadata_dir=config, url_prefix=config, strategy=config, plugin_dir=config,
                  history_dir=config, max_items_in_list=config, zero_fill_filename=config, is_saving_pretty_xml=config,
                  is_saving_sitemaps=config, has_wellknown_at_root=config, config_name=None, **kwargs):
+        """
+        :samp:`Construct an instance of {RsParameters}.`
+
+        All ``parameters`` will get their value from
+
+        1. the _named argument in `\*\*kwargs`. (this is for cloning instances of RsParameters). If not available:
+        2. the named argument. If not available:
+        3. the parameter as saved in the current configuration. If not available:
+        4. the default configuration value.
+
+        :param str resource_dir: ``parameter`` :func:`resource_dir`
+        :param str metadata_dir: ``parameter`` :func:`metadata_dir`
+        :param str url_prefix: ``parameter`` :func:`url_prefix`
+        :param strategy: ``parameter`` :func:`resource_dir`
+        :param str plugin_dir: ``parameter`` :func:`plugin_dir`
+        :param str history_dir: ``parameter`` :func:`history_dir`
+        :param int max_items_in_list: ``parameter`` :func:`max_items_in_list`
+        :param int zero_fill_filename: ``parameter`` :func:`zero_fill_filename`
+        :param bool is_saving_pretty_xml: ``parameter`` :func:`is_saving_pretty_xml`
+        :param bool is_saving_sitemaps: ``parameter`` :func:`is_saving_sitemaps`
+        :param bool has_wellknown_at_root: ``parameter`` :func:`has_wellknown_at_root`
+        :param str config_name: the name of the configuration to read. If given, sets the current configuration.
+        :param kwargs: named arguments, same as parameters, but preceded by _
+        :raises: :exc:`ValueError` if a parameter is not valid or if the configuration with the given `config_name` is not found
+        """
         kwargs.update({
             "resource_dir": resource_dir,
             "metadata_dir": metadata_dir,
@@ -109,6 +162,23 @@ class RsParameters(object):
 
     @property
     def resource_dir(self):
+        """
+        :samp:`The root directory for ResourceSync publishing.` (str)
+
+        The given value should point to an existing directory. A relative path will be made absolute, calculated
+        from the current working directory (`os.getcwd()`).
+
+        The resource_dir acts as the root of the resources to be published. The urls to the resources are
+        calculated relative to the resource_dir. Example::
+
+            resourece_dir:  /abs/path/to/resource_dir
+            resource:       /abs/path/to/resource_dir/sub/path/to/resource
+            url:                        url_prefix + /sub/path/to/resource
+
+        ``default:`` user home directory
+
+        See also: :func:`url_prefix`
+        """
         return self._resource_dir
 
     @resource_dir.setter
@@ -121,21 +191,54 @@ class RsParameters(object):
 
     @property
     def metadata_dir(self):
-        return os.path.join(self.resource_dir, self._metadata_dir)
+        """
+        :samp:`The directory for ResourceSync documents.` (str)
+
+        The metadata_dir is the directory where sitemap documents will be saved.
+        Names and relative path names are allowed. An absolute path will raise a
+        :exc:`ValueError`.
+
+        The metadata directory will be calculated relative to the :func:`resource_dir`.
+
+        If the metadata directory does not exist it will be created during execution of a synchronization.
+
+        ``default:`` 'metadata'
+
+        See also: :func:`abs_metadata_dir`
+        """
+        return self._metadata_dir
 
     @metadata_dir.setter
     def metadata_dir(self, path):
-        if os.path.isabs(path) and not path.startswith(self.resource_dir):
-            raise ValueError("Invalid metadata_dir: %s not on path resource_dir (%s)." % (path, self.resource_dir))
         if os.path.isabs(path):
-            path = os.path.relpath(path, self.resource_dir)
-        md_dir = os.path.join(self.resource_dir, path)
-        if os.path.isfile(md_dir):
-            raise ValueError("Invalid metadata_dir: not a directory: %s" % md_dir)
+            raise ValueError("Invalid value for metadata_dir: path should not be absolute: %s" % path)
         self._metadata_dir = path
 
     @property
     def url_prefix(self):
+        """
+        :samp:`The URL-prefix for ResourceSync publishing.` (str)
+
+        The url_prefix substitutes :func:`resource_dir` when calculating urls to resources. The `url_prefix`
+        should be the host name of the server or host name + path that points to the root directory of the
+        resources. `url_prefix + relative/path/to/resource` should yield a valid url.
+
+        Example. Paths to resources are relative to the server host::
+
+            path to resource:           {resource_dir}/path/to/resource
+            url_prefix:         http://www.example.com
+            url to resource:    http://www.example.com/path/to/resource
+
+        Example. Paths to resources are relative to some directory on the server::
+
+            path to resource:                        {resource_dir}/path/to/resource
+            url_prefix:         http://www.example.com/my/resources
+            url to resource:    http://www.example.com/my/resources/path/to/resource
+
+        ``default:`` 'http://www.example.com'
+
+        See also: :func:`resource_dir`
+        """
         return self._url_prefix
 
     @url_prefix.setter
@@ -230,8 +333,11 @@ class RsParameters(object):
         Configurations.save_configuration_as(name)
 
     # # derived properties
+    def abs_metadata_dir(self):
+        return os.path.join(self.resource_dir, self._metadata_dir)
+
     def abs_metadata_path(self, filename):
-        return os.path.join(self.metadata_dir, filename)
+        return os.path.join(self.abs_metadata_dir(), filename)
 
     def uri_from_path(self, path):
         rel_path = os.path.relpath(path, self.resource_dir)
@@ -247,6 +353,6 @@ class RsParameters(object):
 
     def abs_history_dir(self):
         if self.history_dir:
-            return os.path.join(self.metadata_dir, self.history_dir)
+            return os.path.join(self.abs_metadata_dir(), self.history_dir)
         else:
             return None

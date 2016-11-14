@@ -8,9 +8,6 @@ Submodules
 
    rspub.pluggable.gate
 
-Module contents
----------------
-
 .. automodule:: rspub.pluggable
     :members:
     :undoc-members:

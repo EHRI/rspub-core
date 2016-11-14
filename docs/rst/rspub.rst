@@ -11,9 +11,6 @@ Subpackages
     rspub.pluggable
     rspub.util
 
-Module contents
----------------
-
 .. automodule:: rspub
     :members:
     :undoc-members:

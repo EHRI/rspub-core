@@ -59,6 +59,11 @@ extensions = [
 # (value 'bysource'). The default is alphabetical.
 autodoc_member_order = 'bysource'
 
+# http://www.sphinx-doc.org/en/1.4.8/ext/autosummary.html#directive-autosummary
+# Boolean indicating whether to scan all found documents for autosummary directives,
+# and to generate stub pages for each.
+autosummary_generate = False
+
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 

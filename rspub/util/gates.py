@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 """ Logical functions, gate and gate builders.
 
+
 Logical functions
 -----------------
 

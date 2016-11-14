@@ -8,9 +8,6 @@ Submodules
 
    rspub.cli.rscli
 
-Module contents
----------------
-
 .. automodule:: rspub.cli
     :members:
     :undoc-members:

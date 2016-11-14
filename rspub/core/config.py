@@ -27,6 +27,10 @@ EXT = ".cfg"
 
 
 class Configurations(object):
+    @staticmethod
+    def __get__logger():
+        logger = logging.getLogger(__name__)
+        return logger
 
     @staticmethod
     def list_configurations():
@@ -40,6 +44,7 @@ class Configurations(object):
             raise ValueError("No configuration named '%s'" % name)
         Configuration.reset()
         Configuration._set_configuration_filename(name + EXT)
+        Configurations.__get__logger().info("Loaded configuration %s" % name)
         return Configuration()
 
     @staticmethod
@@ -52,6 +57,7 @@ class Configurations(object):
         current_cfg = Configuration()
         current_cfg.config_file = config_file
         current_cfg.persist()
+        Configurations.__get__logger().info("Saved configuration %s" % name)
 
     @staticmethod
     def remove_configuration(name: str):
@@ -62,6 +68,12 @@ class Configurations(object):
         config_file = os.path.join(config_path, nam + EXT)
         if os.path.exists(config_file):
             os.remove(config_file)
+            Configurations.__get__logger().info("Removed configuration %s" % name)
+
+    @staticmethod
+    def current_configuration_name():
+        current_cfg = Configuration()
+        return os.path.splitext(os.path.basename(current_cfg.config_file))[0]
 
 
 class Configuration(object):

@@ -12,8 +12,6 @@ Submodules
    rspub.util.plugg
    rspub.util.resourcefilter
 
-Module contents
----------------
 
 .. automodule:: rspub.util
     :members:

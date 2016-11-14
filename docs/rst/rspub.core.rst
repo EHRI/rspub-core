@@ -14,9 +14,6 @@ Submodules
    rspub.core.rs_enum
    rspub.core.rs_paras
 
-Module contents
----------------
-
 .. automodule:: rspub.core
     :members:
     :undoc-members:

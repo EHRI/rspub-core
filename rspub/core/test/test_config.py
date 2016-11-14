@@ -21,6 +21,17 @@ class TestConfigurations(unittest.TestCase):
         ch.setFormatter(formatter)
         root.addHandler(ch)
 
+    def test_current_configuration_name(self):
+        Configuration.reset()
+        self.assertEquals("rspub_core", Configurations.current_configuration_name())
+
+        cfg1 = Configuration()
+        Configurations.save_configuration_as("test_current")
+        self.assertEquals("test_current", Configurations.current_configuration_name())
+
+        Configurations.remove_configuration("test_current")
+
+    @unittest.skip
     def test_list_configurations(self):
         configurations = Configurations()
         for c in configurations.list_configurations():
