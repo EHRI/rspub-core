@@ -19,6 +19,7 @@ class ResourceGateBuilder(GateBuilder):
         return includes
 
     def build_excludes(self, excludes: list):
+
         # exclude everything outside the resource directory
         if self.resource_dir:
             excludes.append(not_(directory_pattern_predicate("^" + self.resource_dir)))

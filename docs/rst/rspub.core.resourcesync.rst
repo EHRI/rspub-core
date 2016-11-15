@@ -1,5 +1,7 @@
-rspub.core.resourcesync module
-==============================
+ResourceSync
+============
+
+module: rspub.core.resourcesync
 
 .. automodule:: rspub.core.resourcesync
     :members:

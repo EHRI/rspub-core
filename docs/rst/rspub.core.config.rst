@@ -1,5 +1,7 @@
-rspub.core.config module
-========================
+Configuration
+=============
+
+module: rspub.core.config
 
 .. automodule:: rspub.core.config
     :members:

@@ -1,6 +1,7 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
-""" Logical functions, gate and gate builders.
+"""
+:samp:`Logical functions, gate and gate builders`
 
 
 Logical functions
@@ -82,7 +83,7 @@ LOG = logging.getLogger(__name__)
 
 def not_(predicate):
     """
-    :samp:`Creates the negation of the given {predicate}.`
+    :samp:`Creates the negation of the given {predicate}`
 
     The outcome of a `not_   f` for any `x` is::
 
@@ -99,7 +100,7 @@ def not_(predicate):
 
 def and_(*predicates):
     """
-    :samp:`Creates the logical conjunction of the given {predicates}.`
+    :samp:`Creates the logical conjunction of the given {predicates}`
 
     Chains `predicates` in `and`. The outcome of an `and_  f` for any `x` is::
 
@@ -122,7 +123,7 @@ def and_(*predicates):
 
 def nor_(*predicates):
     """
-    :samp:`Creates the joint denial of the given {predicates}.`
+    :samp:`Creates the joint denial of the given {predicates}`
 
     Chains `predicates` in `nor`. The outcome of a `nor_  f` for any `x` is::
 
@@ -145,7 +146,7 @@ def nor_(*predicates):
 
 def or_(*predicates):
     """
-    :samp:`Creates the logical inclusive disjunction of the given {predicates}.`
+    :samp:`Creates the logical inclusive disjunction of the given {predicates}`
 
     Chains `predicates` in `or`. The outcome of an `or_  f` for any `x` is::
 
@@ -167,7 +168,7 @@ def or_(*predicates):
 
 def nand_(*predicates):
     """
-    :samp:`Creates the alternative denial of the given {predicates}.`
+    :samp:`Creates the alternative denial of the given {predicates}`
 
     Chains `predicates` in `nand`. The outcome of a `nand_  f` for any `x` is::
 
@@ -189,7 +190,7 @@ def nand_(*predicates):
 
 def xor_(*predicates):
     """
-    :samp:`Creates the exclusive disjunction of the given {predicates}.`
+    :samp:`Creates the exclusive disjunction of the given {predicates}`
 
     Chains `predicates` in `xor`. The outcome of an `xor_  f` for any `x` is::
 
@@ -220,7 +221,7 @@ def xor_(*predicates):
 
 def xnor_(*predicates):
     """
-    :samp:`Creates the logical equality of the given {predicates}.`
+    :samp:`Creates the logical equality of the given {predicates}`
 
     Chains `predicates` in `xnor`. The outcome of an `xnor_  f` for any `x` is::
 
@@ -245,7 +246,7 @@ def xnor_(*predicates):
 
 def gate(includes=list(), excludes=list()):
     """
-    :samp:`Creates the logical conjunction of or_({includes}), nor_({excludes}).`
+    :samp:`Creates the logical conjunction of or_({includes}), nor_({excludes})`
 
     Chains `including` predicates and `excluding` predicates. The outcome of a gate `g` for any `x` is::
 
@@ -264,7 +265,7 @@ def gate(includes=list(), excludes=list()):
 
 class GateBuilder(metaclass=ABCMeta):
     """
-    :samp:`Abstract builder class for gates.`
+    :samp:`Abstract builder class for gates`
 
     GateBuilders should extend this abstract class or
     implement the next two methods. In these methods GateBuilders are free to extend on previously defined
@@ -276,7 +277,7 @@ class GateBuilder(metaclass=ABCMeta):
     @abstractmethod
     def build_includes(self, includes: list) -> list:
         """
-        :samp:`Define the list of permitting predicates.`
+        :samp:`Define the list of permitting predicates`
 
         Either rework the given list (append, extend, remove, replace),
         return the given list or return a complete new list.
@@ -290,7 +291,7 @@ class GateBuilder(metaclass=ABCMeta):
     @abstractmethod
     def build_excludes(self, excludes: list) -> list:
         """
-        :samp:`Define the list of restricting predicates.`
+        :samp:`Define the list of restricting predicates`
 
         Either rework the given list (append, extend, remove, replace),
         return the given list or return a complete new list.
@@ -304,7 +305,7 @@ class GateBuilder(metaclass=ABCMeta):
 
 class PluggedInGateBuilder(GateBuilder):
     """
-    :samp:`Builds pluggable {gates}.`
+    :samp:`Builds pluggable {gates}`
 
     The PluggedInGateBuilder can be given zero or more directories where it will recursively look for
     GateBuilders of the given `builder_name`. It will then instantiate the builder and give it the opportunity to
@@ -320,7 +321,7 @@ class PluggedInGateBuilder(GateBuilder):
     """
     def __init__(self, builder_name: str, first_builder: GateBuilder = None, *plugin_directories: str):
         """
-        :samp:`Initialize a {PluggedInGateBuilder}.`
+        :samp:`Initialize a {PluggedInGateBuilder}`
 
         :param str builder_name: the class name (either simple or qualified) of the class implementing the GateBuilder methods.
         :param GateBuilder first_builder: builder of default or initial predicates, may be **None**
@@ -339,7 +340,7 @@ class PluggedInGateBuilder(GateBuilder):
 
     def build_includes(self, includes=list()) -> list:
         """
-        :samp:`Set initial permitting predicates.`
+        :samp:`Set initial permitting predicates`
 
         :param list includes: the list of initial permitting predicates
         :return: the list of initial permitting predicates
@@ -351,7 +352,7 @@ class PluggedInGateBuilder(GateBuilder):
 
     def build_excludes(self, excludes=list()) -> list:
         """
-        :samp:`Set initial restricting predicates.`
+        :samp:`Set initial restricting predicates`
 
         :param list excludes: the list of initial restricting predicates
         :return: the list of initial restricting predicates
@@ -363,7 +364,7 @@ class PluggedInGateBuilder(GateBuilder):
 
     def build_gate(self) -> gate:
         """
-        :samp:`Build a gate as defined by found GateBuilders in {plugin_directories}.`
+        :samp:`Build a gate as defined by found GateBuilders in {plugin_directories}`
 
         Found GateBuilders are given
         the chance to modify the lists `includes` and `excludes`.
@@ -443,14 +444,14 @@ class PluggedInGateBuilder(GateBuilder):
 
 class GateCreationException(ValueError):
     """
-    :samp:`Indicates a gate could not be created because a given value is not a one-argument predicate.`
+    :samp:`Indicates a gate could not be created because a given value is not a one-argument predicate`
     """
     pass
 
 
 class GateBuilderException(GateCreationException):
     """
-    :samp:`Indicates a gate could not be built because of inappropriate behavior of a GateBuilder.`
+    :samp:`Indicates a gate could not be built because of inappropriate behavior of a GateBuilder`
     """
     pass
 
@@ -460,7 +461,7 @@ STOP_ON_CREATION_ERROR = True
 
 def set_stop_on_creation_error(stop):
     """
-    :samp:`Determine module-wide behavior on gate creation errors.`
+    :samp:`Determine module-wide behavior on gate creation errors`
 
     The function :func:`is_one_arg_predicate` will be called throughout this module by logical functions and
     gate builder classes in order to detect if a given value is a one-argument predicate.
@@ -479,7 +480,7 @@ def set_stop_on_creation_error(stop):
 
 def stop_on_creation_error():
     """
-    :samp:`Module-wide behavior on gate creation errors.`
+    :samp:`Module-wide behavior on gate creation errors`
 
     :return: **True** if stops on creation error, **False** otherwise
     """
@@ -488,7 +489,7 @@ def stop_on_creation_error():
 
 def is_one_arg_predicate(p):
     """
-    :samp:`Determines if the given {p} is a one-argument predicate.`
+    :samp:`Determines if the given {p} is a one-argument predicate`
 
     :param p: value to be inspected
     :return: **True** if `p` is a one-argument predicate, **False** otherwise

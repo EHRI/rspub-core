@@ -1,6 +1,23 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
+"""
+:samp:`Save and load multiple configurations`
 
+The class :class:`Configurations` (mark the `s` at the end) enables you to save, load, remove and list
+multiple configurations.
+
+Class :class:`Configuration` (mark the absence of `s` at the end) is a singleton.
+It should not be used directly. In stead use :class:`rspub.core.rs_paras.RsParameters`.
+
+The location where configurations are stored is system-dependent:
+
+ - ``{user-home}\\AppData\\Local\\Programs\\rspub\\`` on Windows
+ - ``{user-home}/.config/rspub/`` on Mac and Linux
+ - ``{user-home}/rspub`` fallback
+
+.. seealso:: :doc:`RsParameters <rspub.core.rs_paras>`
+
+"""
 import logging
 import os
 import platform
@@ -27,19 +44,40 @@ EXT = ".cfg"
 
 
 class Configurations(object):
+    """
+    :samp:`Enables saving, loading, listing and removing {configurations}`
+
+    All methods are static::
+
+        Configurations.list_configurations()
+        Configurations.load_configuration("collection_1")
+        # etc.
+
+    """
     @staticmethod
     def __get__logger():
         logger = logging.getLogger(__name__)
         return logger
 
     @staticmethod
-    def list_configurations():
+    def list_configurations() -> list:
+        """
+        :samp:`List available configurations`
+
+        :return: list of names of previously saved configurations
+        """
         config_path = Configuration._get_config_path()
         config_files = sorted(glob(os.path.join(config_path, "*" + EXT)))
         return map(lambda x: os.path.splitext(os.path.basename(x))[0], config_files)
 
     @staticmethod
     def load_configuration(name: str):
+        """
+        :samp:`Load the configuration with the given name`
+
+        :param name: name of a previously saved configuration
+        :return: the restored Configuration
+        """
         if name not in Configurations.list_configurations():
             raise ValueError("No configuration named '%s'" % name)
         Configuration.reset()
@@ -49,6 +87,13 @@ class Configurations(object):
 
     @staticmethod
     def save_configuration_as(name: str):
+        """
+        :samp:`Save the current configuration under the given name`
+
+        Any previously saved configurations with the same name will be overwritten without warning.
+
+        :param name: name under which the configuration will be saved
+        """
         if name is None or name == "":
             raise ValueError("Invalid configuration name '%s'", name)
         nam = os.path.splitext(name)[0]
@@ -61,6 +106,12 @@ class Configurations(object):
 
     @staticmethod
     def remove_configuration(name: str):
+        """
+        :samp:`Remove the configuration with the given name`
+
+        :param name: the name of the configuration to remove
+        :return: **True** if the configuration was successfully removed, **False** otherwise
+        """
         if name is None or name == "":
             raise ValueError("Invalid configuration name '%s'", name)
         nam = os.path.splitext(name)[0]
@@ -69,14 +120,30 @@ class Configurations(object):
         if os.path.exists(config_file):
             os.remove(config_file)
             Configurations.__get__logger().info("Removed configuration %s" % name)
+            return True
+        else:
+            return False
 
     @staticmethod
     def current_configuration_name():
+        """
+        :samp:`Get the name of the current configuration`
+
+        :return: name of the current configuration
+        """
         current_cfg = Configuration()
         return os.path.splitext(os.path.basename(current_cfg.config_file))[0]
 
 
 class Configuration(object):
+    """
+    :samp:`Singleton persisting object for storing configuration parameters`
+
+    .. warning::
+
+        Do not use class Configuration directly. Use :doc:`RsParameters <rspub.core.rs_paras>` in stead.
+
+    """
 
     _configuration_filename = CFG_FILENAME
 

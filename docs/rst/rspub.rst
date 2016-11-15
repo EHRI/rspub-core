@@ -1,9 +1,6 @@
 rspub package
 =============
 
-Subpackages
------------
-
 .. toctree::
 
     rspub.cli

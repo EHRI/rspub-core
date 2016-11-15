@@ -1,5 +1,7 @@
-rspub.util.gates module
-=======================
+Logical functions and gate builders
+===================================
+
+module: rspub.util.gates
 
 .. automodule:: rspub.util.gates
     :members:

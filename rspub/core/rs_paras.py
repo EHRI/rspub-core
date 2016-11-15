@@ -1,9 +1,18 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
-""" Parameters for ResourceSync publishing.
+"""
+:samp:`Parameters for ResourceSync publishing`
 
-Class RsParameters
-------------------
+The class :class:`RsParameters` validates parameters for ResourceSync publishing that are used throughout the
+application. RsParameters can be persisted as configuration.
+
+Multiple sets of parameters can be saved and reused as named configurations.
+This enables configuring rspub-core to publish metadata on different sets of resources. Each configuration
+can have its own selection mechanism, metadata directory, strategy etc. Each set of resources can than be published
+in its own capability list.
+
+The class :class:`RsParameters` in this module and the class :class:`rspub.core.config.Configurations` are
+important assets in such a quest.
 
 """
 import os
@@ -22,7 +31,7 @@ config = None
 
 class RsParameters(object):
     """
-    :samp:`Class capturing the core parameters for ResourceSync publishing.`
+    :samp:`Class capturing the core parameters for ResourceSync publishing`
 
     Parameters can be set in the :func:`__init__` method of this class and as properties. Each parameter gets a
     screening on validity and a `ValueError` will be raised if it is not valid. Parameters can be saved collectively
@@ -56,7 +65,7 @@ class RsParameters(object):
                  history_dir=config, max_items_in_list=config, zero_fill_filename=config, is_saving_pretty_xml=config,
                  is_saving_sitemaps=config, has_wellknown_at_root=config, config_name=None, **kwargs):
         """
-        :samp:`Construct an instance of {RsParameters}.`
+        :samp:`Construct an instance of {RsParameters}`
 
         All ``parameters`` will get their value from
 
@@ -170,7 +179,7 @@ class RsParameters(object):
     @property
     def resource_dir(self):
         """
-        ``parameter`` :samp:`The local root directory for ResourceSync publishing.` (str)
+        ``parameter`` :samp:`The local root directory for ResourceSync publishing` (str)
 
         The given value should point to an existing directory. A relative path will be made absolute, calculated
         from the current working directory (`os.getcwd()`).
@@ -199,7 +208,7 @@ class RsParameters(object):
     @property
     def metadata_dir(self):
         """
-        ``parameter`` :samp:`The directory for ResourceSync documents.` (str)
+        ``parameter`` :samp:`The directory for ResourceSync documents` (str)
 
         The metadata_dir is the directory where sitemap documents will be saved.
         Names and relative path names are allowed. An absolute path will raise a
@@ -224,7 +233,7 @@ class RsParameters(object):
     @property
     def description_dir(self):
         """
-        ``parameter`` :samp:`Directory where a version of the description document is kept.` (str)
+        ``parameter`` :samp:`Directory where a version of the description document is kept` (str)
 
         The description document, also known as `.well-known/resourcesync`, is keeping links to the
         capability list(s) at the site. A local copy of the description document (or the real description
@@ -251,7 +260,7 @@ class RsParameters(object):
     @property
     def url_prefix(self):
         """
-        ``parameter`` :samp:`The URL-prefix for ResourceSync publishing.` (str)
+        ``parameter`` :samp:`The URL-prefix for ResourceSync publishing` (str)
 
         The url_prefix substitutes :func:`resource_dir` when calculating urls to resources. The `url_prefix`
         should be the host name of the server or host name + path that points to the root directory of the
@@ -299,7 +308,7 @@ class RsParameters(object):
     @property
     def strategy(self):
         """
-        ``parameter`` :samp:`Strategy for ResourceSync publishing.` (str | int | :class:`~rspub.core.rs_enum.Strategy`)
+        ``parameter`` :samp:`Strategy for ResourceSync publishing` (str | int | :class:`~rspub.core.rs_enum.Strategy`)
 
         The `strategy` determines what will be done by :class:`~rspub.core.resourcesync.ResourceSync` upon execution.
         At the moment valid values for `strategy` are:
@@ -323,7 +332,7 @@ class RsParameters(object):
     @property
     def history_dir(self):
         """
-        ``parameter`` :samp:`Directory for storing reports on executed synchronisations.` (str)
+        ``parameter`` :samp:`Directory for storing reports on executed synchronisations` (str)
 
         Currently not in use.
         """
@@ -340,7 +349,7 @@ class RsParameters(object):
     @property
     def plugin_dir(self):
         """
-        ``parameter`` :samp:`Directory where plugins can be found.` (str)
+        ``parameter`` :samp:`Directory where plugins can be found` (str)
 
         The given value should point to an existing directory. A relative path will be made absolute, calculated
         from the current working directory (`os.getcwd()`).
@@ -362,7 +371,7 @@ class RsParameters(object):
     @property
     def max_items_in_list(self):
         """
-        ``parameter`` :samp:`The maximum amount of records in a sitemap.` (int, 1 - 50000)
+        ``parameter`` :samp:`The maximum amount of records in a sitemap` (int, 1 - 50000)
 
         The 'community defined' maximum amount of records in a sitemap document is 50000. If on execution
         the maximum amount is reached, new sitemaps of the same category will be created with the remaining
@@ -380,7 +389,7 @@ class RsParameters(object):
     @property
     def zero_fill_filename(self):
         """
-        ``parameter`` :samp:`The amount of digits in a sitemap filename.` (int, 1 - 10)
+        ``parameter`` :samp:`The amount of digits in a sitemap filename` (int, 1 - 10)
 
         Filenames of resourcelist, changelist etc. are numbered and are post-fixed with this number filled with
         zero's up to `zero_fill_filename`. Examples of filenames with `zero_fill_filename` set at 4::
@@ -400,7 +409,7 @@ class RsParameters(object):
     @property
     def is_saving_pretty_xml(self):
         """
-        ``parameter`` :samp:`Determines appearance of sitemap xml.` (bool)
+        ``parameter`` :samp:`Determines appearance of sitemap xml` (bool)
 
         If no humans need to read or inspect sitemaps there is no need for linebreaks etc.
 
@@ -415,7 +424,7 @@ class RsParameters(object):
     @property
     def is_saving_sitemaps(self):
         """
-        ``parameter`` :samp:`Determines if sitemaps will be written to disk.` (bool)
+        ``parameter`` :samp:`Determines if sitemaps will be written to disk` (bool)
 
         An execution can be a dry-run. With this parameter set to **False** sitemaps will be generated,
         but not written to disk.
@@ -431,7 +440,7 @@ class RsParameters(object):
     @property
     def has_wellknown_at_root(self):
         """
-        ``parameter`` :samp:`Where is the description document {.well-known/resourcesync} on the server.` (bool)
+        ``parameter`` :samp:`Where is the description document {.well-known/resourcesync} on the server` (bool)
 
         The description document is the main entry point for third parties trying to discover resources at
         a source. Capability lists point toward this document in their `rel:up` attribute. If for some
@@ -449,7 +458,7 @@ class RsParameters(object):
 
     def save_configuration(self, on_disk=True):
         """
-        ``function`` :samp:`Save current configuration.`
+        ``function`` :samp:`Save current configuration`
 
         Save the current values of parameters to configuration. If `on_disk` is **True** (the default)
         persist the configuration to disk under the current configuration name.
@@ -478,7 +487,7 @@ class RsParameters(object):
 
     def save_configuration_as(self, name: str):
         """
-        ``function`` :samp:`Save current configuration under {name}.`
+        ``function`` :samp:`Save current configuration under {name}`
 
         Save the current configuration under the given `name`. If a configuration under the given `name` already
         exists it will be overwritten without warning.
@@ -493,7 +502,7 @@ class RsParameters(object):
     # # derived properties
     def abs_metadata_dir(self) -> str:
         """
-        ``derived`` :samp:`The absolute path to metadata directory.`
+        ``derived`` :samp:`The absolute path to metadata directory`
 
         :return: absolute path to metadata directory
         """
@@ -501,7 +510,7 @@ class RsParameters(object):
 
     def abs_metadata_path(self, filename):
         """
-        ``derived`` :samp:`The absolute path to file in the metadata directory.`
+        ``derived`` :samp:`The absolute path to file in the metadata directory`
 
         :param str filename: the filename to position relative to the :func:`abs_metadata_dir`
         :return: absolute path to file in the metadata directory
@@ -510,7 +519,7 @@ class RsParameters(object):
 
     def uri_from_path(self, path):
         """
-        ``derived`` :samp:`Calculate the url of a path relative to {resource_dir}.`
+        ``derived`` :samp:`Calculate the url of a path relative to {resource_dir}`
 
         :param str path: the path to calculate the url from
         :return: the url of the path relative to ``resource_dir``
@@ -520,7 +529,7 @@ class RsParameters(object):
 
     def abs_description_path(self):
         """
-        ``derived`` :samp:`The absolute path to (the local copy of) the file {.well-known/resourcesync}.`
+        ``derived`` :samp:`The absolute path to (the local copy of) the file {.well-known/resourcesync}`
 
         :return: absolute path to (the local copy of) the file ``.well-known/resourcesync``
         """
@@ -531,7 +540,7 @@ class RsParameters(object):
 
     def current_description_url(self):
         """
-        ``derived`` :samp:`The current description url.`
+        ``derived`` :samp:`The current description url`
 
         The current description url either points to ``{{server root}}/.well-known/resourcesync``
         or to a file in the metadata directory.
@@ -549,7 +558,7 @@ class RsParameters(object):
 
     def abs_history_dir(self):
         """
-        ``derived`` :samp:`The absolute path to directory for reports on synchronizations.`
+        ``derived`` :samp:`The absolute path to directory for reports on synchronizations`
 
         Currently not in use.
 

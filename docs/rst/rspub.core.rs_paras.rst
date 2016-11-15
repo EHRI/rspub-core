@@ -1,5 +1,7 @@
-rspub.core.rs_paras module
-==========================
+Parameters
+==========
+
+module: rspub.core.rs_paras
 
 .. automodule:: rspub.core.rs_paras
     :members:
