@@ -1,7 +1,7 @@
 Parameters
 ==========
 
-module: rspub.core.rs_paras
+.. rubric:: module: rspub.core.rs_paras
 
 .. automodule:: rspub.core.rs_paras
     :members:

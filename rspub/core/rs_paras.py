@@ -60,10 +60,10 @@ class RsParameters(object):
     .. seealso:: :doc:`rspub.core.config <rspub.core.config>`
 
     """
-    def __init__(self, resource_dir=config, metadata_dir=config, description_dir=config,
+    def __init__(self, config_name=None, resource_dir=config, metadata_dir=config, description_dir=config,
                  url_prefix=config, strategy=config, plugin_dir=config,
                  history_dir=config, max_items_in_list=config, zero_fill_filename=config, is_saving_pretty_xml=config,
-                 is_saving_sitemaps=config, has_wellknown_at_root=config, config_name=None, **kwargs):
+                 is_saving_sitemaps=config, has_wellknown_at_root=config, **kwargs):
         """
         :samp:`Construct an instance of {RsParameters}`
 
@@ -74,6 +74,7 @@ class RsParameters(object):
         3. the parameter as saved in the current configuration. If not available:
         4. the default configuration value.
 
+        :param str config_name: the name of the configuration to read. If given, sets the current configuration.
         :param str resource_dir: ``parameter`` :func:`resource_dir`
         :param str metadata_dir: ``parameter`` :func:`metadata_dir`
         :param str description_dir: ``parameter`` :func:`description_dir`
@@ -86,7 +87,6 @@ class RsParameters(object):
         :param bool is_saving_pretty_xml: ``parameter`` :func:`is_saving_pretty_xml`
         :param bool is_saving_sitemaps: ``parameter`` :func:`is_saving_sitemaps`
         :param bool has_wellknown_at_root: ``parameter`` :func:`has_wellknown_at_root`
-        :param str config_name: the name of the configuration to read. If given, sets the current configuration.
         :param kwargs: named arguments, same as parameters, but preceded by _
         :raises: :exc:`ValueError` if a parameter is not valid or if the configuration with the given `config_name` is not found
         """

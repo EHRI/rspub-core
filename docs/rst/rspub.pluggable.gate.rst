@@ -1,5 +1,7 @@
-rspub.pluggable.gate module
-===========================
+Resource gate builder
+=====================
+
+module: rspub.pluggable.gate
 
 .. automodule:: rspub.pluggable.gate
     :members:

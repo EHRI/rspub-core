@@ -3,20 +3,25 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-rspub-core documentation
-========================
-
-Contents:
-
-.. toctree::
-   :maxdepth: -1
-
-   rst/modules
-
 Indices and tables
 ==================
 
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
+
+rspub-core documentation
+========================
+
+.. toctree::
+
+    rst/rspub.cli
+    rst/rspub.core
+    rst/rspub.pluggable
+    rst/rspub.util
+
+.. automodule:: rspub
+    :members:
+    :undoc-members:
+    :show-inheritance:
 

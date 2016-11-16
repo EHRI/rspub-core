@@ -79,6 +79,36 @@ executors could be accomplished in a next version of rspub-core.
 Multiple collections
 --------------------
 
+:class:`ResourceSync` is a subclass of :class:`~rspub.core.rs_paras.RsParameters` and so the parameters set on
+:class:`ResourceSync` can be saved and reinstituted later on. :class:`~rspub.core.config.Configurations` has
+methods for listing and removing previously saved configurations. Multiple collections of resources
+could be synchronized, each collection with its own configuration. Synchronizing the collection 'spam' could
+go along these lines::
+
+    # get a list of previously saved configurations
+    [print(x) for x in Configurations.list_configurations()]
+    # rspub_core
+    # spam_config
+    # eggs_config
+
+    # prepare for synchronization of collection 'all about spam'
+    resourcesync = ResourceSync(config_name="spam_config")
+    # spam resources are in two directories
+    filenames = ["resources/green_spam", "resources/blue_spam"]
+    # do the synchronization
+    resourcesync.execute(filenames)
+
+
+.. seealso:: :class:`rspub.core.rs_paras.RsParameters`, :class:`rspub.core.config.Configurations`, :func:`~rspub.core.rs_paras.RsParameters.save_configuration_as`
+
+Observe execution
+-----------------
+
+:class:`ResourceSync` is a subclass of :class:`~rspub.util.observe.Observable`. The executor to which the execution
+is delegated inherits all observers registered with :class:`ResourceSync`. :class:`ResourceSync` it self does not
+fire events.
+
+.. seealso::  :doc:`rspub.util.observe <rspub.util.observe>`, :class:`rspub.core.executors.ExecutorEvent`
 
 """
 import logging
@@ -95,12 +125,38 @@ LOG = logging.getLogger(__name__)
 
 
 class ResourceSync(Observable, RsParameters):
+    """
+    :samp:`Main class for ResourceSync publishing`
+
+    """
 
     def __init__(self, **kwargs):
+        """
+        :samp:`Initialization`
+
+        :param str config_name: the name of the configuration to read. If given, sets the current configuration.
+        :param kwargs: see :func:`rspub.core.rs_paras.RsParameters.__init__`
+
+        .. seealso::  :doc:`rspub.core.rs_paras <rspub.core.rs_paras>`
+        """
         Observable.__init__(self)
         RsParameters.__init__(self, **kwargs)
 
     def execute(self, filenames: iter, start_new=False):
+        """
+        :samp:`Publish ResourceSync documents under conditions of current {parameters}`
+
+        Call appropriate executor and publish sitemap documents on the resources found in `filenames`.
+
+        If no file/files 'resourcelist_*.xml' are found in metadata directory will always dispatch to
+        strategy (new) ``resourcelist``.
+
+        If ``parameter`` :func:`~rspub.core.rs_paras.RsParameters.is_saving_sitemaps` is ``False`` will do
+        a dry run: no existing sitemaps will be changed and no new sitemaps will be written to disk.
+
+        :param filenames: list of filenames and/or directories to scan
+        :param start_new: erase metadata directory and create new resourcelists
+        """
         resourcelist_files = sorted(glob(self.abs_metadata_path("resourcelist_*.xml")))
         start_new = start_new or len(resourcelist_files) == 0
         paras = RsParameters(**self.__dict__)
@@ -121,6 +177,11 @@ class ResourceSync(Observable, RsParameters):
 
 
 class ExecutionHistory(EventObserver):
+    """
+    :samp:`Execution report creator`
+
+    Currently not in use.
+    """
 
     def __init__(self, history_dir):
         self.history_dir = history_dir

@@ -68,7 +68,7 @@ class Configurations(object):
         """
         config_path = Configuration._get_config_path()
         config_files = sorted(glob(os.path.join(config_path, "*" + EXT)))
-        return map(lambda x: os.path.splitext(os.path.basename(x))[0], config_files)
+        return [os.path.splitext(os.path.basename(x))[0] for x in config_files]
 
     @staticmethod
     def load_configuration(name: str):

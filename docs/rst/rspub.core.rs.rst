@@ -1,9 +1,9 @@
 ResourceSync
 ============
 
-module: rspub.core.resourcesync
+.. rubric:: module: rspub.core.rs
 
-.. automodule:: rspub.core.resourcesync
+.. automodule:: rspub.core.rs
     :members:
     :undoc-members:
     :show-inheritance:

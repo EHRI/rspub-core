@@ -1,5 +1,7 @@
-rspub.cli.rscli module
+Command line interface
 ======================
+
+module: rspub.cli.rscli
 
 .. automodule:: rspub.cli.rscli
     :members:

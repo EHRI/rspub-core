@@ -1,8 +1,5 @@
-rspub.cli package
-=================
-
-Submodules
-----------
+rspub.cli
+=========
 
 .. toctree::
 

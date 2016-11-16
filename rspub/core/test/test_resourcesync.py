@@ -6,8 +6,8 @@ import os
 import sys
 import unittest
 
-from rspub.core.config import Configuration
-from rspub.core.resourcesync import ResourceSync
+from rspub.core.config import Configuration, Configurations
+from rspub.core.rs import ResourceSync
 from rspub.core.rs_enum import Strategy
 from rspub.util.observe import EventLogger
 
@@ -81,8 +81,8 @@ class TestResourceSync(unittest.TestCase):
 
     def test_strategy_incremental_changelist(self):
         self.change_file_contents()
-
         rs = ResourceSync(resource_dir=resource_dir(), metadata_dir=metadata_dir())
+
         rs.register(EventLogger(logging_level=logging.INFO))
         #rs.max_items_in_list = 3
         # rs.is_saving_sitemaps = False
@@ -99,6 +99,20 @@ class TestResourceSync(unittest.TestCase):
         filename = os.path.join(folder, "document_1.txt")
         with open(filename, "a") as file:
             file.write("\n%s" % str(datetime.datetime.now()))
+
+    # def test_multiple_configurations(self):
+    #     # get a list of previously saved configurations
+    #     [print(x) for x in Configurations.list_configurations()]
+    #     # rspub_core
+    #     # spam_config
+    #     # eggs_config
+    #
+    #     # prepare for synchronization of collection 'all about spam'
+    #     resourcesync = ResourceSync(config_name="spam_config")
+    #
+    #     # spam resources are in two directories
+    #     filenames = ["resources/green_spam", "resources/blue_spam"]
+    #     resourcesync.execute(filenames)
 
 
 

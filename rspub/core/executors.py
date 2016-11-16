@@ -1,5 +1,10 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
+"""
+:samp:`Events and base classes for execution`
+
+
+"""
 import logging
 import os
 import re
@@ -16,7 +21,7 @@ from rspub.core.rs_enum import Capability
 from rspub.core.rs_paras import RsParameters
 from rspub.pluggable.gate import ResourceGateBuilder
 from rspub.util import defaults
-from rspub.util.gates import PluggedInGateBuilder
+from rspub.util.gates import PluggedInGateBuilder, gate
 from rspub.util.observe import Observable, ObserverInterruptException
 
 LOG = logging.getLogger(__name__)
@@ -25,28 +30,79 @@ CLASS_NAME_RESOURCE_GATE_BUILDER = "ResourceGateBuilder"
 
 
 class ExecutorEvent(Enum):
+    """
+    :samp:`Events fired by {Executors}`
+
+    There are information events (``inform``) and confirmation events (``confirm``). If an
+    :class:`~rspub.util.observe.Observer` overrides the method :func:`~rspub.util.observe.Observer.confirm`
+    and returns ``False`` on a ``confirm`` event,
+    an :class:`~rspub.util.observe.ObserverInterruptException` is raised.
+
+    All events are broadcast in the format::
+
+        [inform][confirm](source, event, **kwargs)
+
+    where ``source`` is the calling instance, ``event`` is the relevant event and ``**kwargs`` hold relevant
+    information about the event.
+
+    .. note:: All events are numbered, although numbers may not show in generated documentation.
+    """
     # # information events
     # common low-level events
     rejected_file = 1
+    """
+    ``1`` ``inform`` :samp:`File rejected by resource gate`
+    """
     start_file_search = 2
+    """
+    ``2`` ``inform`` :samp:`File search was started`
+    """
     created_resource = 3
-
+    """
+    ``3`` ``informa`` :samp:`The metadata for a resource was created`
+    """
     # common mid-level events
     completed_document = 10
-
+    """
+    ``10`` ``inform`` :samp:`A sitemap document was completed`
+    """
     # common high-level events
     found_changes = 20
+    """
+    ``20`` ``inform`` :samp:`Resources that changed were found`
+    """
     execution_start = 30
+    """
+    ``30`` ``inform`` :samp:`Execution of resource synchronization started`
+    """
     execution_end = 31
-
+    """
+    ``31`` ``inform`` :samp:`Execution of resource synchronization did end`
+    """
     # # confirmation events
     clear_metadata_directory = 100
+    """
+    ``100`` ``confirm`` :samp:`Files in metadata directory will be erased`
+    """
 
 
 class SitemapData(object):
+    """
+    :samp:`Holds metadata about sitemaps`
 
+    """
     def __init__(self, resource_count=0, ordinal=0, uri=None, path=None, capability_name=None,
                  document_saved=False):
+        """
+        :samp:`Initialization`
+
+        :param int resource_count: the amount of records in the sitemap
+        :param int ordinal: the ordinal number as reflected in the sitemap filename and url
+        :param str uri: the url of the sitemap
+        :param str path: the local path of the sitemap
+        :param str capability_name: the capability of the sitemap
+        :param bool document_saved: True if the sitemap was saved to disk, False otherwise
+        """
         self.resource_count = resource_count
         self.ordinal = ordinal
         self.uri = uri
@@ -63,8 +119,20 @@ class SitemapData(object):
 
 
 class Executor(Observable, metaclass=ABCMeta):
+    """
+    :samp:`Abstract base class for ResourceSync execution`
 
+    """
     def __init__(self, rs_parameters: RsParameters=None):
+        """
+        :samp:`Initialization`
+
+        If no :class:`~rspub.core.rs_paras.RsParameters` were given will construct
+        new :class:`~rspub.core.rs_paras.RsParameters` from
+        configuration found under :func:`~rspub.core.config.Configurations.current_configuration_name`.
+
+        :param rs_parameters: :class:`~rspub.core.rs_paras.RsParameters` for execution
+        """
         Observable.__init__(self)
 
         self.para = rs_parameters if rs_parameters else RsParameters()
@@ -72,7 +140,12 @@ class Executor(Observable, metaclass=ABCMeta):
         self.date_start_processing = None
         self.date_end_processing = None
 
-    def resource_gate(self):
+    def resource_gate(self) -> gate:
+        """
+        :samp:`Construct or return the resource gate`
+
+        :return: resource gate
+        """
         if self.passes_resource_gate is None:
             default_builder = ResourceGateBuilder(resource_dir=self.para.resource_dir,
                                                   metadata_dir=self.para.abs_metadata_dir(),
@@ -83,6 +156,14 @@ class Executor(Observable, metaclass=ABCMeta):
         return self.passes_resource_gate
 
     def execute(self, filenames: iter):
+        """
+        ``build step 0`` :samp:`Publish ResourceSync documents`
+
+        Publish ResourceSync documents under conditions of
+        current :class:`~rspub.core.rs_paras.RsParameters`.
+
+        :param filenames: iter of filenames and/or directories to scan
+        """
         self.date_start_processing = defaults.w3c_now()
         self.observers_inform(self, ExecutorEvent.execution_start, filenames=filenames, parameters=self.para.__dict__)
         if not os.path.exists(self.para.abs_metadata_dir()):
@@ -101,20 +182,53 @@ class Executor(Observable, metaclass=ABCMeta):
 
     # # Execution steps - start
     def prepare_metadata_dir(self):
+        """
+        ``build step 1`` :samp:`Does nothing`
+
+        Subclasses that want to prepare metadata directory before generating new documents may override.
+        """
         pass
 
     @abstractmethod
     def generate_rs_documents(self, filenames: iter) -> [SitemapData]:
+        """
+        ``build step 2`` :samp:`Raises {NotImplementedError}`
+
+        Subclasses must walk resources found in ``filenames`` and, if appropriate, generate sitemaps
+        and produce sitemap data.
+
+        :param filenames: list of filenames and/or directories to scan
+        :return: list of :class:`SitemapData` of generated sitemaps
+        """
         raise NotImplementedError
 
     def post_process_documents(self, sitemap_data_iter: iter):
+        """
+        ``build step 3`` :samp:`Does nothing`
+
+        Subclasses that want to post proces the documents in metadata directory may override.
+
+        :param sitemap_data_iter: iter over :class:`SitemapData` of sitemaps generated in build step 2
+        """
         pass
 
     @abstractmethod
     def create_index(self, sitemap_data_iter: iter):
+        """
+        ``build step 4`` :samp:`Raises {NotImplementedError}`
+
+        Subclasses must create sitemap indexes if appropriate.
+
+        :param sitemap_data_iter: iter over :class:`SitemapData` of sitemaps generated in build step 2
+        """
         raise NotImplementedError
 
     def create_capabilitylist(self) -> SitemapData:
+        """
+        ``build step 5`` :samp:`Create a new capabilitylist over sitemaps found in metadata directory`
+
+        :return: :class:`SitemapData` over the newly created capabilitylist
+        """
         capabilitylist_path = self.para.abs_metadata_path("capabilitylist.xml")
         if os.path.exists(capabilitylist_path) and self.para.is_saving_sitemaps:
             os.remove(capabilitylist_path)
@@ -133,6 +247,12 @@ class Executor(Observable, metaclass=ABCMeta):
         return self.finish_sitemap(-1, capabilitylist)
 
     def update_resource_sync(self, capabilitylist_data):
+        """
+        ``build step 6`` :samp:`Update description with newly created capabilitylist`
+
+        :param capabilitylist_data: :class:`SitemapData` over the newly created capabilitylist
+        :return: :class:`SitemapData` over updated description
+        """
         src_desc_path = self.para.abs_description_path()
         well_known_dir = os.path.dirname(src_desc_path)
         os.makedirs(well_known_dir, exist_ok=True)
