@@ -354,7 +354,7 @@ class RsParameters(object):
         The given value should point to an existing directory. A relative path will be made absolute, calculated
         from the current working directory (`os.getcwd()`).
 
-        At the moment plugins for :class:`~rspub.pluggable.ResourceGateBuilder` can be provided.
+        At the moment plugins for :class:`~rspub.pluggable.gate.ResourceGateBuilder` can be provided.
 
         ``default:`` **None**
 

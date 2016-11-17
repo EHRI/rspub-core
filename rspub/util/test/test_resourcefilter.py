@@ -48,5 +48,36 @@ class TestPredicates(unittest.TestCase):
         # valid until 2065-01-24 06:20:00
         self.assertFalse(lmaf(file_name))
 
+        lmaf = rf.last_modified_after_predicate("2016-08-01")
+        self.assertTrue(lmaf(file_name))
+
+    def test_example(self):
+        import rspub.util.resourcefilter as rf
+
+        dir_ends_with_abc = rf.directory_pattern_predicate("abc$")
+        assert dir_ends_with_abc("/foo/bar/folder_abc/my_resource.txt")
+        assert not dir_ends_with_abc("/foo/bar/folder_def/my_resource.txt")
+
+        xml_file = rf.filename_pattern_predicate(".xml$")
+        assert xml_file("my_resource.xml")
+        assert not xml_file("my_resource.txt")
+
+        import rspub.util.gates as lf
+
+        xml_files_in_abc = lf.and_(dir_ends_with_abc, xml_file)
+        assert xml_files_in_abc("/foo/bar/folder_abc/my_resource.xml")
+        assert not xml_files_in_abc("/foo/bar/folder_abc/my_resource.txt")
+        assert not xml_files_in_abc("/foo/bar/folder_def/my_resource.xml")
+
+        recent = rf.last_modified_after_predicate("2016-08-01")
+
+        includes = [xml_files_in_abc]
+        excludes = [recent]
+        resource_gate = lf.gate(includes, excludes)
+
+
+
+
+
 
 

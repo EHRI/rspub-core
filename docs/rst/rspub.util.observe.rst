@@ -1,5 +1,7 @@
-rspub.util.observe module
-=========================
+Observable and observers
+========================
+
+.. rubric:: module: rspub.util.observe
 
 .. automodule:: rspub.util.observe
     :members:

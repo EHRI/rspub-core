@@ -1,5 +1,7 @@
-rspub.util.defaults module
-==========================
+Defaults
+========
+
+.. rubric:: module: rspub.util.defaults
 
 .. automodule:: rspub.util.defaults
     :members:

@@ -1,7 +1,7 @@
-rspub.util.plugg module
-=======================
+Light plugin framework
+======================
 
-.. rubric:: source: https://github.com/EHRI/rspub-core/blob/master/rspub/util/plugg.py
+.. rubric:: module: rspub.util.plugg
 
 .. automodule:: rspub.util.plugg
     :members:

@@ -35,7 +35,7 @@ You can implement your own resource :func:`~rspub.util.gates.gate` by supplying 
 `ResourceGateBuilder` in a directory you specify under the
 :func:`~rspub.core.rs_paras.RsParameters.plugin_dir` ``parameter``. Your `ResourceGateBuilder` should subclass
 :class:`~rspub.pluggable.gate.ResourceGateBuilder` or at least implement the methods
-:func:`~rspub.util.gates.GateBuilder.build_includes` and :class:`~rspub.util.gates.GateBuilder.build_excludes`.
+:func:`~rspub.util.gates.GateBuilder.build_includes` and :func:`~rspub.util.gates.GateBuilder.build_excludes`.
 A detailed description of how to create your own `ResourceGateBuilder` can be found in
 :doc:`rspub.pluggable.gate <rspub.pluggable.gate>`.
 

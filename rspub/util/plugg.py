@@ -1,12 +1,8 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
-""" Py-module and -class inspector.
+"""
+:samp:`Py-module and -class inspector`
 
-
--------
-
-Classes and functions
----------------------
 
 """
 import importlib

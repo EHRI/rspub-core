@@ -3,6 +3,8 @@
 import os
 import re
 
+import dateutil.parser
+
 
 def hidden_file_predicate():
     # in Python 3.5 this should work
@@ -21,6 +23,9 @@ def filename_pattern_predicate(name_pattern=""):
 
 
 def last_modified_after_predicate(t=0):
+    if isinstance(t, str):
+        t = dateutil.parser.parse(t).timestamp()
+
     def _file_attribute_filter(file_path):
         if not os.path.exists(file_path):
             return False

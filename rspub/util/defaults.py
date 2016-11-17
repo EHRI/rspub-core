@@ -1,6 +1,7 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
-""" Various utility functions.
+"""
+:samp:`Various utility functions`
 
 """
 import base64

@@ -3,11 +3,11 @@ rspub.util
 
 .. toctree::
 
-   rspub.util.defaults
-   rspub.util.gates
    rspub.util.observe
-   rspub.util.plugg
+   rspub.util.gates
    rspub.util.resourcefilter
+   rspub.util.plugg
+   rspub.util.defaults
 
 
 .. automodule:: rspub.util

@@ -1,5 +1,7 @@
-rspub.util.resourcefilter module
-================================
+Resource filters
+================
+
+.. rubric:: module: rspub.util.resourcefilter
 
 .. automodule:: rspub.util.resourcefilter
     :members:

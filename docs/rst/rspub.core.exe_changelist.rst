@@ -1,5 +1,7 @@
-rspub.core.exe_changelist module
-================================
+Create changelists
+==================
+
+.. rubric:: module: rspub.core.exe_changelist
 
 .. automodule:: rspub.core.exe_changelist
     :members:

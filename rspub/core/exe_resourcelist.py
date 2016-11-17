@@ -1,5 +1,9 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
+"""
+:samp:`Executor creating resourcelists`
+
+"""
 import os
 
 from resync import Resource
@@ -10,7 +14,9 @@ from rspub.util import defaults
 
 
 class ResourceListExecutor(Executor):
-    """ Executes the new resourcelist strategy.
+    """
+    :samp:`Executes the new resourcelist strategy`
+
     A ResourceListExecutor clears the metadata directory and creates new resourcelist(s) every time
     the executor runs (and is_saving_sitemaps).
     """

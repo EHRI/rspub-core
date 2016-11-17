@@ -7,8 +7,8 @@ rspub.core
    rspub.core.rs_paras
    rspub.core.rs
    rspub.core.executors
-   rspub.core.exe_changelist
    rspub.core.exe_resourcelist
+   rspub.core.exe_changelist
    rspub.core.rs_enum
 
 

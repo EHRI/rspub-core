@@ -122,6 +122,10 @@ class Executor(Observable, metaclass=ABCMeta):
     """
     :samp:`Abstract base class for ResourceSync execution`
 
+    There are 6 ``build steps`` that concrete subclasses may override (or 7 if they want to completely take over
+    the execution). Two steps are mandatory for subclasses to implement: :func:`generate_rs_documents`
+    and :func:`create_index`. Steps :func:`create_capabilitylist` and :func:`update_resource_sync` are not abstract -
+    they can safely be done by this :class:`Executor`.
     """
     def __init__(self, rs_parameters: RsParameters=None):
         """

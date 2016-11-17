@@ -1,5 +1,13 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
+"""
+:samp:`Executors creating changelists`
+
+Concrete classes:
+    - :class:`NewChangeListExecutor`
+    - :class:`IncrementalChangeListExecutor`
+
+"""
 import os
 from abc import ABCMeta
 from glob import glob
@@ -13,7 +21,10 @@ from rspub.core.rs_paras import RsParameters
 
 
 class ChangeListExecutor(Executor, metaclass=ABCMeta):
+    """
+    :samp:`Abstract class for creating changelists`
 
+    """
     def generate_rs_documents(self, filenames: iter) -> [SitemapData]:
         pass
 
@@ -144,8 +155,10 @@ class ChangeListExecutor(Executor, metaclass=ABCMeta):
 
 
 class NewChangeListExecutor(ChangeListExecutor):
-    """ Implements the new changelist strategy.
-    A NewChangeListExecutor creates new changelists every time the executor runs (and is_saving_sitemaps).
+    """
+    :samp:`Implements the new changelist strategy`
+
+    A :class:`NewChangeListExecutor` creates new changelists every time the executor runs (and is_saving_sitemaps).
     If there are previous changelists that are not closed (md:until is not set) this executor will close
     those previous changelists by setting their md:until value to now (start_of_processing)
     """
@@ -175,8 +188,11 @@ class NewChangeListExecutor(ChangeListExecutor):
 
 
 class IncrementalChangeListExecutor(ChangeListExecutor):
-    """ Implements the incremental changelist strategy.
-    A IncrementalChangeListExecutor adds changes to an already existing changelist every time the executor runs
+    """
+    :samp:`Implements the incremental changelist strategy`
+
+    An :class:`IncrementalChangeListExecutor` adds changes to an already existing changelist every time
+    the executor runs
     (and is_saving_sitemaps).
     """
     def generate_rs_documents(self, filenames: iter):
