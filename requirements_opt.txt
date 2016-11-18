@@ -1,0 +1,11 @@
+--index-url https://pypi.python.org/simple/
+
+### requirements_opt.txt #####################################
+###
+### To install, run:
+###      $ pip install -r requirements_opt.txt
+###
+##############################################################
+
+# Enable completion on command line interface
+gnureadline

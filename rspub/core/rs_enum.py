@@ -1,7 +1,14 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import gettext
 from enum import Enum, unique
+
+_ = gettext.gettext
+
+strategy_descriptions = [_("New resourcelist strategy"),
+                         _("New changelist strategy"),
+                         _("Incremental changelist strategy")]
 
 
 @unique
@@ -65,14 +72,20 @@ class Strategy(Enum):
 
         :param value: may be :class:`Strategy`, str or int
         :return: :class:`Strategy`
-        :raises: :exc:`KeyError` if the given value could not be converted to a :class:`Strategy`
+        :raises: :exc:`ValueError` if the given value could not be converted to a :class:`Strategy`
         """
-        if isinstance(value, Strategy):
-            return value
-        elif isinstance(value, int):
-            return Strategy(value)
-        else:
-            return Strategy[value]
+        try:
+            if isinstance(value, Strategy):
+                return value
+            elif isinstance(value, int):
+                return Strategy(value)
+            else:
+                return Strategy[value]
+        except KeyError as err:
+            raise ValueError(err)
+
+    def describe(self):
+        return strategy_descriptions[self.value]
 
 
 class Capability(Enum):

@@ -517,16 +517,6 @@ class RsParameters(object):
         """
         return os.path.join(self.abs_metadata_dir(), filename)
 
-    def uri_from_path(self, path):
-        """
-        ``derived`` :samp:`Calculate the url of a path relative to {resource_dir}`
-
-        :param str path: the path to calculate the url from
-        :return: the url of the path relative to ``resource_dir``
-        """
-        rel_path = os.path.relpath(path, self.resource_dir)
-        return self.url_prefix + defaults.sanitize_url_path(rel_path)
-
     def abs_description_path(self):
         """
         ``derived`` :samp:`The absolute path to (the local copy of) the file {.well-known/resourcesync}`
@@ -538,11 +528,20 @@ class RsParameters(object):
             desc_dir = self.abs_metadata_dir()
         return os.path.join(desc_dir, WELL_KNOWN_PATH)
 
-    def current_description_url(self):
+    def server_root(self):
+        """
+        ``derived`` :samp:`The server root as derived from {url_prefix}`
+
+        :return: server root
+        """
+        r = urllib.parse.urlsplit(self.url_prefix)
+        return urllib.parse.urlunsplit([r[0], r[1], "", "", ""])
+
+    def description_url(self):
         """
         ``derived`` :samp:`The current description url`
 
-        The current description url either points to ``{{server root}}/.well-known/resourcesync``
+        The current description url either points to ``{server root}/.well-known/resourcesync``
         or to a file in the metadata directory.
 
         :return: current description url
@@ -550,10 +549,33 @@ class RsParameters(object):
         See also: :func:`has_wellknown_at_root`
         """
         if self.has_wellknown_at_root:
-            rel_path = WELL_KNOWN_PATH
+            r = urllib.parse.urlsplit(self.url_prefix)
+            return urllib.parse.urlunsplit([r[0], r[1], WELL_KNOWN_PATH, "", ""])
         else:
             path = self.abs_metadata_path(WELL_KNOWN_PATH)
             rel_path = os.path.relpath(path, self.resource_dir)
+            return self.url_prefix + defaults.sanitize_url_path(rel_path)
+
+    def capabilitylist_url(self) -> str:
+        """
+        ``derived`` :samp:`The current capabilitylist url`
+
+        The current capabilitylist url points to 'capabilitylist.xml' in the metadata directory.
+
+        :return: current capabilitylist url
+        """
+        path = self.abs_metadata_path("capabilitylist.xml")
+        rel_path = os.path.relpath(path, self.resource_dir)
+        return self.url_prefix + defaults.sanitize_url_path(rel_path)
+
+    def uri_from_path(self, path):
+        """
+        ``derived`` :samp:`Calculate the url of a path relative to {resource_dir}`
+
+        :param str path: the path to calculate the url from
+        :return: the url of the path relative to ``resource_dir``
+        """
+        rel_path = os.path.relpath(path, self.resource_dir)
         return self.url_prefix + defaults.sanitize_url_path(rel_path)
 
     def abs_history_dir(self):
@@ -568,3 +590,50 @@ class RsParameters(object):
             return os.path.join(self.abs_metadata_dir(), self.history_dir)
         else:
             return None
+
+    @staticmethod
+    def configuration_name():
+        """
+        ``function`` :samp`Current configuration name`
+
+        :return: current configuration name
+        """
+        return Configurations.current_configuration_name()
+
+    def describe(self, pretty=False, fill=23):
+        tuples = [
+            [False, "configuration_name", self.configuration_name()],
+            [True, "resource_dir", self.resource_dir],
+            [True, "metadata_dir", self.metadata_dir],
+            [False, "abs_metadata_dir", self.abs_metadata_dir()],
+            [True, "description_dir", self.description_dir],
+            [False, "abs_description_path", self.abs_description_path()],
+            [True, "url_prefix", self.url_prefix],
+            [True, "has_wellknown_at_root", self.has_wellknown_at_root],
+            [False, "description_url", self.description_url()],
+            [False, "capabilitylist_url", self.capabilitylist_url()],
+            [True, "strategy", self.strategy, " = ", self.strategy.describe()],
+            [True, "plugin_dir", self.plugin_dir],
+            [True, "max_items_in_list", self.max_items_in_list],
+            [True, "zero_fill_filename", self.zero_fill_filename],
+            [True, "is_saving_pretty_xml", self.is_saving_pretty_xml],
+            [True, "is_saving_sitemaps", self.is_saving_sitemaps]
+        ]
+        if pretty:
+            f = "{:" + str(fill) + "s}"
+            s = ""
+            for t in tuples:
+                s += " - " if t[0] else " + "
+                s += f.format(t[1])
+                s += str(t[2])
+                for extra in t[3:]:
+                    s += str(extra)
+                s += "\n"
+            return s
+        else:
+            return tuples
+
+
+
+
+

@@ -41,7 +41,7 @@ class ResourceListExecutor(Executor):
             index_path = self.para.abs_metadata_path("resourcelist-index.xml")
             rel_index_path = os.path.relpath(index_path, self.para.resource_dir)
             index_url = self.para.url_prefix + defaults.sanitize_url_path(rel_index_path)
-            resourcelist_index.link_set(rel="up", href=self.current_capabilitylist_url())
+            resourcelist_index.link_set(rel="up", href=self.para.capabilitylist_url())
 
             for sitemap_data in sitemap_data_iter:
                 resourcelist_index.add(Resource(uri=sitemap_data.url, md_at=sitemap_data.doc_start,

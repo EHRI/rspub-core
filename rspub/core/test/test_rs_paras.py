@@ -17,9 +17,13 @@ class TestRsParameters(unittest.TestCase):
         Configuration._set_configuration_filename(None)
 
     def test_load_configuration(self):
+        Configuration().core_clear()
         rsp = RsParameters()
+        self.assertEquals("test_rs_paras", rsp.configuration_name())
+
         rsp.max_items_in_list=5566
         rsp.save_configuration_as("realy_not_a_name_for_config")
+        self.assertEquals("realy_not_a_name_for_config", rsp.configuration_name())
 
         rsp = RsParameters(config_name="realy_not_a_name_for_config")
         self.assertEquals(5566, rsp.max_items_in_list)
@@ -31,6 +35,10 @@ class TestRsParameters(unittest.TestCase):
         with self.assertRaises(Exception) as context:
             RsParameters(config_name="realy_not_a_name_for_config")
         self.assertIsInstance(context.exception, ValueError)
+
+        Configuration().reset()
+        rsp = RsParameters()
+        self.assertEquals("rspub_core", rsp.configuration_name())
 
     def test_resource_dir(self):
         user_home = os.path.expanduser("~")
@@ -334,4 +342,28 @@ class TestRsParameters(unittest.TestCase):
 
         rsp2 = RsParameters()
         self.assertEquals(rsp.__dict__, rsp2.__dict__)
+
+    def test_server_root(self):
+        rsp = RsParameters(url_prefix="http://example.com/bla/foo/bar")
+        self.assertEquals(rsp.server_root(), "http://example.com")
+
+        rsp.url_prefix = "http://www.example.com"
+        self.assertEquals(rsp.server_root(), "http://www.example.com")
+
+    def test_current_description_url(self):
+        rsp = RsParameters(url_prefix="http://example.com/bla/foo/bar")
+        rsp.has_wellknown_at_root = True
+        self.assertEquals(rsp.description_url(), "http://example.com/.well-known/resourcesync")
+
+        rsp.has_wellknown_at_root = False
+        rsp.resource_dir = os.path.expanduser("~")
+        rsp.metadata_dir = "some/path/md10"
+        self.assertEquals(rsp.description_url(),
+                          "http://example.com/bla/foo/bar/some/path/md10/.well-known/resourcesync")
+
+    def test_describe(self):
+        rsp = RsParameters()
+        print(rsp.describe(True))
+
+
 

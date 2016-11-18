@@ -167,7 +167,6 @@ class Configuration(object):
     @staticmethod
     def reset():
         Configuration._instance = None
-        Configuration._set_configuration_filename(None)
         Configuration.__get__logger().info("Configuration was reset.")
 
     @staticmethod

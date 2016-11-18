@@ -35,4 +35,7 @@ class Test_Strategy(unittest.TestCase):
         self.assertIs(Strategy.inc_changelist, Strategy.strategy_for("inc_changelist"))
         self.assertIs(Strategy.inc_changelist, Strategy.strategy_for(2))
 
+    def test_describe(self):
+        self.assertEquals(Strategy.resourcelist.describe(), "New resourcelist strategy")
+
 

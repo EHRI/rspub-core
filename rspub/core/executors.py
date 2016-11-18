@@ -267,7 +267,7 @@ class Executor(Observable, metaclass=ABCMeta):
 
         src_description.add(Resource(uri=capabilitylist_data.uri, capability=Capability.capabilitylist.name),
                             replace=True)
-        sitemap_data = SitemapData(len(src_description), -1, self.para.current_description_url(), src_desc_path,
+        sitemap_data = SitemapData(len(src_description), -1, self.para.description_url(), src_desc_path,
                                    Capability.description.name)
         if self.para.is_saving_sitemaps:
             self.save_sitemap(src_description, src_desc_path)
@@ -376,14 +376,9 @@ class Executor(Observable, metaclass=ABCMeta):
 
     def current_rel_up_for(self, sitemap):
         if sitemap.capability_name == Capability.capabilitylist.name:
-            return self.para.current_description_url()
+            return self.para.description_url()
         else:
-            return self.current_capabilitylist_url()
-
-    def current_capabilitylist_url(self) -> str:
-        path = self.para.abs_metadata_path("capabilitylist.xml")
-        rel_path = os.path.relpath(path, self.para.resource_dir)
-        return self.para.url_prefix + defaults.sanitize_url_path(rel_path)
+            return self.para.capabilitylist_url()
 
     def update_rel_index(self, index_url, path):
         sitemap = self.read_sitemap(path)

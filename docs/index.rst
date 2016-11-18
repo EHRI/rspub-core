@@ -10,8 +10,12 @@ Indices and tables
 * :ref:`modindex`
 * :ref:`search`
 
-rspub-core documentation
-========================
+rspub-core source documentation
+===============================
+
+See for an overview on package and module level :ref:`modindex`
+
+
 
 .. toctree::
 
