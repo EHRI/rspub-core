@@ -38,7 +38,7 @@ class TestRsParameters(unittest.TestCase):
 
         Configuration().reset()
         rsp = RsParameters()
-        self.assertEquals("rspub_core", rsp.configuration_name())
+        self.assertEquals("realy_not_a_name_for_config", rsp.configuration_name())
 
     def test_resource_dir(self):
         user_home = os.path.expanduser("~")

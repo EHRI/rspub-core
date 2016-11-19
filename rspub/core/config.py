@@ -11,9 +11,9 @@ It should not be used directly. In stead use :class:`rspub.core.rs_paras.RsParam
 
 The location where configurations are stored is system-dependent:
 
- - ``{user-home}\\AppData\\Local\\Programs\\rspub\\`` on Windows
- - ``{user-home}/.config/rspub/`` on Mac and Linux
- - ``{user-home}/rspub`` fallback
+ - ``{user-home}\\AppData\\Local\\Programs\\rspub\\config\\`` on Windows
+ - ``{user-home}/.config/rspub/config/`` on Mac and Linux
+ - ``{user-home}/rspub/config/`` fallback
 
 .. seealso:: :doc:`RsParameters <rspub.core.rs_paras>`
 
@@ -38,7 +38,7 @@ from rspub.core.rs_enum import Strategy
 # Windows:  ﻿'Windows'
 # CentOS:   'Linux'
 
-CFG_FILENAME = "rspub_core.cfg"
+CFG_FILENAME = "DEFAULT.cfg"
 SECTION_CORE = "core"
 EXT = ".cfg"
 
@@ -186,7 +186,7 @@ class Configuration(object):
             if not os.path.exists(lin_path): os.makedirs(lin_path)
             if os.path.exists(lin_path): c_path = lin_path
 
-        c_path = os.path.join(c_path, "rspub")
+        c_path = os.path.join(c_path, "rspub", "config")
         if not os.path.exists(c_path):
             os.makedirs(c_path)
         Configuration.__get__logger().info("Configuration directory: %s", c_path)
@@ -264,8 +264,14 @@ class Configuration(object):
     def description_dir(self, fallback=None):
         return self.parser.get(SECTION_CORE, "description_dir", fallback=fallback)
 
-    def set_description_dir(self, common_file):
-        self.__set_option__(SECTION_CORE, "description_dir", common_file)
+    def set_description_dir(self, description_dir):
+        self.__set_option__(SECTION_CORE, "description_dir", description_dir)
+
+    def selector_file(self, fallback=None):
+        return self.parser.get(SECTION_CORE, "selector_file", fallback=fallback)
+
+    def set_selector_file(self, selector_file):
+        self.__set_option__(SECTION_CORE, "selector_file", selector_file)
 
     def plugin_dir(self, fallback=None):
         return self.parser.get(SECTION_CORE, "plugin_dir", fallback=fallback)

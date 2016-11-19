@@ -44,7 +44,7 @@ class ResourceListExecutor(Executor):
             resourcelist_index.link_set(rel="up", href=self.para.capabilitylist_url())
 
             for sitemap_data in sitemap_data_iter:
-                resourcelist_index.add(Resource(uri=sitemap_data.url, md_at=sitemap_data.doc_start,
+                resourcelist_index.add(Resource(uri=sitemap_data.uri, md_at=sitemap_data.doc_start,
                                       md_completed=sitemap_data.doc_end))
                 if sitemap_data.document_saved:
                     self.update_rel_index(index_url, sitemap_data.path)

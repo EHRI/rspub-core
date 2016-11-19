@@ -22,6 +22,7 @@ from numbers import Number
 import validators
 from rspub.core.config import Configuration, Configurations
 from rspub.core.rs_enum import Strategy
+from rspub.core.selector import Selector
 from rspub.util import defaults
 
 
@@ -61,7 +62,7 @@ class RsParameters(object):
 
     """
     def __init__(self, config_name=None, resource_dir=config, metadata_dir=config, description_dir=config,
-                 url_prefix=config, strategy=config, plugin_dir=config,
+                 url_prefix=config, strategy=config, selector_file=config, plugin_dir=config,
                  history_dir=config, max_items_in_list=config, zero_fill_filename=config, is_saving_pretty_xml=config,
                  is_saving_sitemaps=config, has_wellknown_at_root=config, **kwargs):
         """
@@ -80,6 +81,7 @@ class RsParameters(object):
         :param str description_dir: ``parameter`` :func:`description_dir`
         :param str url_prefix: ``parameter`` :func:`url_prefix`
         :param strategy: ``parameter`` :func:`strategy`
+        :param str selector_file: ``parameter`` :func:`selector_file`
         :param str plugin_dir: ``parameter`` :func:`plugin_dir`
         :param str history_dir: ``parameter`` :func:`history_dir`
         :param int max_items_in_list: ``parameter`` :func:`max_items_in_list`
@@ -96,6 +98,7 @@ class RsParameters(object):
             "description_dir": description_dir,
             "url_prefix": url_prefix,
             "strategy": strategy,
+            "selector_file": selector_file,
             "plugin_dir": plugin_dir,
             "history_dir": history_dir,
             "max_items_in_list": max_items_in_list,
@@ -128,6 +131,10 @@ class RsParameters(object):
         self._strategy = None
         _strategy_ = self.__arg__("_strategy", cfg.strategy(), **kwargs)
         self.strategy = _strategy_
+
+        self._selector_file = None
+        _selector_file_ = self.__arg__("_selector_file", cfg.selector_file(), **kwargs)
+        self.selector_file = _selector_file_
 
         self._plugin_dir = None
         _plugin_dir_ = self.__arg__("_plugin_dir", cfg.plugin_dir(), **kwargs)
@@ -330,6 +337,25 @@ class RsParameters(object):
         self._strategy = Strategy.strategy_for(value)
 
     @property
+    def selector_file(self):
+        """
+        ``parameter`` :samp:`Location of file to construct a {Selector}` (str)
+
+        A :class:`rspub.core.selector.Selector` can be used as input for the execute methods. The `selector_file`
+        specifies the location of the selector file.
+        """
+        return self._selector_file
+
+    @selector_file.setter
+    def selector_file(self, filename):
+        if filename and not isinstance(filename, str):
+            raise ValueError("Value for selector_file should be string. %s is %s" % (filename, type(filename)))
+        if filename == "":
+            filename = None
+
+        self._selector_file = filename
+
+    @property
     def history_dir(self):
         """
         ``parameter`` :samp:`Directory for storing reports on executed synchronisations` (str)
@@ -474,6 +500,7 @@ class RsParameters(object):
         cfg.set_description_dir(self.description_dir)
         cfg.set_url_prefix(self.url_prefix)
         cfg.set_strategy(self.strategy)
+        cfg.set_selector_file(self.selector_file)
         cfg.set_history_dir(self.history_dir)
         cfg.set_plugin_dir(self.plugin_dir)
         cfg.set_max_items_in_list(self.max_items_in_list)
@@ -578,6 +605,17 @@ class RsParameters(object):
         rel_path = os.path.relpath(path, self.resource_dir)
         return self.url_prefix + defaults.sanitize_url_path(rel_path)
 
+    def abs_selector_file(self):
+        """
+        ``derived`` :samp:`The absolute selector file`
+
+        :return: absolute selector file
+        """
+        if self.selector_file:
+            return os.path.abspath(self.selector_file)
+        else:
+            return None
+
     def abs_history_dir(self):
         """
         ``derived`` :samp:`The absolute path to directory for reports on synchronizations`
@@ -613,6 +651,8 @@ class RsParameters(object):
             [False, "description_url", self.description_url()],
             [False, "capabilitylist_url", self.capabilitylist_url()],
             [True, "strategy", self.strategy, " = ", self.strategy.describe()],
+            [True, "selector_file", self.selector_file],
+            [False, "abs_selector_file", self.abs_selector_file()],
             [True, "plugin_dir", self.plugin_dir],
             [True, "max_items_in_list", self.max_items_in_list],
             [True, "zero_fill_filename", self.zero_fill_filename],

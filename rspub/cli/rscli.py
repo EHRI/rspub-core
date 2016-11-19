@@ -1,18 +1,20 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import os
 import sys
-import cmd, glob
 
-from rspub.core.rs_paras import RsParameters
+from rspub.core.selector import Selector
 
 if sys.version_info[0] < 3:
     raise RuntimeError("Your Python has version 2. This application needs Python3.x")
 
+import os
+import cmd, glob
+
 # Start this module from anywhere on the system: append root directory of project.
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__)))))
 #                rspub-core         rspub           cli               rscli.py
+from rspub.core.rs_paras import RsParameters
 from rspub.core.config import Configuration, Configurations
 from rspub.core.rs_enum import Strategy
 
@@ -26,6 +28,9 @@ except ImportError:
     pass
 
 
+PARAS = RsParameters()
+
+
 def str2bool(v, none=False):
     if v:
         return v.lower() in ["yes", "y", "true", "t", "1", "on", "o"]
@@ -36,9 +41,12 @@ def str2bool(v, none=False):
 class SuperCmd(cmd.Cmd):
 
     _complete_ = "-> Press 2 x <tab> for options, 1 x <tab> for completion.\n" if __GNU_READLINE__ else ""
-    doc_header = "Documented commands (type: help <topic>):"
+    _complete_ += "-> For help type: help"
 
     stop = False
+
+    def __init__(self):
+        cmd.Cmd.__init__(self)
 
     def __complete_path__(self, text, line, begidx, endidx):
         # see: http://stackoverflow.com/questions/16826172/filename-tab-completion-in-cmd-cmd-of-python#27256663
@@ -80,13 +88,58 @@ class SuperCmd(cmd.Cmd):
         self.stop = True
 
     def help_exit(self):
-        print("exit\n\tExit", self.__class__.__name__, "mode.")
+        print("exit\n\tExit", self.__class__.__name__)
 
     def do_EOF(self, line):
         """EOF, Ctrl+D:
         Exit the application."""
         print("Bye from", __file__)
         sys.exit()
+
+    @staticmethod
+    def complete_configuration(text):
+        if not text:
+            completions = Configurations.list_configurations()[:]
+        else:
+            completions = [x for x in Configurations.list_configurations() if x.startswith(text)]
+        return completions
+
+    def do_list_configurations(self, line):
+        """list_configurations:
+        List saved configurations"""
+        print("====================")
+        print("Saved configurations")
+        print("====================")
+        for config in Configurations.list_configurations():
+            print(config)
+        print("")
+        print("====================")
+
+    def do_open_configuration(self, name):
+        """open_configuration [name]:
+        Open a saved configuration"""
+        global PARAS
+        if name:
+            try:
+                PARAS = RsParameters(config_name=name)
+                self.do_list_parameters(name)
+            except ValueError as err:
+                print("\nIllegal argument: {0}".format(err))
+        else:
+            print("Open a configuration. Specify a name:")
+            self.do_list_configurations(name)
+
+    def complete_open_configuration(self, text, line, begidx, endidx):
+        return self.complete_configuration(text)
+
+    def do_list_parameters(self, line):
+        """list_parameters:
+        List current parameters."""
+        print("================================================================================")
+        print("Parameters for Metadata Publishing")
+        print("================================================================================")
+        print(PARAS.describe(True))
+        print("================================================================================")
 
 
 class RsPub(SuperCmd):
@@ -95,6 +148,9 @@ class RsPub(SuperCmd):
     intro = "================================================== \n" + \
             "Command Line Interface for ResourceSync Publishing \n" + \
             "================================================== \n" + SuperCmd._complete_
+
+    def __init__(self):
+        SuperCmd.__init__(self)
 
     def do_configure(self, line):
         """configure:
@@ -120,52 +176,16 @@ class Configure(SuperCmd):
             "============================= \n" + SuperCmd._complete_
 
     def __init__(self):
-        cmd.Cmd.__init__(self)
-        self.paras = RsParameters()
-
-    @staticmethod
-    def complete_configuration(text):
-        if not text:
-            completions = Configurations.list_configurations()[:]
-        else:
-            completions = [x for x in Configurations.list_configurations() if x.startswith(text)]
-        return completions
-
-    def do_list_configurations(self, line):
-        """list_configurations:
-        List saved configurations"""
-        print("====================")
-        print("Saved configurations")
-        print("====================")
-        for config in Configurations.list_configurations():
-            print(config)
-        print("")
-        print("====================")
+        SuperCmd.__init__(self)
 
     def do_save_configuration(self, name):
         """save_configuration [name]:
         Save the current configuration as (name)"""
-        if (name):
-            self.paras.save_configuration_as(name)
+        if name:
+            PARAS.save_configuration_as(name)
             print("Current configuration saved as '%s'" % name)
         else:
-            print("Current configuration saved as '%s'" % self.paras.configuration_name())
-
-    def do_open_configuration(self, name):
-        """open_configuration [name]:
-        Open a saved configuration"""
-        if name:
-            try:
-                self.paras = RsParameters(config_name=name)
-                self.do_list_parameters(name)
-            except ValueError as err:
-                print("\nIllegal argument: {0}".format(err))
-        else:
-            print("Open a configuration. Specify a name:")
-            self.do_list_configurations(name)
-
-    def complete_open_configuration(self, text, line, begidx, endidx):
-        return self.complete_configuration(text)
+            print("Current configuration saved as '%s'" % PARAS.configuration_name())
 
     def do_remove_configuration(self, name):
         """remove_configuration [name]:
@@ -183,23 +203,14 @@ class Configure(SuperCmd):
     def complete_remove_configuration(self, text, line, begidx, endidx):
         return self.complete_configuration(text)
 
-    def do_list_parameters(self, line):
-        """list_parameters:
-        List current parameters."""
-        print("==================================================================================")
-        print("Parameters for Metadata Publishing")
-        print("==================================================================================")
-        print(self.paras.describe(True))
-        print("==================================================================================")
-
     def do_reset(self, line):
         """reset:
         Reset the configuration to default settings."""
-        if self.__confirm__("Reset configuration '%s' to default settings?" % self.paras.configuration_name()):
-            Configuration().reset()
+        global PARAS
+        if self.__confirm__("Reset configuration '%s' to default settings?" % PARAS.configuration_name()):
             Configuration().core_clear()
-            self.paras = RsParameters()
-            self.paras.save_configuration()
+            PARAS = RsParameters()
+            PARAS.save_configuration()
             self.do_list_parameters(line)
 
     def help_resource_dir(self):
@@ -208,12 +219,12 @@ class Configure(SuperCmd):
                    ]))
 
     def do_resource_dir(self, path):
-        print("Was:" if path else "Current:", self.paras.resource_dir)
+        print("Was:" if path else "Current:", PARAS.resource_dir)
         if path:
             try:
-                self.paras.resource_dir = path
-                self.paras.save_configuration(True)
-                print("Now:", self.paras.resource_dir)
+                PARAS.resource_dir = path
+                PARAS.save_configuration(True)
+                print("Now:", PARAS.resource_dir)
             except ValueError as err:
                 print("\nIllegal argument: {0}".format(err))
 
@@ -226,12 +237,12 @@ class Configure(SuperCmd):
                    ]))
 
     def do_metadata_dir(self, path):
-        print("Was:" if path else "Current:", self.paras.metadata_dir)
+        print("Was:" if path else "Current:", PARAS.metadata_dir)
         if path:
             try:
-                self.paras.metadata_dir = path
-                self.paras.save_configuration(True)
-                print("Now:", self.paras.metadata_dir)
+                PARAS.metadata_dir = path
+                PARAS.save_configuration(True)
+                print("Now:", PARAS.metadata_dir)
             except ValueError as err:
                 print("\nIllegal argument: {0}".format(err))
 
@@ -244,14 +255,14 @@ class Configure(SuperCmd):
                    ]))
 
     def do_description_dir(self, path):
-        print("Was:" if path else "Current:", self.paras.description_dir)
+        print("Was:" if path else "Current:", PARAS.description_dir)
         if path:
             try:
                 if path == "None":
                     path = None
-                self.paras.description_dir = path
-                self.paras.save_configuration(True)
-                print("Now:", self.paras.description_dir)
+                PARAS.description_dir = path
+                PARAS.save_configuration(True)
+                print("Now:", PARAS.description_dir)
             except ValueError as err:
                 print("\nIllegal argument: {0}".format(err))
 
@@ -266,23 +277,25 @@ class Configure(SuperCmd):
                        ]))
 
     def do_url_prefix(self, url):
-        print("Was:" if url else "Current:", self.paras.url_prefix)
+        print("Was:" if url else "Current:", PARAS.url_prefix)
         if url:
             try:
-                self.paras.url_prefix = url
-                self.paras.save_configuration(True)
-                print("Now:", self.paras.url_prefix)
+                PARAS.url_prefix = url
+                PARAS.save_configuration(True)
+                print("Now:", PARAS.url_prefix)
             except ValueError as err:
                 print("\nIllegal argument: {0}".format(err))
 
     def do_has_wellknown_at_root(self, value):
         """has_wellknown_at_root:
+        has_wellknown_at_root            Get the property
+        has_wellknown_at_root (yes | no) Set the property
         The description document '.well-known/resourcesync' is at the root of the server address."""
-        print("Was:" if value else "Current:", self.paras.has_wellknown_at_root)
+        print("Was:" if value else "Current:", PARAS.has_wellknown_at_root)
         if value:
-            self.paras.has_wellknown_at_root = str2bool(value, none=self.paras.has_wellknown_at_root)
-            self.paras.save_configuration(True)
-            print("Now:", self.paras.has_wellknown_at_root)
+            PARAS.has_wellknown_at_root = str2bool(value, none=PARAS.has_wellknown_at_root)
+            PARAS.save_configuration(True)
+            print("Now:", PARAS.has_wellknown_at_root)
 
     def help_strategy(self):
         print('\n'.join(["strategy", "   Get the strategy.",
@@ -294,12 +307,12 @@ class Configure(SuperCmd):
                    ]))
 
     def do_strategy(self, name):
-        print("Was:" if name else "Current:", self.paras.strategy)
+        print("Was:" if name else "Current:", PARAS.strategy)
         if name:
             try:
-                self.paras.strategy = name
-                self.paras.save_configuration(True)
-                print("Now:", self.paras.strategy)
+                PARAS.strategy = name
+                PARAS.save_configuration(True)
+                print("Now:", PARAS.strategy)
             except ValueError as err:
                 print("\nIllegal argument: {0}".format(err))
                 self.help_strategy()
@@ -311,6 +324,29 @@ class Configure(SuperCmd):
             completions = [x for x in Strategy.names() if x.startswith(text)]
         return completions
 
+    def do_selector_file(self, path):
+        """selector_file:
+        selector_file        Get the property
+        selector_file [path] Set the property
+        selector_file None   Reset the property
+        ---------------------------------------
+        The selector_file points to the location of the file to persist a :class:`rspub.core.selector.Selector`
+        """
+        print("Was:" if path else "Current:", PARAS.selector_file)
+        if path:
+            try:
+                if path == "None":
+                    path = None
+                PARAS.selector_file = path
+                PARAS.save_configuration(True)
+                print("Now:", PARAS.selector_file)
+            except ValueError as err:
+                print("\nIllegal argument: {0}".format(err))
+
+    def complete_selector_file(self, text, line, begidx, endidx):
+        return self.__complete_path__(text, line, begidx, endidx)
+
+
     def help_plugin_dir(self):
         print('\n'.join(["plugin_dir", "   Get the path to the plugin directory.",
                    "description_dir [path]", "   Set the path to the plugin directory.",
@@ -320,14 +356,14 @@ class Configure(SuperCmd):
                    ]))
 
     def do_plugin_dir(self, path):
-        print("Was:" if path else "Current:", self.paras.plugin_dir)
+        print("Was:" if path else "Current:", PARAS.plugin_dir)
         if path:
             try:
                 if path == "None":
                     path = None
-                self.paras.plugin_dir = path
-                self.paras.save_configuration(True)
-                print("Now:", self.paras.plugin_dir)
+                PARAS.plugin_dir = path
+                PARAS.save_configuration(True)
+                print("Now:", PARAS.plugin_dir)
             except ValueError as err:
                 print("\nIllegal argument: {0}".format(err))
 
@@ -338,12 +374,12 @@ class Configure(SuperCmd):
         """max_items_in_list:
         The maximum amount of records in a sitemap (int, 1 - 50000)
         """
-        print("Was:" if value else "Current:", self.paras.max_items_in_list)
+        print("Was:" if value else "Current:", PARAS.max_items_in_list)
         if (value):
             try:
-                self.paras.max_items_in_list = int(value)
-                self.paras.save_configuration(True)
-                print("Now:", self.paras.max_items_in_list)
+                PARAS.max_items_in_list = int(value)
+                PARAS.save_configuration(True)
+                print("Now:", PARAS.max_items_in_list)
             except ValueError as err:
                 print("\nIllegal argument: {0}".format(err))
 
@@ -351,32 +387,32 @@ class Configure(SuperCmd):
         """zero_fill_filename:
         The amount of digits in a sitemap filename (int, 1 - 10)
         """
-        print("Was:" if value else "Current:", self.paras.zero_fill_filename)
+        print("Was:" if value else "Current:", PARAS.zero_fill_filename)
         if (value):
             try:
-                self.paras.zero_fill_filename = int(value)
-                self.paras.save_configuration(True)
-                print("Now:", self.paras.zero_fill_filename)
+                PARAS.zero_fill_filename = int(value)
+                PARAS.save_configuration(True)
+                print("Now:", PARAS.zero_fill_filename)
             except ValueError as err:
                 print("\nIllegal argument: {0}".format(err))
 
     def do_is_saving_pretty_xml(self, value):
         """is_saving_pretty_xml:
         Determines appearance of sitemap xml (yes | no)"""
-        print("Was:" if value else "Current:", self.paras.is_saving_pretty_xml)
+        print("Was:" if value else "Current:", PARAS.is_saving_pretty_xml)
         if value:
-            self.paras.is_saving_pretty_xml = str2bool(value, none=self.paras.is_saving_pretty_xml)
-            self.paras.save_configuration(True)
-            print("Now:", self.paras.is_saving_pretty_xml)
+            PARAS.is_saving_pretty_xml = str2bool(value, none=PARAS.is_saving_pretty_xml)
+            PARAS.save_configuration(True)
+            print("Now:", PARAS.is_saving_pretty_xml)
 
     def do_is_saving_sitemaps(self, value):
         """is_saving_sitemaps:
         Determines if sitemaps will be written to disk (yes | no)"""
-        print("Was:" if value else "Current:", self.paras.is_saving_sitemaps)
+        print("Was:" if value else "Current:", PARAS.is_saving_sitemaps)
         if value:
-            self.paras.is_saving_sitemaps = str2bool(value, none=self.paras.is_saving_sitemaps)
-            self.paras.save_configuration(True)
-            print("Now:", self.paras.is_saving_sitemaps)
+            PARAS.is_saving_sitemaps = str2bool(value, none=PARAS.is_saving_sitemaps)
+            PARAS.save_configuration(True)
+            print("Now:", PARAS.is_saving_sitemaps)
 
 
 class Select(SuperCmd):
@@ -386,16 +422,98 @@ class Select(SuperCmd):
             "Select data for ResourceSync Publishing \n" + \
             "======================================= \n" + SuperCmd._complete_
 
-    config = Configuration()
+    def __init__(self):
+        SuperCmd.__init__(self)
+        self.selector = None
+        if PARAS.selector_file:
+            try:
+                self.selector = Selector(PARAS.abs_selector_file())
+                print("Loaded Selector from", self.selector.abs_location())
+            except Exception as err:
+                print("\nSelector error: {0}".format(err))
 
-    def do_directory(self, path):
-        print("set directory", path)
+        if self.selector is None:
+            self.selector = Selector()
 
-    def complete_directory(self, text, line, begidx, endidx):
-        if line == "directory ":
-            return [self.config.resource_dir()]
-        else:
-            return self.__complete_path__(text, line, begidx, endidx)
+    def do_load_selector(self, path):
+        if path:
+            self.check_exit()
+            try:
+                self.selector = Selector(path)
+                print("Loaded Selector from", self.selector.abs_location())
+            except Exception as err:
+                print("\nSelector error: {0}".format(err))
+
+    def complete_load_selector(self, text, line, begidx, endidx):
+        return self.__complete_path__(text, line, begidx, endidx)
+
+    def do_include_path(self, path):
+        if path:
+            self.selector.include(path)
+            print("Included:", path)
+
+    def complete_include_path(self, text, line, begidx, endidx):
+        return self.__complete_path__(text, line, begidx, endidx)
+
+    def do_list_includes(self, line):
+        print("======================================================")
+        print("Included files. Selector.location = %s" % self.selector.abs_location())
+        print("======================================================")
+        file_count = 0
+        for file in self.selector.list_includes():
+            file_count += 1
+            print(file)
+        print("Total included files: %d" % file_count)
+        print("======================================================")
+
+    def do_exclude_path(self, path):
+        if path:
+            self.selector.exclude(path)
+            print("Excluded:", path)
+
+    def complete_exclude_path(self, text, line, begidx, endidx):
+        return self.__complete_path__(text, line, begidx, endidx)
+
+    def do_list_excludes(self, line):
+        print("======================================================")
+        print("Excluded files. Selector.location = %s" % self.selector.abs_location())
+        print("======================================================")
+        file_count = 0
+        for file in self.selector.list_excludes():
+            file_count += 1
+            print(file)
+        print("Total excluded files: %d" % file_count)
+        print("======================================================")
+
+    def do_list_selected(self, line):
+        print("======================================================")
+        print("Selected files. Selector.location = %s" % self.selector.abs_location())
+        print("======================================================")
+        file_count = 0
+        for file in self.selector:
+            file_count += 1
+            print(file)
+        print("Total selected files: %d" % file_count)
+        print("======================================================")
+
+    def save_selector(self):
+        print("saved!")
+
+    def check_exit(self):
+        if self.selector and self.selector.dirty:
+            if self.__confirm__("Selection has unsaved changes. Save current selection?"):
+                self.save_selector()
+
+    def do_exit(self, line):
+        self.check_exit()
+        self.stop = True
+
+    def do_EOF(self, line):
+        """EOF, Ctrl+D:
+        Exit the application."""
+        self.check_exit()
+        print("Bye from", __file__)
+        sys.exit()
 
 
 if __name__ == '__main__':

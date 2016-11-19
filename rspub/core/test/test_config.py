@@ -22,8 +22,10 @@ class TestConfigurations(unittest.TestCase):
         root.addHandler(ch)
 
     def test_current_configuration_name(self):
+        # No name change
+        current_name = Configurations.current_configuration_name()
         Configuration.reset()
-        self.assertEquals("rspub_core", Configurations.current_configuration_name())
+        self.assertEquals(current_name, Configurations.current_configuration_name())
 
         cfg1 = Configuration()
         Configurations.save_configuration_as("test_current")
@@ -45,8 +47,8 @@ class TestConfigurations(unittest.TestCase):
         cfg1 = Configuration()
         cfg2 = Configuration()
         self.assertIs(cfg1, cfg2)
-        self.assertEquals(os.path.splitext(config.CFG_FILENAME)[0], cfg1.name())
-        self.assertEquals(os.path.splitext(config.CFG_FILENAME)[0], cfg2.name())
+        self.assertEquals(Configurations.current_configuration_name(), cfg1.name())
+        self.assertEquals(Configurations.current_configuration_name(), cfg2.name())
 
         Configurations.save_configuration_as("test_load_1")
         self.assertEquals("test_load_1", cfg1.name())
@@ -54,7 +56,7 @@ class TestConfigurations(unittest.TestCase):
 
         cfg3 = Configuration()
         self.assertIsNot(cfg1, cfg3)
-        self.assertEquals(os.path.splitext(config.CFG_FILENAME)[0], cfg3.name())
+        self.assertEquals(Configurations.current_configuration_name(), cfg3.name())
 
         Configurations.save_configuration_as("test_load_2")
         self.assertEquals("test_load_1", cfg1.name())
@@ -84,12 +86,12 @@ class TestConfiguration(unittest.TestCase):
         # print("\n>>> Testing set_test_config")
         Configuration._set_configuration_filename(None)
         assert not Configuration._configuration_filename
-        assert Configuration._get_configuration_filename() == "rspub_core.cfg"
+        assert Configuration._get_configuration_filename() == config.CFG_FILENAME
 
         Configuration._set_configuration_filename("foo.bar")
         assert Configuration._get_configuration_filename() == "foo.bar"
         Configuration._set_configuration_filename(None)
-        assert Configuration._get_configuration_filename() == "rspub_core.cfg"
+        assert Configuration._get_configuration_filename() == config.CFG_FILENAME
 
     def test02_instance(self):
         # print("\n>>> Testing _instance")
@@ -102,14 +104,14 @@ class TestConfiguration(unittest.TestCase):
 
         path1 = config1.config_path
         if platform.system() == "Darwin":
-            assert path1 == os.path.expanduser("~") + "/.config/rspub"
+            assert path1 == os.path.expanduser("~") + "/.config/rspub/config"
         elif platform.system() == "Windows":
-            path_expected = os.path.join(os.path.expanduser("~"), "AppData", "Local", "rspub")
+            path_expected = os.path.join(os.path.expanduser("~"), "AppData", "Local", "rspub", "config")
             assert path1 == path_expected
         elif platform.system() == "Linux":
-            assert path1 == os.path.expanduser("~") + "/.config/rspub"
+            assert path1 == os.path.expanduser("~") + "/.config/rspub/config"
         else:
-            assert path1 == os.path.expanduser("~") + "/rspub"
+            assert path1 == os.path.expanduser("~") + "/rspub/config"
 
         config1.core_clear()
         assert config1.resource_dir() == os.path.expanduser("~")

@@ -9,6 +9,7 @@ rspub.core
    rspub.core.executors
    rspub.core.exe_resourcelist
    rspub.core.exe_changelist
+   rspub.core.selector
    rspub.core.rs_enum
 
 
