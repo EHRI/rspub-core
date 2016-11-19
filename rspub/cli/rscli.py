@@ -91,8 +91,12 @@ class SuperCmd(cmd.Cmd):
         print("exit\n\tExit", self.__class__.__name__)
 
     def do_EOF(self, line):
-        """EOF, Ctrl+D:
-        Exit the application."""
+        """
+EOF, Ctrl+D, Ctrl+C::
+
+    Exit the application.
+
+        """
         print("Bye from", __file__)
         sys.exit()
 
@@ -105,8 +109,12 @@ class SuperCmd(cmd.Cmd):
         return completions
 
     def do_list_configurations(self, line):
-        """list_configurations:
-        List saved configurations"""
+        """
+list_configurations::
+
+    List saved configurations
+
+        """
         print("====================")
         print("Saved configurations")
         print("====================")
@@ -116,8 +124,12 @@ class SuperCmd(cmd.Cmd):
         print("====================")
 
     def do_open_configuration(self, name):
-        """open_configuration [name]:
-        Open a saved configuration"""
+        """
+open_configuration [name]::
+
+    Open a saved configuration
+
+        """
         global PARAS
         if name:
             try:
@@ -133,8 +145,12 @@ class SuperCmd(cmd.Cmd):
         return self.complete_configuration(text)
 
     def do_list_parameters(self, line):
-        """list_parameters:
-        List current parameters."""
+        """
+list_parameters::
+
+    List current parameters
+
+        """
         print("================================================================================")
         print("Parameters for Metadata Publishing")
         print("================================================================================")
@@ -153,18 +169,30 @@ class RsPub(SuperCmd):
         SuperCmd.__init__(self)
 
     def do_configure(self, line):
-        """configure:
-        Switch to configuration mode."""
+        """
+configure::
+
+    Switch to configuration mode
+
+        """
         Configure().cmdloop()
 
     def do_select(self, line):
-        """select:
-        Switch to select mode."""
+        """
+select::
+
+    Switch to select mode
+
+        """
         Select().cmdloop()
 
     def do_exit(self, line):
-        """exit, EOF, Ctrl+D:
-        Exit the application."""
+        """
+EOF, Ctrl+D, Ctrl+C::
+
+    Exit the application.
+
+        """
         self.do_EOF(line)
 
 
@@ -179,8 +207,12 @@ class Configure(SuperCmd):
         SuperCmd.__init__(self)
 
     def do_save_configuration(self, name):
-        """save_configuration [name]:
-        Save the current configuration as (name)"""
+        """
+save_configuration [name]::
+
+    Save the current configuration as (name)
+
+        """
         if name:
             PARAS.save_configuration_as(name)
             print("Current configuration saved as '%s'" % name)
@@ -188,8 +220,12 @@ class Configure(SuperCmd):
             print("Current configuration saved as '%s'" % PARAS.configuration_name())
 
     def do_remove_configuration(self, name):
-        """remove_configuration [name]:
-        Remove a saved configuration"""
+        """
+remove_configuration [name]::
+
+    Remove a saved configuration
+
+        """
         if name:
             if self.__confirm__("Remove configuration '%s'?" % name):
                 if Configurations.remove_configuration(name):
@@ -204,8 +240,12 @@ class Configure(SuperCmd):
         return self.complete_configuration(text)
 
     def do_reset(self, line):
-        """reset:
-        Reset the configuration to default settings."""
+        """
+reset::
+
+    Reset the configuration to default settings.
+
+        """
         global PARAS
         if self.__confirm__("Reset configuration '%s' to default settings?" % PARAS.configuration_name()):
             Configuration().core_clear()
@@ -219,6 +259,16 @@ class Configure(SuperCmd):
                    ]))
 
     def do_resource_dir(self, path):
+        """
+resource_dir::
+
+    resource_dir         - Get the parameter
+    resource_dir [path]  - Set the parameter
+    ----------------------------------------
+    The resource_dir acts as the root of the resources to be published.
+    The urls to the resources are calculated relative to the resource_dir.
+
+        """
         print("Was:" if path else "Current:", PARAS.resource_dir)
         if path:
             try:
@@ -231,12 +281,17 @@ class Configure(SuperCmd):
     def complete_resource_dir(self, text, line, begidx, endidx):
         return self.__complete_path__(text, line, begidx, endidx)
 
-    def help_metadata_dir(self):
-        print('\n'.join(["metadata_dir", "   Get the metadata directory.",
-                   "metadata_dir [path]", "   Set the metadata directory to path."
-                   ]))
-
     def do_metadata_dir(self, path):
+        """
+metadata_dir::
+
+    metadata_dir         - Get the parameter
+    metadata_dir [path]  - Set the parameter
+    ----------------------------------------
+    The metadata_dir is where sitemaps will be stored.
+    The metadata_dir is always relative to the resource_dir
+
+        """
         print("Was:" if path else "Current:", PARAS.metadata_dir)
         if path:
             try:
@@ -246,15 +301,18 @@ class Configure(SuperCmd):
             except ValueError as err:
                 print("\nIllegal argument: {0}".format(err))
 
-    def help_description_dir(self):
-        print('\n'.join(["description_dir", "   Get the directory of the source description document.",
-                   "description_dir [path]", "   Set the directory of the source description document.",
-                   "--------------------------------------------------------------",
-                   "The sourcedescription document is an entry point for discovering ResourceSync Framework documents on a site."
-                   "Type 'None' to reset"
-                   ]))
-
     def do_description_dir(self, path):
+        """
+description_dir::
+
+    description_dir         - Get the parameter
+    description_dir [path]  - Set the parameter
+    description_dir None    - Reset the parameter
+    ---------------------------------------------
+    The path to the directory of the (local copy of) the source description,
+    aka '.well-known/resourcesync'
+
+        """
         print("Was:" if path else "Current:", PARAS.description_dir)
         if path:
             try:
@@ -269,14 +327,16 @@ class Configure(SuperCmd):
     def complete_description_dir(self, text, line, begidx, endidx):
         return self.__complete_path__(text, line, begidx, endidx)
 
-    def help_url_prefix(self):
-        print('\n'.join(["url_prefix", "   Get the url prefix.",
-                       "url_prefix [url]", "   Set the url prefix.",
-                       "--------------------------------------------------------------",
-                       "The url_prefix is used to prefix paths to ResourceSync Framework documents and resources."
-                       ]))
-
     def do_url_prefix(self, url):
+        """
+url_prefix::
+
+    url_prefix           - Get the parameter
+    url_prefix [prefix]  - Set the parameter
+    ----------------------------------------
+    The url_prefix is used to prefix urls to documents and resources.
+
+        """
         print("Was:" if url else "Current:", PARAS.url_prefix)
         if url:
             try:
@@ -287,26 +347,32 @@ class Configure(SuperCmd):
                 print("\nIllegal argument: {0}".format(err))
 
     def do_has_wellknown_at_root(self, value):
-        """has_wellknown_at_root:
-        has_wellknown_at_root            Get the property
-        has_wellknown_at_root (yes | no) Set the property
-        The description document '.well-known/resourcesync' is at the root of the server address."""
+        """
+has_wellknown_at_root::
+
+    has_wellknown_at_root             - Get the parameter
+    has_wellknown_at_root (yes | no)  - Set the parameter
+    ----------------------------------------------------
+    The description document '.well-known/resourcesync' is at the root
+    of the server address.
+
+        """
         print("Was:" if value else "Current:", PARAS.has_wellknown_at_root)
         if value:
             PARAS.has_wellknown_at_root = str2bool(value, none=PARAS.has_wellknown_at_root)
             PARAS.save_configuration(True)
             print("Now:", PARAS.has_wellknown_at_root)
 
-    def help_strategy(self):
-        print('\n'.join(["strategy", "   Get the strategy.",
-                   "strategy [name]", "   Set the strategy.",
-                   "--------------------------------------------------------------",
-                   "The strategy determines what type of resource list is exposed.",
-                   "Possible values: ",
-                   ", ".join(Strategy.names())
-                   ]))
-
     def do_strategy(self, name):
+        """
+strategy::
+
+    strategy             - Get the parameter
+    strategy [strategy]  - Set the parameter
+    ----------------------------------------
+    The strategy determines what will be done by ResourceSync upon execution.
+
+        """
         print("Was:" if name else "Current:", PARAS.strategy)
         if name:
             try:
@@ -315,7 +381,6 @@ class Configure(SuperCmd):
                 print("Now:", PARAS.strategy)
             except ValueError as err:
                 print("\nIllegal argument: {0}".format(err))
-                self.help_strategy()
 
     def complete_strategy(self, text, line, begidx, endidx):
         if not text:
@@ -328,12 +393,12 @@ class Configure(SuperCmd):
         """
 selector_file::
 
-        selector_file        Get the property
-        selector_file [path] Set the property
-        selector_file None   Reset the property
-        ---------------------------------------
-        The selector_file points to the location of the file that stores
-        (the contents of) a rspub.core.selector.Selector
+    selector_file        Get the parameter
+    selector_file [path] Set the parameter
+    selector_file None   Reset the parameter
+    ---------------------------------------
+    The selector_file points to the location of the file that stores
+    (the contents of) a rspub.core.selector.Selector
 
         """
         print("Was:" if path else "Current:", PARAS.selector_file)
@@ -350,16 +415,17 @@ selector_file::
     def complete_selector_file(self, text, line, begidx, endidx):
         return self.__complete_path__(text, line, begidx, endidx)
 
-
-    def help_plugin_dir(self):
-        print('\n'.join(["plugin_dir", "   Get the path to the plugin directory.",
-                   "description_dir [path]", "   Set the path to the plugin directory.",
-                   "--------------------------------------------------------------",
-                   "The plugin_dir is the directory where plugins can be found.",
-                   "Type 'None' to reset"
-                   ]))
-
     def do_plugin_dir(self, path):
+        """
+plugin_dir::
+
+    plugin_dir         - Get the parameter
+    plugin_dir [path]  - Set the parameter
+    plugin_dir None    - Reset the parameter
+    ---------------------------------------
+    The directory where plugins can be found.
+
+        """
         print("Was:" if path else "Current:", PARAS.plugin_dir)
         if path:
             try:
@@ -375,8 +441,14 @@ selector_file::
         return self.__complete_path__(text, line, begidx, endidx)
 
     def do_max_items_in_list(self, value):
-        """max_items_in_list:
-        The maximum amount of records in a sitemap (int, 1 - 50000)
+        """
+max_items_in_list::
+
+    max_items_in_list                   - Get the parameter
+    max_items_in_list (int, 1 - 50000)  - Set the parameter
+    ------------------------------------------------------
+    The maximum amount of records in a sitemap.
+
         """
         print("Was:" if value else "Current:", PARAS.max_items_in_list)
         if (value):
@@ -388,8 +460,14 @@ selector_file::
                 print("\nIllegal argument: {0}".format(err))
 
     def do_zero_fill_filename(self, value):
-        """zero_fill_filename:
-        The amount of digits in a sitemap filename (int, 1 - 10)
+        """
+zero_fill_filename::
+
+    zero_fill_filename                - Get the parameter
+    zero_fill_filename (int, 1 - 10)  - Set the parameter
+    ----------------------------------------------------
+    The amount of digits in a sitemap filename.
+
         """
         print("Was:" if value else "Current:", PARAS.zero_fill_filename)
         if (value):
@@ -401,8 +479,15 @@ selector_file::
                 print("\nIllegal argument: {0}".format(err))
 
     def do_is_saving_pretty_xml(self, value):
-        """is_saving_pretty_xml:
-        Determines appearance of sitemap xml (yes | no)"""
+        """
+is_saving_pretty_xml::
+
+    is_saving_pretty_xml             - Get the parameter
+    is_saving_pretty_xml (yes | no)  - Set the parameter
+    ---------------------------------------------------
+    Determines appearance of sitemap xml.
+
+        """
         print("Was:" if value else "Current:", PARAS.is_saving_pretty_xml)
         if value:
             PARAS.is_saving_pretty_xml = str2bool(value, none=PARAS.is_saving_pretty_xml)
@@ -410,8 +495,15 @@ selector_file::
             print("Now:", PARAS.is_saving_pretty_xml)
 
     def do_is_saving_sitemaps(self, value):
-        """is_saving_sitemaps:
-        Determines if sitemaps will be written to disk (yes | no)"""
+        """
+is_saving_sitemaps::
+
+    is_saving_sitemaps             - Get the parameter
+    is_saving_sitemaps (yes | no)  - Set the parameter
+    -------------------------------------------------
+    Determines if sitemaps will be written to disk.
+
+        """
         print("Was:" if value else "Current:", PARAS.is_saving_sitemaps)
         if value:
             PARAS.is_saving_sitemaps = str2bool(value, none=PARAS.is_saving_sitemaps)
