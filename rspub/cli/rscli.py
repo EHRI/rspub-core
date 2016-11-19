@@ -325,12 +325,16 @@ class Configure(SuperCmd):
         return completions
 
     def do_selector_file(self, path):
-        """selector_file:
+        """
+selector_file::
+
         selector_file        Get the property
         selector_file [path] Set the property
         selector_file None   Reset the property
         ---------------------------------------
-        The selector_file points to the location of the file to persist a :class:`rspub.core.selector.Selector`
+        The selector_file points to the location of the file that stores
+        (the contents of) a rspub.core.selector.Selector
+
         """
         print("Was:" if path else "Current:", PARAS.selector_file)
         if path:
@@ -436,6 +440,15 @@ class Select(SuperCmd):
             self.selector = Selector()
 
     def do_load_selector(self, path):
+        """
+load_selector::
+
+    load_selector [path] - Load Selector from location [path]
+    ---------------------------------------------------------
+    If the current Selector has unsaved changes, you will be
+    prompted to save or discard.
+
+        """
         if path:
             self.check_exit()
             try:
@@ -448,6 +461,14 @@ class Select(SuperCmd):
         return self.__complete_path__(text, line, begidx, endidx)
 
     def do_include_path(self, path):
+        """
+include_path::
+
+    include_path [path] - Add a file or directory to the collection of includes.
+    ----------------------------------------------------------------------------
+    The [path] can be relative or absolute.
+
+        """
         if path:
             self.selector.include(path)
             print("Included:", path)
@@ -456,6 +477,12 @@ class Select(SuperCmd):
         return self.__complete_path__(text, line, begidx, endidx)
 
     def do_list_includes(self, line):
+        """
+list_includes::
+
+    List absolute filenames of the included files.
+
+        """
         print("======================================================")
         print("Included files. Selector.location = %s" % self.selector.abs_location())
         print("======================================================")
@@ -467,6 +494,14 @@ class Select(SuperCmd):
         print("======================================================")
 
     def do_exclude_path(self, path):
+        """
+exclude_path::
+
+    exclude_path [path] - Add a file or directory to the collection of excludes.
+    ----------------------------------------------------------------------------
+    The [path] can be relative or absolute.
+
+        """
         if path:
             self.selector.exclude(path)
             print("Excluded:", path)
@@ -475,6 +510,12 @@ class Select(SuperCmd):
         return self.__complete_path__(text, line, begidx, endidx)
 
     def do_list_excludes(self, line):
+        """
+list_excludes::
+
+    List absolute filenames of the excluded files.
+
+        """
         print("======================================================")
         print("Excluded files. Selector.location = %s" % self.selector.abs_location())
         print("======================================================")
@@ -486,6 +527,14 @@ class Select(SuperCmd):
         print("======================================================")
 
     def do_list_selected(self, line):
+        """
+list_selected::
+
+    List absolute filenames of the selected files. The selected files are
+    the relative complement of excludes with respect to includes.
+    (list_includes \ list_excludes)
+
+        """
         print("======================================================")
         print("Selected files. Selector.location = %s" % self.selector.abs_location())
         print("======================================================")
@@ -509,8 +558,12 @@ class Select(SuperCmd):
         self.stop = True
 
     def do_EOF(self, line):
-        """EOF, Ctrl+D:
-        Exit the application."""
+        """
+EOF, Ctrl+D, Ctrl+C::
+
+    Exit the application.
+
+        """
         self.check_exit()
         print("Bye from", __file__)
         sys.exit()
