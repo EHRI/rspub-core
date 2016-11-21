@@ -119,6 +119,7 @@ from rspub.core.exe_changelist import NewChangeListExecutor, IncrementalChangeLi
 from rspub.core.exe_resourcelist import ResourceListExecutor
 from rspub.core.rs_enum import Strategy
 from rspub.core.rs_paras import RsParameters
+from rspub.core.selector import Selector
 from rspub.util.observe import Observable, EventObserver
 
 LOG = logging.getLogger(__name__)
@@ -142,7 +143,7 @@ class ResourceSync(Observable, RsParameters):
         Observable.__init__(self)
         RsParameters.__init__(self, **kwargs)
 
-    def execute(self, filenames: iter, start_new=False):
+    def execute(self, filenames: iter=None, start_new=False):
         """
         :samp:`Publish ResourceSync documents under conditions of current {parameters}`
 
@@ -154,11 +155,24 @@ class ResourceSync(Observable, RsParameters):
         If ``parameter`` :func:`~rspub.core.rs_paras.RsParameters.is_saving_sitemaps` is ``False`` will do
         a dry run: no existing sitemaps will be changed and no new sitemaps will be written to disk.
 
-        :param filenames: list of filenames and/or directories to scan
+        :param filenames: filenames and/or directories to scan
         :param start_new: erase metadata directory and create new resourcelists
         """
+        # always start fresh publication with resourcelist
         resourcelist_files = sorted(glob(self.abs_metadata_path("resourcelist_*.xml")))
         start_new = start_new or len(resourcelist_files) == 0
+
+        # do we have filenames or look for a saved Selector?
+        if filenames is None and self.selector_file:
+            try:
+                filenames = Selector(self.selector_file)
+                LOG.info("Loaded selector from '%s'" % self.selector_file)
+            except Exception as err:
+                LOG.warn("Unable to load selector: {0}".format(err))
+
+        if filenames is None:
+            raise RuntimeError("Unable to execute: no filenames.")
+
         paras = RsParameters(**self.__dict__)
         executor = None
 
@@ -174,6 +188,18 @@ class ResourceSync(Observable, RsParameters):
             executor.execute(filenames)
         else:
             raise NotImplementedError("Strategy not implemented: %s" % self.strategy)
+
+        # associate current parameters with a selector
+        if isinstance(filenames, Selector):
+            if filenames.location:
+                try:
+                    filenames.write()
+                    self.selector_file = filenames.abs_location()
+                    self.save_configuration(True)
+                    LOG.info("Associated parameters '%s' with selector at '%s'"
+                             % (self.configuration_name(), self.selector_file))
+                except Exception as err:
+                    LOG.warn("Unable to save selector: {0}".format(err))
 
 
 class ExecutionHistory(EventObserver):

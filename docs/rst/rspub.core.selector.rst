@@ -1,5 +1,5 @@
-Selectors
-=========
+Selector
+========
 
 .. rubric:: module: rspub.core.selector
 

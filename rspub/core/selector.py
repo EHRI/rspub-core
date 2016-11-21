@@ -152,6 +152,12 @@ class Selector(object):
 
         return generator
 
+    def get_included_entries(self):
+        return self._includes
+
+    def get_excluded_entries(self):
+        return self._excludes
+
     def read_includes(self, filename):
         with open(filename, "r") as file:
             self.include(file.read().splitlines())
@@ -174,17 +180,15 @@ class Selector(object):
         if filename is None:
             filename = self.location
         if filename is None:
-            raise RuntimeError("Illegal call to write: no filename, no location.")
+            raise RuntimeError("No filename, no location. Cannot save selector.")
         with open(filename, 'w') as file:
             writer = csv.writer(file, quoting=csv.QUOTE_ALL)
             for item in self._includes:
                 writer.writerow(["+", item])
             for item in self._excludes:
                 writer.writerow(["-", item])
-        if self.location is None:
-            self.location = filename
-        if self.location == filename:
-            self.dirty = False
+        self.location = filename
+        self.dirty = False
 
     def read(self, filename):
         filename = os.path.abspath(filename)
@@ -205,4 +209,6 @@ class Selector(object):
             return os.path.abspath(self.location)
         else:
             return None
+
+
 

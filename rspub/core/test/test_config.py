@@ -70,6 +70,10 @@ class TestConfigurations(unittest.TestCase):
         self.assertEquals("test_load_2", cfg3.name())
         self.assertEquals("test_load_1", cfg4.name())
 
+    unittest.skip()
+    def test_rspub_config_dir(self):
+        print(Configurations.rspub_config_dir())
+
 
 class TestConfiguration(unittest.TestCase):
     @classmethod

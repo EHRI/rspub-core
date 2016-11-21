@@ -134,6 +134,11 @@ class Configurations(object):
         current_cfg = Configuration()
         return os.path.splitext(os.path.basename(current_cfg.config_file))[0]
 
+    @staticmethod
+    def rspub_config_dir():
+        current_cfg = Configuration()
+        return os.path.dirname(os.path.dirname(current_cfg.config_file))
+
 
 class Configuration(object):
     """

@@ -22,9 +22,7 @@ from numbers import Number
 import validators
 from rspub.core.config import Configuration, Configurations
 from rspub.core.rs_enum import Strategy
-from rspub.core.selector import Selector
 from rspub.util import defaults
-
 
 WELL_KNOWN_PATH = os.path.join(".well-known", "resourcesync")
 config = None
@@ -605,17 +603,6 @@ class RsParameters(object):
         rel_path = os.path.relpath(path, self.resource_dir)
         return self.url_prefix + defaults.sanitize_url_path(rel_path)
 
-    def abs_selector_file(self):
-        """
-        ``derived`` :samp:`The absolute selector file`
-
-        :return: absolute selector file
-        """
-        if self.selector_file:
-            return os.path.abspath(self.selector_file)
-        else:
-            return None
-
     def abs_history_dir(self):
         """
         ``derived`` :samp:`The absolute path to directory for reports on synchronizations`
@@ -652,7 +639,6 @@ class RsParameters(object):
             [False, "capabilitylist_url", self.capabilitylist_url()],
             [True, "strategy", self.strategy, " = ", self.strategy.describe()],
             [True, "selector_file", self.selector_file],
-            [False, "abs_selector_file", self.abs_selector_file()],
             [True, "plugin_dir", self.plugin_dir],
             [True, "max_items_in_list", self.max_items_in_list],
             [True, "zero_fill_filename", self.zero_fill_filename],

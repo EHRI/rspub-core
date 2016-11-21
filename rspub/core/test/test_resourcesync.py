@@ -9,6 +9,8 @@ import unittest
 from rspub.core.config import Configuration, Configurations
 from rspub.core.rs import ResourceSync
 from rspub.core.rs_enum import Strategy
+from rspub.core.rs_paras import RsParameters
+from rspub.core.selector import Selector
 from rspub.util.observe import EventLogger
 
 
@@ -100,19 +102,26 @@ class TestResourceSync(unittest.TestCase):
         with open(filename, "a") as file:
             file.write("\n%s" % str(datetime.datetime.now()))
 
-    # def test_multiple_configurations(self):
-    #     # get a list of previously saved configurations
-    #     [print(x) for x in Configurations.list_configurations()]
-    #     # rspub_core
-    #     # spam_config
-    #     # eggs_config
-    #
-    #     # prepare for synchronization of collection 'all about spam'
-    #     resourcesync = ResourceSync(config_name="spam_config")
-    #
-    #     # spam resources are in two directories
-    #     filenames = ["resources/green_spam", "resources/blue_spam"]
-    #     resourcesync.execute(filenames)
+    def test_with_selector(self):
+        metadata = os.path.join("tmp", "rs", "md_select")
 
+        selector = Selector()
+        selector.location = os.path.join(resource_dir(), "tmp", "rs", "test_data", "selector1.txt")
+        selector.include(test_resource())
+        selector.exclude(os.path.join(test_resource(), "collection2"))
+
+        rs = ResourceSync(resource_dir=resource_dir(), metadata_dir=metadata)
+        rs.register(EventLogger(logging_level=logging.INFO))
+
+        rs.execute(selector)
+        # once executed we can just call rs.execute() because selector associated with paras
+        rs.execute()
+
+    def test_instantiate_from_RsParameters(self):
+        paras = RsParameters()
+        paras.metadata_dir = "test_instantiate_from_RsParameters"
+
+        rs = ResourceSync(**paras.__dict__)
+        self.assertEquals("test_instantiate_from_RsParameters", rs.metadata_dir)
 
 

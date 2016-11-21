@@ -3,7 +3,10 @@
 
 import sys
 
+from rspub.core.executors import SitemapData
+from rspub.core.rs import ResourceSync
 from rspub.core.selector import Selector
+from rspub.util.observe import EventPrinter, EventObserver
 
 if sys.version_info[0] < 3:
     raise RuntimeError("Your Python has version 2. This application needs Python3.x")
@@ -29,6 +32,7 @@ except ImportError:
 
 
 PARAS = RsParameters()
+SELECTOR = None
 
 
 def str2bool(v, none=False):
@@ -38,6 +42,25 @@ def str2bool(v, none=False):
         return none
 
 
+class CliObserver(EventObserver):
+
+    def inform_completed_document(self, *args, **kwargs):
+        event = args[1].name
+        path = ", sitemap: " + kwargs["path"]
+        resource_count = ", resources: " + str(kwargs["resource_count"])
+        print(event, resource_count, path)
+
+    def inform_execution_end(self, *args, **kwargs):
+        event = args[1].name
+        new_sitemaps = kwargs["new_sitemaps"]
+        print(event)
+        print("\tsitemaps created or updated: ", len(new_sitemaps))
+        for smd in new_sitemaps:
+            assert isinstance(smd, SitemapData)
+            print("\t", smd.capability_name, smd.path, "count:", smd.resource_count, "saved:", smd.document_saved)
+
+
+#####################################################################################################
 class SuperCmd(cmd.Cmd):
 
     _complete_ = "-> Press 2 x <tab> for options, 1 x <tab> for completion.\n" if __GNU_READLINE__ else ""
@@ -79,6 +102,16 @@ class SuperCmd(cmd.Cmd):
         else:
             line = line.rstrip('\r\n')
         return str2bool(line)
+
+    def __ask__(self, question):
+        self.stdout.write(self.prompt + question + " ")
+        self.stdout.flush()
+        line = self.stdin.readline()
+        if not len(line):
+            line = 'EOF'
+        else:
+            line = line.rstrip('\r\n')
+        return line
 
     def postcmd(self, stop, line):
         """Hook method executed just after a command dispatch is finished."""
@@ -123,27 +156,6 @@ list_configurations::
         print("")
         print("====================")
 
-    def do_open_configuration(self, name):
-        """
-open_configuration [name]::
-
-    Open a saved configuration
-
-        """
-        global PARAS
-        if name:
-            try:
-                PARAS = RsParameters(config_name=name)
-                self.do_list_parameters(name)
-            except ValueError as err:
-                print("\nIllegal argument: {0}".format(err))
-        else:
-            print("Open a configuration. Specify a name:")
-            self.do_list_configurations(name)
-
-    def complete_open_configuration(self, text, line, begidx, endidx):
-        return self.complete_configuration(text)
-
     def do_list_parameters(self, line):
         """
 list_parameters::
@@ -158,6 +170,7 @@ list_parameters::
         print("================================================================================")
 
 
+#####################################################################################################
 class RsPub(SuperCmd):
 
     prompt = "rspub > "
@@ -186,6 +199,52 @@ select::
         """
         Select().cmdloop()
 
+    def do_run(self, line):
+        """
+run::
+
+    run rspub with the current configuration.
+
+        """
+        # SELECTOR ->   yes ->   SELECTOR.location -> yes -> associated -> yes -> run_s
+        #   no|                       no|                      no|
+        # P.selector > y > run       run_s                  P.selector -> yes -> ask ->yes-> run_s
+        #   no|                                                no|               no|
+        #  abort                                              run_s             abort
+        # ------------------------------------------------------------------------------------------
+        run = False
+        run_s = False
+        abort = False
+        rs = ResourceSync(**PARAS.__dict__)
+        rs.register(CliObserver())
+        if SELECTOR is None and PARAS.selector_file is None:
+            abort = "No selector and configuration not associated with selector. Run aborted."
+
+        if SELECTOR is None and PARAS.selector_file:
+            run = True
+
+        if not abort and not run and SELECTOR is not None:
+            if SELECTOR.location is None or SELECTOR.abs_location() == PARAS.selector_file:
+                run_s = True
+            elif PARAS.selector_file is None:
+                run_s = True
+            elif self.__confirm__("Associate current configuration with selector?"):
+                run_s = True
+            else:
+                abort = "Not associating current configuration with selector. Run aborted."
+
+        if abort:
+            print(abort)
+        elif run_s:
+            rs.execute(SELECTOR)
+        elif run:
+            rs.execute()
+        else:
+            location = None
+            if SELECTOR:
+                location = SELECTOR.abs_location()
+            print("Missed a path in tree: ", SELECTOR, location, PARAS.selector_file)
+
     def do_exit(self, line):
         """
 EOF, Ctrl+D, Ctrl+C::
@@ -196,6 +255,7 @@ EOF, Ctrl+D, Ctrl+C::
         self.do_EOF(line)
 
 
+#####################################################################################################
 class Configure(SuperCmd):
 
     prompt = "configure > "
@@ -205,6 +265,27 @@ class Configure(SuperCmd):
 
     def __init__(self):
         SuperCmd.__init__(self)
+
+    def do_open_configuration(self, name):
+        """
+open_configuration [name]::
+
+    Open a saved configuration
+
+        """
+        global PARAS
+        if name:
+            try:
+                PARAS = RsParameters(config_name=name)
+                self.do_list_parameters(name)
+            except ValueError as err:
+                print("\nIllegal argument: {0}".format(err))
+        else:
+            print("Open a configuration. Specify a name:")
+            self.do_list_configurations(name)
+
+    def complete_open_configuration(self, text, line, begidx, endidx):
+        return self.complete_configuration(text)
 
     def do_save_configuration(self, name):
         """
@@ -252,11 +333,6 @@ reset::
             PARAS = RsParameters()
             PARAS.save_configuration()
             self.do_list_parameters(line)
-
-    def help_resource_dir(self):
-        print('\n'.join(["resource_dir", "   Get the resources root directory.",
-                   "resource_dir [path]", "   Set the resources root directory to path."
-                   ]))
 
     def do_resource_dir(self, path):
         """
@@ -389,31 +465,53 @@ strategy::
             completions = [x for x in Strategy.names() if x.startswith(text)]
         return completions
 
-    def do_selector_file(self, path):
-        """
-selector_file::
+# # Too troublesome to actively set a selector file on parameters.
+# What if not there. How keep association between parameters and selector.
+# Solution: Keep a weak association between parameters and selector.
+# 1. associate selector file and parameters upon execution, if selector and selector is saved.
+# 2. upon execution and no filenames, look for saved selector in parameters.
+#     def do_selector_file(self, path):
+#         """
+# selector_file::
+#
+#     selector_file        Get the parameter
+#     selector_file [path] Set the parameter
+#     selector_file None   Reset the parameter
+#     ---------------------------------------
+#     The selector_file points to the location of the file that stores
+#     (the contents of) a rspub.core.selector.Selector
+#
+#         """
+#         print("Was:" if path else "Current:", PARAS.selector_file)
+#         if path:
+#             try:
+#                 if path == "None":
+#                     path = None
+#                 PARAS.selector_file = path
+#                 PARAS.save_configuration(True)
+#                 print("Now:", PARAS.selector_file)
+#             except ValueError as err:
+#                 print("\nIllegal argument: {0}".format(err))
+#
+#     def complete_selector_file(self, text, line, begidx, endidx):
+#         return self.__complete_path__(text, line, begidx, endidx)
 
-    selector_file        Get the parameter
-    selector_file [path] Set the parameter
-    selector_file None   Reset the parameter
-    ---------------------------------------
-    The selector_file points to the location of the file that stores
-    (the contents of) a rspub.core.selector.Selector
+    def do_discard_selector_file(self, line):
+        """
+discard_selector_file::
+
+    Remove the association between this configuration and selector (if any).
+    An association between a configuration and a selector is set after execution
+    of ResourceSync with a Selector as file selector.
 
         """
-        print("Was:" if path else "Current:", PARAS.selector_file)
-        if path:
-            try:
-                if path == "None":
-                    path = None
-                PARAS.selector_file = path
+        if PARAS.selector_file:
+            if self.__confirm__("Discard association between configuration '%s' and selector at '%s'?"
+                                % (PARAS.configuration_name(), PARAS.selector_file)):
+                PARAS.selector_file = None
                 PARAS.save_configuration(True)
-                print("Now:", PARAS.selector_file)
-            except ValueError as err:
-                print("\nIllegal argument: {0}".format(err))
-
-    def complete_selector_file(self, text, line, begidx, endidx):
-        return self.__complete_path__(text, line, begidx, endidx)
+        else:
+            print("Configuration '%s' is not associated with a selector." % PARAS.configuration_name())
 
     def do_plugin_dir(self, path):
         """
@@ -511,6 +609,7 @@ is_saving_sitemaps::
             print("Now:", PARAS.is_saving_sitemaps)
 
 
+#####################################################################################################
 class Select(SuperCmd):
 
     prompt = "select > "
@@ -519,17 +618,17 @@ class Select(SuperCmd):
             "======================================= \n" + SuperCmd._complete_
 
     def __init__(self):
+        global SELECTOR
         SuperCmd.__init__(self)
-        self.selector = None
         if PARAS.selector_file:
             try:
-                self.selector = Selector(PARAS.abs_selector_file())
-                print("Loaded Selector from", self.selector.abs_location())
+                SELECTOR = Selector(PARAS.selector_file)
+                print("Loaded Selector from", SELECTOR.abs_location())
             except Exception as err:
                 print("\nSelector error: {0}".format(err))
 
-        if self.selector is None:
-            self.selector = Selector()
+        if SELECTOR is None:
+            SELECTOR = Selector()
 
     def do_load_selector(self, path):
         """
@@ -541,15 +640,35 @@ load_selector::
     prompted to save or discard.
 
         """
-        if path:
-            self.check_exit()
+        global SELECTOR
+        if path and self.check_exit():
             try:
-                self.selector = Selector(path)
-                print("Loaded Selector from", self.selector.abs_location())
+                SELECTOR = Selector(path)
+                print("Loaded Selector from", SELECTOR.abs_location())
             except Exception as err:
                 print("\nSelector error: {0}".format(err))
 
     def complete_load_selector(self, text, line, begidx, endidx):
+        return self.__complete_path__(text, line, begidx, endidx)
+
+    def do_save_selector(self, path):
+        """
+save_selector::
+
+    save_selector         - Save current selector
+    save_selector [path]  - Save current selector as [path]
+
+        """
+        try:
+            if path:
+                SELECTOR.write(path)
+            else:
+                SELECTOR.write()
+            print("Saved selector as %s" % SELECTOR.abs_location())
+        except Exception as err:
+            print("\nUnable to save: {0}".format(err))
+
+    def complete_save_selector(self, text, line, begidx, endidx):
         return self.__complete_path__(text, line, begidx, endidx)
 
     def do_include_path(self, path):
@@ -562,8 +681,10 @@ include_path::
 
         """
         if path:
-            self.selector.include(path)
+            SELECTOR.include(path)
             print("Included:", path)
+        else:
+            print("Usage: include_path [path] - Include the given path or directory")
 
     def complete_include_path(self, text, line, begidx, endidx):
         return self.__complete_path__(text, line, begidx, endidx)
@@ -576,10 +697,10 @@ list_includes::
 
         """
         print("======================================================")
-        print("Included files. Selector.location = %s" % self.selector.abs_location())
+        print("Included files. Selector.location = %s" % SELECTOR.abs_location())
         print("======================================================")
         file_count = 0
-        for file in self.selector.list_includes():
+        for file in SELECTOR.list_includes():
             file_count += 1
             print(file)
         print("Total included files: %d" % file_count)
@@ -595,8 +716,10 @@ exclude_path::
 
         """
         if path:
-            self.selector.exclude(path)
+            SELECTOR.exclude(path)
             print("Excluded:", path)
+        else:
+            print("Usage: exclude_path [path] - Exclude the given path or directory")
 
     def complete_exclude_path(self, text, line, begidx, endidx):
         return self.__complete_path__(text, line, begidx, endidx)
@@ -609,10 +732,10 @@ list_excludes::
 
         """
         print("======================================================")
-        print("Excluded files. Selector.location = %s" % self.selector.abs_location())
+        print("Excluded files. Selector.location = %s" % SELECTOR.abs_location())
         print("======================================================")
         file_count = 0
-        for file in self.selector.list_excludes():
+        for file in SELECTOR.list_excludes():
             file_count += 1
             print(file)
         print("Total excluded files: %d" % file_count)
@@ -628,26 +751,146 @@ list_selected::
 
         """
         print("======================================================")
-        print("Selected files. Selector.location = %s" % self.selector.abs_location())
+        print("Selected files. Selector.location = %s" % SELECTOR.abs_location())
         print("======================================================")
         file_count = 0
-        for file in self.selector:
+        for file in SELECTOR:
             file_count += 1
             print(file)
         print("Total selected files: %d" % file_count)
         print("======================================================")
 
-    def save_selector(self):
-        print("saved!")
+    def do_read_includes(self, path):
+        """
+read_includes::
+
+    read_includes [path]  - Read included filenames from a file at [path]
+
+        """
+        if path:
+            try:
+                SELECTOR.read_includes(path)
+                print("Filenames from '%s' included." % path)
+            except Exception as err:
+                print("\nUnable to read includes: {0}".format(err))
+        else:
+            print("Usage: read_includes [path]  - Read included filenames from a file at [path]")
+
+    def complete_read_includes(self, text, line, begidx, endidx):
+        return self.__complete_path__(text, line, begidx, endidx)
+
+    def do_read_excludes(self, path):
+        """
+read_excludes::
+
+    read_excludes [path]  - Read excluded filenames from a file at [path]
+
+        """
+        if path:
+            try:
+                SELECTOR.read_excludes(path)
+                print("Filenames from '%s' excluded." % path)
+            except Exception as err:
+                print("\nUnable to read excludes: {0}".format(err))
+        else:
+            print("Usage: read_excludes [path]  - Read excluded filenames from a file at [path]")
+
+    def complete_read_excludes(self, text, line, begidx, endidx):
+        return self.__complete_path__(text, line, begidx, endidx)
+
+    def do_clear_includes(self, line):
+        """
+clear_includes::
+
+    Clear included filenames from selector.
+
+        """
+        if self.__confirm__("Clear included filenames from selector?"):
+            SELECTOR.clear_includes()
+            self.do_list_includes(line)
+
+    def do_clear_excludes(self, line):
+        """
+clear_excludes::
+
+    Clear excluded filenames from selector.
+
+        """
+        if self.__confirm__("Clear excluded filenames from selector?"):
+            SELECTOR.clear_excludes()
+            self.do_list_excludes(line)
+
+    def do_discard_include(self, path):
+        """
+discard_include::
+
+    discard_include [path]  - Remove [path] from included filenames.
+
+        """
+        if path:
+            SELECTOR.discard_include(path)
+        else:
+            print("Usage: discard_include [path]  - remove [path] from included filenames.")
+
+    def complete_discard_include(self, text, line, begidx, endidx):
+        return self.__complete_path__(text, line, begidx, endidx)
+
+    def do_discard_exclude(self, path):
+        """
+discard_exclude::
+
+    discard_exclude [path]  - Remove [path] from excluded filenames.
+
+        """
+        if path:
+            SELECTOR.discard_exclude(path)
+        else:
+            print("Usage: discard_exclude [path]  - remove [path] from excluded filenames.")
+
+    def complete_discard_exclude(self, text, line, begidx, endidx):
+        return self.__complete_path__(text, line, begidx, endidx)
+
+    def do_get_included_entries(self, line):
+        """
+get_included_entries::
+
+    List included entries.
+
+        """
+        print("=========================================================")
+        print("Included entries. Selector.location = %s" % SELECTOR.abs_location())
+        print("=========================================================")
+        [print(x) for x in SELECTOR.get_included_entries()]
+        print("=========================================================")
+
+    def do_get_excluded_entries(self, line):
+        """
+get_excluded_entries::
+
+    List excluded entries.
+
+        """
+        print("=========================================================")
+        print("Excluded entries. Selector.location = %s" % SELECTOR.abs_location())
+        print("=========================================================")
+        [print(x) for x in SELECTOR.get_excluded_entries()]
+        print("=========================================================")
 
     def check_exit(self):
-        if self.selector and self.selector.dirty:
-            if self.__confirm__("Selection has unsaved changes. Save current selection?"):
-                self.save_selector()
+        if SELECTOR.dirty:
+            save = self.__confirm__("Selector has unsaved changes. Save changes to disk?")
+            if save and SELECTOR.location:
+                self.do_save_selector(SELECTOR.location)
+                return True
+            elif save:
+                print("Use command 'save_selector' to save current selector.")
+                return False
+        return True
 
     def do_exit(self, line):
-        self.check_exit()
-        self.stop = True
+        if self.check_exit():
+            self.stop = True
+
 
     def do_EOF(self, line):
         """
@@ -656,9 +899,9 @@ EOF, Ctrl+D, Ctrl+C::
     Exit the application.
 
         """
-        self.check_exit()
-        print("Bye from", __file__)
-        sys.exit()
+        if self.check_exit():
+            print("Bye from", __file__)
+            sys.exit()
 
 
 if __name__ == '__main__':

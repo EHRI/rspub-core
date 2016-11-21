@@ -70,8 +70,9 @@ class EventObserver(Observer):
 
 class EventPrinter(Observer):
 
-    def __init__(self, event_level = 0):
+    def __init__(self, event_level = 0, print_kwargs=True):
         self.event_level = event_level
+        self.print_kwargs = print_kwargs
 
     def inform(self, *args, **kwargs):
         if len(args) == 2:
@@ -79,7 +80,10 @@ class EventPrinter(Observer):
                 source = args[0].__class__.__name__
                 event = args[1]
                 if event.value >= self.event_level:
-                    print(source, event.name, kwargs)
+                    if self.print_kwargs:
+                        print(source, event.name, kwargs)
+                    else:
+                        print(source, event.name)
             except AttributeError:
                 print("unexpected args: ", args)
         else:
