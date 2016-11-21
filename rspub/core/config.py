@@ -331,3 +331,9 @@ class Configuration(object):
 
     def set_has_wellknown_at_root(self, at_root):
         self.__set_boolean__(SECTION_CORE, "has_wellknown_at_root", at_root)
+
+    def last_excution(self):
+        return self.parser.get(SECTION_CORE, "last_excution", fallback=None)
+
+    def set_last_execution(self, date_string):
+        self.__set_option__(SECTION_CORE, "last_excution", date_string)

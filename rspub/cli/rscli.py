@@ -54,9 +54,8 @@ class CliObserver(EventObserver):
         event = args[1].name
         new_sitemaps = kwargs["new_sitemaps"]
         print(event)
-        print("\tsitemaps created or updated: ", len(new_sitemaps))
+        print("\tsitemaps created or updated:", len(new_sitemaps))
         for smd in new_sitemaps:
-            assert isinstance(smd, SitemapData)
             print("\t", smd.capability_name, smd.path, "count:", smd.resource_count, "saved:", smd.document_saved)
 
 
@@ -206,39 +205,39 @@ run::
     run rspub with the current configuration.
 
         """
-        # SELECTOR ->   yes ->   SELECTOR.location -> yes -> associated -> yes -> run_s
+        # SELECTOR ->   yes ->   SELECTOR.location -> yes -> associated -> yes -> [runs]
         #   no|                       no|                      no|
-        # P.selector > y > run       run_s                  P.selector -> yes -> ask ->yes-> run_s
+        # P.selector > y > [run]    [runs]                 P.selector -> yes -> ask ->yes-> [runs]
         #   no|                                                no|               no|
-        #  abort                                              run_s             abort
-        # ------------------------------------------------------------------------------------------
-        run = False
-        run_s = False
+        # [abort]                                             [runs]           [abort]
+        # ----------------------------------------------------------------------------------------
+        global PARAS
+        run = False     # rs.execute()
+        runs = False    # rs.execute(SELECTOR)
         abort = False
-        rs = ResourceSync(**PARAS.__dict__)
-        rs.register(CliObserver())
-        if SELECTOR is None and PARAS.selector_file is None:
-            abort = "No selector and configuration not associated with selector. Run aborted."
 
-        if SELECTOR is None and PARAS.selector_file:
-            run = True
-
-        if not abort and not run and SELECTOR is not None:
-            if SELECTOR.location is None or SELECTOR.abs_location() == PARAS.selector_file:
-                run_s = True
-            elif PARAS.selector_file is None:
-                run_s = True
+        if SELECTOR is None:
+            if PARAS.selector_file is None:
+                abort = "No selector and configuration not associated with selector. Run aborted."
+            else:
+                run = True
+        else:
+            if SELECTOR.location is None \
+                    or SELECTOR.abs_location() == PARAS.selector_file \
+                    or PARAS.selector_file is None:
+                runs = True
             elif self.__confirm__("Associate current configuration with selector?"):
-                run_s = True
+                runs = True
             else:
                 abort = "Not associating current configuration with selector. Run aborted."
 
         if abort:
             print(abort)
-        elif run_s:
-            rs.execute(SELECTOR)
-        elif run:
-            rs.execute()
+        elif run or runs:
+            rs = ResourceSync(**PARAS.__dict__)
+            rs.register(CliObserver())
+            rs.execute(SELECTOR)   # == rs.execute() if SELECTOR is None for [run]
+            PARAS = RsParameters(**rs.__dict__) # update association PARA.selector_file -> Selector.location
         else:
             location = None
             if SELECTOR:

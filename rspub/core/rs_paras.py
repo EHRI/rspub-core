@@ -154,6 +154,8 @@ class RsParameters(object):
         self._is_saving_sitemaps = self.__arg__("_is_saving_sitemaps", cfg.is_saving_sitemaps(), **kwargs)
         self._has_wellknown_at_root = self.__arg__("_has_wellknown_at_root", cfg.has_wellknown_at_root(), **kwargs)
 
+        self.last_execution = self.__arg__("last_execution", cfg.last_excution(), **kwargs)
+
     @staticmethod
     def __arg__(name, default=None, **kwargs):
         value = default
@@ -506,6 +508,7 @@ class RsParameters(object):
         cfg.set_is_saving_pretty_xml(self.is_saving_pretty_xml)
         cfg.set_is_saving_sitemaps(self.is_saving_sitemaps)
         cfg.set_has_wellknown_at_root(self.has_wellknown_at_root)
+        cfg.set_last_execution(self.last_execution)
 
         if on_disk:
             cfg.persist()
@@ -643,7 +646,8 @@ class RsParameters(object):
             [True, "max_items_in_list", self.max_items_in_list],
             [True, "zero_fill_filename", self.zero_fill_filename],
             [True, "is_saving_pretty_xml", self.is_saving_pretty_xml],
-            [True, "is_saving_sitemaps", self.is_saving_sitemaps]
+            [True, "is_saving_sitemaps", self.is_saving_sitemaps],
+            [False, "last_execution", self.last_execution]
         ]
         if pretty:
             f = "{:" + str(fill) + "s}"

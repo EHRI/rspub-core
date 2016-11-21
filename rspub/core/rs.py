@@ -120,6 +120,7 @@ from rspub.core.exe_resourcelist import ResourceListExecutor
 from rspub.core.rs_enum import Strategy
 from rspub.core.rs_paras import RsParameters
 from rspub.core.selector import Selector
+from rspub.util import defaults
 from rspub.util.observe import Observable, EventObserver
 
 LOG = logging.getLogger(__name__)
@@ -195,11 +196,15 @@ class ResourceSync(Observable, RsParameters):
                 try:
                     filenames.write()
                     self.selector_file = filenames.abs_location()
-                    self.save_configuration(True)
                     LOG.info("Associated parameters '%s' with selector at '%s'"
                              % (self.configuration_name(), self.selector_file))
                 except Exception as err:
                     LOG.warn("Unable to save selector: {0}".format(err))
+
+        if self.is_saving_sitemaps:
+            self.last_execution = defaults.w3c_now()
+
+        self.save_configuration(True)
 
 
 class ExecutionHistory(EventObserver):
