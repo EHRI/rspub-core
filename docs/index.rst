@@ -7,6 +7,7 @@
 * :ref:`modindex`
 * :ref:`search`
 
+
 rspub-core source documentation
 ===============================
 
