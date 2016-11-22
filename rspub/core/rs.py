@@ -201,6 +201,7 @@ class ResourceSync(Observable, RsParameters):
                 except Exception as err:
                     LOG.warn("Unable to save selector: {0}".format(err))
 
+        # set a timestamp
         if self.is_saving_sitemaps:
             self.last_execution = defaults.w3c_now()
 

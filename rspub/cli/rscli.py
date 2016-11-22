@@ -42,23 +42,6 @@ def str2bool(v, none=False):
         return none
 
 
-class CliObserver(EventObserver):
-
-    def inform_completed_document(self, *args, **kwargs):
-        event = args[1].name
-        path = ", sitemap: " + kwargs["path"]
-        resource_count = ", resources: " + str(kwargs["resource_count"])
-        print(event, resource_count, path)
-
-    def inform_execution_end(self, *args, **kwargs):
-        event = args[1].name
-        new_sitemaps = kwargs["new_sitemaps"]
-        print(event)
-        print("\tsitemaps created or updated:", len(new_sitemaps))
-        for smd in new_sitemaps:
-            print("\t", smd.capability_name, smd.path, "count:", smd.resource_count, "saved:", smd.document_saved)
-
-
 #####################################################################################################
 class SuperCmd(cmd.Cmd):
 
@@ -170,7 +153,7 @@ list_parameters::
 
 
 #####################################################################################################
-class RsPub(SuperCmd):
+class RsPub(SuperCmd, EventObserver):
 
     prompt = "rspub > "
     intro = "================================================== \n" + \
@@ -234,10 +217,13 @@ run::
         if abort:
             print(abort)
         elif run or runs:
-            rs = ResourceSync(**PARAS.__dict__)
-            rs.register(CliObserver())
-            rs.execute(SELECTOR)   # == rs.execute() if SELECTOR is None for [run]
-            PARAS = RsParameters(**rs.__dict__) # update association PARA.selector_file -> Selector.location
+            try:
+                rs = ResourceSync(**PARAS.__dict__)
+                rs.register(self)
+                rs.execute(SELECTOR)   # == rs.execute() if SELECTOR is None for [run]
+                PARAS = RsParameters(**rs.__dict__) # catch up with updated paras
+            except Exception as err:
+                print("\nUncompleted run: {0}".format(err))
         else:
             location = None
             if SELECTOR:
@@ -252,6 +238,26 @@ EOF, Ctrl+D, Ctrl+C::
 
         """
         self.do_EOF(line)
+
+    # EventObserver callbacks
+    def confirm_clear_metadata_directory(self, *args, **kwargs):
+        return self.__confirm__("Clear metadata directory '%s'?" % kwargs["metadata_dir"])
+
+    @staticmethod
+    def inform_completed_document(*args, **kwargs):
+        event = args[1].name
+        path = ", sitemap: " + kwargs["path"]
+        resource_count = ", resources: " + str(kwargs["resource_count"])
+        print(event, resource_count, path)
+
+    @staticmethod
+    def inform_execution_end(*args, **kwargs):
+        event = args[1].name
+        new_sitemaps = kwargs["new_sitemaps"]
+        print(event)
+        print("\tsitemaps created or updated:", len(new_sitemaps))
+        for smd in new_sitemaps:
+            print("\t", smd.capability_name, smd.path, "count:", smd.resource_count, "saved:", smd.document_saved)
 
 
 #####################################################################################################

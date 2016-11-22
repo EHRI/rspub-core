@@ -12,7 +12,7 @@ can have its own selection mechanism, metadata directory, strategy etc. Each set
 in its own capability list.
 
 The class :class:`RsParameters` in this module and the class :class:`rspub.core.config.Configurations` are
-important assets in such a quest.
+important assets in this endeavour. RsParameters can be associated with a saved :class:`rspub.core.selector.Selector`.
 
 """
 import os
@@ -343,6 +343,8 @@ class RsParameters(object):
 
         A :class:`rspub.core.selector.Selector` can be used as input for the execute methods. The `selector_file`
         specifies the location of the selector file.
+
+        ``default:`` **None**
         """
         return self._selector_file
 
@@ -622,13 +624,31 @@ class RsParameters(object):
     @staticmethod
     def configuration_name():
         """
-        ``function`` :samp`Current configuration name`
+        ``function`` :samp:`Current configuration name`
 
         :return: current configuration name
         """
         return Configurations.current_configuration_name()
 
-    def describe(self, pretty=False, fill=23):
+    def describe(self, as_string=False, fill=23):
+        """
+        ``function`` :samp:`List parameters and derived values`
+
+        List parameters, values and derived values as a list of tuples. Each tuple contains:
+
+        ===  =====  ========================================================
+        n    field  contents
+        ===  =====  ========================================================
+        0    bool   **True** for ``parameter``, **False** for derived value
+        1    name   The name of the parameter or derived value
+        2    value  The value of the parameter or derived value
+        3..  ...    Anything else
+        ===  =====  ========================================================
+
+        :param as_string: return contents as a printable string
+        :param fill: if as_string: fill column 'name' with `fill` spaces
+        :return: list[list] or str
+        """
         tuples = [
             [False, "configuration_name", self.configuration_name()],
             [True, "resource_dir", self.resource_dir],
@@ -649,7 +669,7 @@ class RsParameters(object):
             [True, "is_saving_sitemaps", self.is_saving_sitemaps],
             [False, "last_execution", self.last_execution]
         ]
-        if pretty:
+        if as_string:
             f = "{:" + str(fill) + "s}"
             s = ""
             for t in tuples:

@@ -67,6 +67,19 @@ class EventObserver(Observer):
     def pass_inform(self, *args, **kwargs):
         pass
 
+    def confirm(self, *args, **kwargs):
+        if len(args) == 2:
+            try:
+                event = args[1]
+                return getattr(self, "confirm_" + event.name)(*args, **kwargs)
+            except AttributeError:
+                return self.pass_confirm(*args, **kwargs)
+        else:
+            return self.pass_confirm(*args, **kwargs)
+
+    def pass_confirm(self, *args, **kwargs):
+        return True
+
 
 class EventPrinter(Observer):
 
