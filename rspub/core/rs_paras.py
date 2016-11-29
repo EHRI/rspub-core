@@ -235,6 +235,8 @@ class RsParameters(object):
     def metadata_dir(self, path):
         if os.path.isabs(path):
             raise ValueError("Invalid value for metadata_dir: path should not be absolute: %s" % path)
+        if path is None or path == "":
+            raise ValueError("Invalid value for metadata_dir: path should not be empty")
         self._metadata_dir = path
 
     @property
@@ -529,6 +531,14 @@ class RsParameters(object):
         self.save_configuration(False)
         Configurations.save_configuration_as(name)
 
+    def reset(self):
+        name = self.configuration_name()
+        cfg = Configuration()
+        cfg.core_clear()
+        cfg.persist()
+        self.__init__(config_name=name)
+
+
     # # derived properties
     def abs_metadata_dir(self) -> str:
         """
@@ -554,7 +564,7 @@ class RsParameters(object):
         :return: absolute path to (the local copy of) the file ``.well-known/resourcesync``
         """
         desc_dir = self.description_dir
-        if desc_dir is None:
+        if desc_dir is None or desc_dir == "":
             desc_dir = self.abs_metadata_dir()
         return os.path.join(desc_dir, WELL_KNOWN_PATH)
 
@@ -630,6 +640,9 @@ class RsParameters(object):
         """
         return Configurations.current_configuration_name()
 
+    def example_filename(self, ordinal):
+        return "changelist_" + str(ordinal).zfill(self.zero_fill_filename) + ".xml"
+
     def describe(self, as_string=False, fill=23):
         """
         ``function`` :samp:`List parameters and derived values`
@@ -660,11 +673,12 @@ class RsParameters(object):
             [True, "has_wellknown_at_root", self.has_wellknown_at_root],
             [False, "description_url", self.description_url()],
             [False, "capabilitylist_url", self.capabilitylist_url()],
-            [True, "strategy", self.strategy, " = ", self.strategy.describe()],
+            [True, "strategy", self.strategy, self.strategy.describe()],
             [True, "selector_file", self.selector_file],
             [True, "plugin_dir", self.plugin_dir],
             [True, "max_items_in_list", self.max_items_in_list],
             [True, "zero_fill_filename", self.zero_fill_filename],
+            [False, "example_filename", self.example_filename(42)],
             [True, "is_saving_pretty_xml", self.is_saving_pretty_xml],
             [True, "is_saving_sitemaps", self.is_saving_sitemaps],
             [False, "last_execution", self.last_execution]
@@ -677,6 +691,7 @@ class RsParameters(object):
                 s += f.format(t[1])
                 s += str(t[2])
                 for extra in t[3:]:
+                    s += " | "
                     s += str(extra)
                 s += "\n"
             return s

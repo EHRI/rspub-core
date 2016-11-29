@@ -365,5 +365,21 @@ class TestRsParameters(unittest.TestCase):
         rsp = RsParameters()
         print(rsp.describe(True))
 
+    def test_set_with_reflection(self):
+        rsp = RsParameters()
+
+        name = "resource_dir"
+        try:
+            setattr(rsp, name, "blaat")
+        except ValueError as err:
+            print(err)
+
+        rsp.metadata_dir = "md1"
+        name = "metadata_dir"
+        x = getattr(rsp, name)
+        print(x)
+
+
+
 
 

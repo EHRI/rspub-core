@@ -70,7 +70,7 @@ class TestConfigurations(unittest.TestCase):
         self.assertEquals("test_load_2", cfg3.name())
         self.assertEquals("test_load_1", cfg4.name())
 
-    unittest.skip()
+    unittest.skip("visual test")
     def test_rspub_config_dir(self):
         print(Configurations.rspub_config_dir())
 
@@ -108,14 +108,14 @@ class TestConfiguration(unittest.TestCase):
 
         path1 = config1.config_path
         if platform.system() == "Darwin":
-            assert path1 == os.path.expanduser("~") + "/.config/rspub/config"
+            assert path1 == os.path.expanduser("~") + "/.config/rspub/core"
         elif platform.system() == "Windows":
-            path_expected = os.path.join(os.path.expanduser("~"), "AppData", "Local", "rspub", "config")
+            path_expected = os.path.join(os.path.expanduser("~"), "AppData", "Local", "rspub", "core")
             assert path1 == path_expected
         elif platform.system() == "Linux":
-            assert path1 == os.path.expanduser("~") + "/.config/rspub/config"
+            assert path1 == os.path.expanduser("~") + "/.config/rspub/core"
         else:
-            assert path1 == os.path.expanduser("~") + "/rspub/config"
+            assert path1 == os.path.expanduser("~") + "/rspub/core"
 
         config1.core_clear()
         assert config1.resource_dir() == os.path.expanduser("~")

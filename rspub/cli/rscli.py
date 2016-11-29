@@ -3,11 +3,6 @@
 
 import sys
 
-from rspub.core.executors import SitemapData
-from rspub.core.rs import ResourceSync
-from rspub.core.selector import Selector
-from rspub.util.observe import EventPrinter, EventObserver
-
 if sys.version_info[0] < 3:
     raise RuntimeError("Your Python has version 2. This application needs Python3.x")
 
@@ -17,6 +12,9 @@ import cmd, glob
 # Start this module from anywhere on the system: append root directory of project.
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__)))))
 #                rspub-core         rspub           cli               rscli.py
+from rspub.core.rs import ResourceSync
+from rspub.core.selector import Selector
+from rspub.util.observe import EventObserver
 from rspub.core.rs_paras import RsParameters
 from rspub.core.config import Configuration, Configurations
 from rspub.core.rs_enum import Strategy

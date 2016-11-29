@@ -27,18 +27,8 @@ from glob import glob
 from rspub.core.rs_enum import Strategy
 
 
-# Location for configuration files on Windows: ﻿
-# os.path.expanduser("~")\AppData\Local\Programs\rspub\rspub_core.cfg
-#
-# Location for configuration files on unix-based systems:
-# os.path.expanduser("~")/.config/rspub/rspub_core.cfg
-#
-# platform.system() returns
-# Mac:      'Darwin'
-# Windows:  ﻿'Windows'
-# CentOS:   'Linux'
-
 CFG_FILENAME = "DEFAULT.cfg"
+CFG_DIRNAME = "core"
 SECTION_CORE = "core"
 EXT = ".cfg"
 
@@ -95,7 +85,7 @@ class Configurations(object):
         :param name: name under which the configuration will be saved
         """
         if name is None or name == "":
-            raise ValueError("Invalid configuration name '%s'", name)
+            raise ValueError("Invalid configuration name. (None or empty string)")
         nam = os.path.splitext(name)[0]
         config_path = Configuration._get_config_path()
         config_file = os.path.join(config_path, nam + EXT)
@@ -159,7 +149,7 @@ class Configuration(object):
 
     @staticmethod
     def _set_configuration_filename(cfg_filename):
-        Configuration.__get__logger().info("Setting configuration filename to %s", cfg_filename)
+        Configuration.__get__logger().debug("Setting configuration filename to %s", cfg_filename)
         Configuration._configuration_filename = cfg_filename
 
     @staticmethod
@@ -172,7 +162,7 @@ class Configuration(object):
     @staticmethod
     def reset():
         Configuration._instance = None
-        Configuration.__get__logger().info("Configuration was reset.")
+        Configuration.__get__logger().debug("Configuration was reset.")
 
     @staticmethod
     def _get_config_path():
@@ -191,17 +181,17 @@ class Configuration(object):
             if not os.path.exists(lin_path): os.makedirs(lin_path)
             if os.path.exists(lin_path): c_path = lin_path
 
-        c_path = os.path.join(c_path, "rspub", "config")
+        c_path = os.path.join(c_path, "rspub", CFG_DIRNAME)
         if not os.path.exists(c_path):
             os.makedirs(c_path)
-        Configuration.__get__logger().info("Configuration directory: %s", c_path)
+        #Configuration.__get__logger().info("Configuration directory: %s", c_path)
         return c_path
 
     _instance = None
 
     def __new__(cls, *args, **kwargs):
         if not cls._instance:
-            Configuration.__get__logger().info("Creating Configuration._instance")
+            Configuration.__get__logger().debug("Creating Configuration._instance")
             cls._instance = super(Configuration, cls).__new__(cls, *args)
             cls.config_path = cls._get_config_path()
             cls.config_file = os.path.join(cls.config_path, Configuration._get_configuration_filename())
@@ -223,7 +213,7 @@ class Configuration(object):
         f = open(self.config_file, "w")
         self.parser.write(f)
         f.close()
-        Configuration.__get__logger().info("Persisted %s", self.config_file)
+        Configuration.__get__logger().debug("Persisted %s", self.config_file)
 
     def __set_option__(self, section, option, value):
         if not self.parser.has_section(section):

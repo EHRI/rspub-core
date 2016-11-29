@@ -39,3 +39,4 @@ class Test_Strategy(unittest.TestCase):
         self.assertEquals(Strategy.resourcelist.describe(), "New resourcelist strategy")
 
 
+

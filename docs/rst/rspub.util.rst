@@ -1,3 +1,5 @@
+:ref:`genindex` | :ref:`modindex` | :ref:`search`
+
 rspub.util
 ==========
 
