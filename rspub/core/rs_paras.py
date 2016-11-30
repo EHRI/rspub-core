@@ -21,7 +21,7 @@ from numbers import Number
 
 import validators
 from rspub.core.config import Configuration, Configurations
-from rspub.core.rs_enum import Strategy
+from rspub.core.rs_enum import Strategy, SelectMode
 from rspub.util import defaults
 
 WELL_KNOWN_PATH = os.path.join(".well-known", "resourcesync")
@@ -60,7 +60,8 @@ class RsParameters(object):
 
     """
     def __init__(self, config_name=None, resource_dir=config, metadata_dir=config, description_dir=config,
-                 url_prefix=config, strategy=config, selector_file=config, plugin_dir=config,
+                 url_prefix=config, strategy=config, selector_file=config, simple_select_file=config,
+                 select_mode=config, plugin_dir=config,
                  history_dir=config, max_items_in_list=config, zero_fill_filename=config, is_saving_pretty_xml=config,
                  is_saving_sitemaps=config, has_wellknown_at_root=config, **kwargs):
         """
@@ -78,8 +79,10 @@ class RsParameters(object):
         :param str metadata_dir: ``parameter`` :func:`metadata_dir`
         :param str description_dir: ``parameter`` :func:`description_dir`
         :param str url_prefix: ``parameter`` :func:`url_prefix`
-        :param strategy: ``parameter`` :func:`strategy`
+        :param Strategy: ``parameter`` :func:`strategy`
         :param str selector_file: ``parameter`` :func:`selector_file`
+        :param str simple_select_file: ``parameter`` :func:`simple_select_file`
+        :param SelectMode select_mode: ``parameter`` :func:`select_mode`
         :param str plugin_dir: ``parameter`` :func:`plugin_dir`
         :param str history_dir: ``parameter`` :func:`history_dir`
         :param int max_items_in_list: ``parameter`` :func:`max_items_in_list`
@@ -97,6 +100,8 @@ class RsParameters(object):
             "url_prefix": url_prefix,
             "strategy": strategy,
             "selector_file": selector_file,
+            "simple_select_file": simple_select_file,
+            "select_mode": select_mode,
             "plugin_dir": plugin_dir,
             "history_dir": history_dir,
             "max_items_in_list": max_items_in_list,
@@ -133,6 +138,14 @@ class RsParameters(object):
         self._selector_file = None
         _selector_file_ = self.__arg__("_selector_file", cfg.selector_file(), **kwargs)
         self.selector_file = _selector_file_
+
+        self._simple_select_file = None
+        _simple_select_file_ = self.__arg__("_simple_select_file", cfg.simple_select_file(), **kwargs)
+        self.simple_select_file = _simple_select_file_
+
+        self._select_mode = None
+        _select_mode_ = self.__arg__("_select_mode", cfg.select_mode(), **kwargs)
+        self.select_mode = _select_mode_
 
         self._plugin_dir = None
         _plugin_dir_ = self.__arg__("_plugin_dir", cfg.plugin_dir(), **kwargs)
@@ -360,6 +373,27 @@ class RsParameters(object):
         self._selector_file = filename
 
     @property
+    def simple_select_file(self):
+        return self._simple_select_file
+
+    @simple_select_file.setter
+    def simple_select_file(self, filename):
+        if filename and not isinstance(filename, str):
+            raise ValueError("Value for simple_select_file should be string. %s is %s" % (filename, type(filename)))
+        if filename == "":
+            filename = None
+
+        self._simple_select_file = filename
+
+    @property
+    def select_mode(self):
+        return self._select_mode
+
+    @select_mode.setter
+    def select_mode(self, mode):
+        self._select_mode = SelectMode.select_mode_for(mode)
+
+    @property
     def history_dir(self):
         """
         ``parameter`` :samp:`Directory for storing reports on executed synchronisations` (str)
@@ -505,6 +539,8 @@ class RsParameters(object):
         cfg.set_url_prefix(self.url_prefix)
         cfg.set_strategy(self.strategy)
         cfg.set_selector_file(self.selector_file)
+        cfg.set_simple_select_file(self.simple_select_file)
+        cfg.set_select_mode(self.select_mode)
         cfg.set_history_dir(self.history_dir)
         cfg.set_plugin_dir(self.plugin_dir)
         cfg.set_max_items_in_list(self.max_items_in_list)
@@ -675,6 +711,8 @@ class RsParameters(object):
             [False, "capabilitylist_url", self.capabilitylist_url()],
             [True, "strategy", self.strategy, self.strategy.describe()],
             [True, "selector_file", self.selector_file],
+            [True, "simple_select_file", self.simple_select_file],
+            [True, "select_mode", self.select_mode],
             [True, "plugin_dir", self.plugin_dir],
             [True, "max_items_in_list", self.max_items_in_list],
             [True, "zero_fill_filename", self.zero_fill_filename],

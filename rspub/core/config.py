@@ -24,8 +24,7 @@ import platform
 from configparser import ConfigParser
 from glob import glob
 
-from rspub.core.rs_enum import Strategy
-
+from rspub.core.rs_enum import Strategy, SelectMode
 
 CFG_FILENAME = "DEFAULT.cfg"
 CFG_DIRNAME = "core"
@@ -267,6 +266,18 @@ class Configuration(object):
 
     def set_selector_file(self, selector_file):
         self.__set_option__(SECTION_CORE, "selector_file", selector_file)
+
+    def simple_select_file(self, fallback=None):
+        return self.parser.get(SECTION_CORE, "simple_select_file", fallback=fallback)
+
+    def set_simple_select_file(self, simple_file):
+        self.__set_option__(SECTION_CORE, "simple_select_file", simple_file)
+
+    def select_mode(self, fallback=SelectMode.simple.name):
+        return SelectMode[self.parser.get(SECTION_CORE, "select_mode", fallback=fallback)]
+
+    def set_select_mode(self, mode):
+        self.__set_int__(SECTION_CORE, "select_mode", mode.name)
 
     def plugin_dir(self, fallback=None):
         return self.parser.get(SECTION_CORE, "plugin_dir", fallback=fallback)

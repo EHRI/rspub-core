@@ -296,12 +296,12 @@ class Executor(Observable, metaclass=ABCMeta):
             passes_gate = self.resource_gate()
             for filename in filenames:
                 if not isinstance(filename, str):
-                    LOG.warn("Not a string: %s" % filename)
+                    LOG.warning("Not a string: %s" % filename)
                     filename = str(filename)
 
                 file = os.path.abspath(filename)
                 if not os.path.exists(file):
-                    LOG.warn("File does not exist: %s" % file)
+                    LOG.warning("File does not exist: %s" % file)
                 elif os.path.isdir(file):
                     for cr, rsc in generator(self.walk_directories(file), count=count):
                         yield cr, rsc

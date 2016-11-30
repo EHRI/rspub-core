@@ -140,7 +140,7 @@ class Selector(object):
             for name in filenames:
                 file = os.path.abspath(name)
                 if not os.path.exists(file):
-                    LOG.warn("File does not exist: %s" % file)
+                    LOG.warning("File does not exist: %s" % file)
                 elif os.path.isdir(file):
                     for rfile in generator(self._walk_directories(file)):
                         yield  rfile
@@ -148,15 +148,23 @@ class Selector(object):
                 elif os.path.isfile(file):
                     yield file
                 else:
-                    LOG.warn("Not a regular file: %s" % file)
+                    LOG.warning("Not a regular file: %s" % file)
 
         return generator
 
+    def relativize_includes(self, root_path):
+        self._includes = {os.path.relpath(x, root_path) for x in self._includes}
+        return self.get_included_entries()
+
+    def relativize_excludes(self, root_path):
+        self._excludes = {os.path.relpath(x, root_path) for x in self._excludes}
+        return self.get_excluded_entries()
+
     def get_included_entries(self):
-        return self._includes
+        return sorted(self._includes)
 
     def get_excluded_entries(self):
-        return self._excludes
+        return sorted(self._excludes)
 
     def read_includes(self, filename):
         with open(filename, "r") as file:

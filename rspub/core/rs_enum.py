@@ -125,3 +125,25 @@ class Capability(Enum):
     """
     ``7`` :samp:`description`
     """
+
+
+class SelectMode(Enum):
+    """
+    :samp:`Mode of selection`
+
+    """
+    simple = 0
+
+    selector = 1
+
+    @staticmethod
+    def select_mode_for(mode):
+        try:
+            if isinstance(mode, SelectMode):
+                return mode
+            elif isinstance(mode, int):
+                return Strategy(mode)
+            else:
+                return Strategy[mode]
+        except KeyError as err:
+            raise ValueError(err)
