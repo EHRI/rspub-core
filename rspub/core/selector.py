@@ -19,7 +19,6 @@ class Selector(object):
 
         self._abs_excludes = None
         self._exc_count = 0
-        self.dirty = False
 
     def __iter__(self):
         # alternative implementation would take 2 blobs of filenames (recursive through directories) in memory:
@@ -46,7 +45,7 @@ class Selector(object):
             for name in filenames:
                 file = os.path.abspath(name)
                 if not os.path.exists(file):
-                    LOG.warn("File does not exist: %s" % file)
+                    LOG.warning("File does not exist: %s" % file)
                 elif os.path.isdir(file):
                     for rfile in generator(self._walk_directories(file)):
                         yield  rfile
@@ -55,7 +54,7 @@ class Selector(object):
                     if len(list(takewhile(lambda x: not file.startswith(x), self._abs_excludes))) == self._exc_count:
                         yield file
                 else:
-                    LOG.warn("Not a regular file: %s" % file)
+                    LOG.warning("Not a regular file: %s" % file)
 
         return generator
 
@@ -69,7 +68,6 @@ class Selector(object):
                     yield file
 
     def include(self, *filenames):
-        self.dirty = True
         for item in filenames:
             if isinstance(item, str):
                 self._includes.add(item)
@@ -82,7 +80,6 @@ class Selector(object):
                 raise ValueError("Illegal argument: %s" % item)
 
     def exclude(self, *filenames):
-        self.dirty = True
         for item in filenames:
             if isinstance(item, str):
                 self._excludes.add(item)
@@ -95,7 +92,6 @@ class Selector(object):
                 raise ValueError("Illegal argument: %s" % item)
 
     def discard_include(self, *filenames):
-        self.dirty = True
         for item in filenames:
             if isinstance(item, str):
                 self._includes.discard(item)
@@ -108,7 +104,6 @@ class Selector(object):
                 raise ValueError("Illegal argument: %s" % item)
 
     def discard_exclude(self, *filenames):
-        self.dirty = True
         for item in filenames:
             if isinstance(item, str):
                 self._excludes.discard(item)
@@ -121,11 +116,9 @@ class Selector(object):
                 raise ValueError("Illegal argument: %s" % item)
 
     def clear_includes(self):
-        self.dirty = True
         self._includes.clear()
 
     def clear_excludes(self):
-        self.dirty = True
         self._excludes.clear()
 
     def list_includes(self):
@@ -161,10 +154,13 @@ class Selector(object):
         return self.get_excluded_entries()
 
     def get_included_entries(self):
-        return sorted(self._includes)
+        return self._includes
 
     def get_excluded_entries(self):
-        return sorted(self._excludes)
+        return self._excludes
+
+    def is_empty(self):
+        return len(self._includes) + len(self._excludes) == 0
 
     def read_includes(self, filename):
         with open(filename, "r") as file:
@@ -196,7 +192,6 @@ class Selector(object):
             for item in self._excludes:
                 writer.writerow(["-", item])
         self.location = filename
-        self.dirty = False
 
     def read(self, filename):
         filename = os.path.abspath(filename)
