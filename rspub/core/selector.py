@@ -3,14 +3,25 @@
 import csv
 import logging
 import os
+from enum import Enum
 from itertools import takewhile
+
+from rspub.util.observe import Observable
 
 LOG = logging.getLogger(__name__)
 
 
-class Selector(object):
+class SelectorEvent(Enum):
+
+    file_does_not_exist = 0
+    not_a_regular_file = 1
+    file_excluded = 2
+
+
+class Selector(Observable):
 
     def __init__(self, location=None):
+        Observable.__init__(self)
         self.location = location
         self._includes = set()
         self._excludes = set()
@@ -46,20 +57,23 @@ class Selector(object):
                 file = os.path.abspath(name)
                 if not os.path.exists(file):
                     LOG.warning("File does not exist: %s" % file)
+                    self.observers_inform(self, SelectorEvent.file_does_not_exist, filename=file)
                 elif os.path.isdir(file):
                     for rfile in generator(self._walk_directories(file)):
                         yield  rfile
-                    pass
                 elif os.path.isfile(file):
                     if len(list(takewhile(lambda x: not file.startswith(x), self._abs_excludes))) == self._exc_count:
                         yield file
+                    else:
+                        self.observers_inform(self, SelectorEvent.file_excluded, filename=file)
                 else:
                     LOG.warning("Not a regular file: %s" % file)
+                    self.observers_inform(self, SelectorEvent.not_a_regular_file, filename=file)
 
         return generator
 
     @staticmethod
-    def _walk_directories(*directories) -> [str]:
+    def _walk_directories(*directories):
         for directory in directories:
             abs_dir = os.path.abspath(directory)
             for root, _directories, _filenames in os.walk(abs_dir):
