@@ -59,7 +59,7 @@ class ExecutorEvent(Enum):
     """
     created_resource = 3
     """
-    ``3`` ``informa`` :samp:`The metadata for a resource was created`
+    ``3`` ``inform`` :samp:`The metadata for a resource was created`
     """
     # common mid-level events
     completed_document = 10

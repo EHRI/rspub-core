@@ -65,7 +65,8 @@ class Selector(Observable):
                     if len(list(takewhile(lambda x: not file.startswith(x), self._abs_excludes))) == self._exc_count:
                         yield file
                     else:
-                        self.observers_inform(self, SelectorEvent.file_excluded, filename=file)
+                        if not self.observers_confirm(self, SelectorEvent.file_excluded, filename=file):
+                            break
                 else:
                     LOG.warning("Not a regular file: %s" % file)
                     self.observers_inform(self, SelectorEvent.not_a_regular_file, filename=file)

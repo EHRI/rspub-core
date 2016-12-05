@@ -677,7 +677,10 @@ class RsParameters(object):
         return Configurations.current_configuration_name()
 
     def example_filename(self, ordinal):
-        return "changelist_" + str(ordinal).zfill(self.zero_fill_filename) + ".xml"
+        if self.strategy == Strategy.resourcelist:
+            return "resourcelist_" + str(ordinal).zfill(self.zero_fill_filename) + ".xml"
+        else:
+            return "changelist_" + str(ordinal).zfill(self.zero_fill_filename) + ".xml"
 
     def describe(self, as_string=False, fill=23):
         """
