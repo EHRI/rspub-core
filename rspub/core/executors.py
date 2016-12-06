@@ -169,7 +169,7 @@ class Executor(Observable, metaclass=ABCMeta):
         :param filenames: iter of filenames and/or directories to scan
         """
         self.date_start_processing = defaults.w3c_now()
-        self.observers_inform(self, ExecutorEvent.execution_start, filenames=filenames, parameters=self.para.__dict__)
+        self.observers_inform(self, ExecutorEvent.execution_start, date_start_processing=self.date_start_processing)
         if not os.path.exists(self.para.abs_metadata_dir()):
             os.makedirs(self.para.abs_metadata_dir())
 
@@ -182,7 +182,7 @@ class Executor(Observable, metaclass=ABCMeta):
         capabilitylist_data = self.create_capabilitylist()
         self.update_resource_sync(capabilitylist_data)
 
-        self.observers_inform(self, ExecutorEvent.execution_end, new_sitemaps=sitemap_data_iter)
+        self.observers_inform(self, ExecutorEvent.execution_end, date_end_processing = self.date_end_processing)
 
     # # Execution steps - start
     def prepare_metadata_dir(self):
@@ -273,7 +273,7 @@ class Executor(Observable, metaclass=ABCMeta):
             self.save_sitemap(src_description, src_desc_path)
             sitemap_data.document_saved = True
 
-        self.observers_inform(self, ExecutorEvent.completed_document, document=src_description, **sitemap_data.__dict__)
+        self.observers_inform(self, ExecutorEvent.completed_document, document=src_description, sitemap_data=sitemap_data)
         return sitemap_data
     # # Execution steps - end
 
@@ -318,7 +318,7 @@ class Executor(Observable, metaclass=ABCMeta):
                                             mime_type=defaults.mime_type(file))
                         yield count, resource
                         self.observers_inform(self, ExecutorEvent.created_resource, resource=resource,
-                                              count=count)
+                                              count=count, file=file)
                     else:
                         self.observers_inform(self, ExecutorEvent.rejected_file, file=file)
                 else:
@@ -371,7 +371,7 @@ class Executor(Observable, metaclass=ABCMeta):
                 sm_file.write(sitemap.as_xml())
             sitemap_data.document_saved = True
 
-        self.observers_inform(self, ExecutorEvent.completed_document, document=sitemap, **sitemap_data.__dict__)
+        self.observers_inform(self, ExecutorEvent.completed_document, document=sitemap, sitemap_data=sitemap_data)
         return sitemap_data
 
     def current_rel_up_for(self, sitemap):

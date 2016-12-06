@@ -574,8 +574,6 @@ class RsParameters(object):
         cfg.persist()
         self.__init__(config_name=name)
 
-
-    # # derived properties
     def abs_metadata_dir(self) -> str:
         """
         ``derived`` :samp:`The absolute path to metadata directory`
