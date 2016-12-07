@@ -169,7 +169,7 @@ class ResourceSync(Observable, RsParameters):
                 filenames = Selector(self.selector_file)
                 LOG.info("Loaded selector from '%s'" % self.selector_file)
             except Exception as err:
-                LOG.warn("Unable to load selector: {0}".format(err))
+                LOG.warning("Unable to load selector: {0}".format(err))
 
         if filenames is None:
             raise RuntimeError("Unable to execute: no filenames.")
@@ -199,11 +199,11 @@ class ResourceSync(Observable, RsParameters):
                     LOG.info("Associated parameters '%s' with selector at '%s'"
                              % (self.configuration_name(), self.selector_file))
                 except Exception as err:
-                    LOG.warn("Unable to save selector: {0}".format(err))
+                    LOG.warning("Unable to save selector: {0}".format(err))
 
         # set a timestamp
         if self.is_saving_sitemaps:
-            self.last_execution = defaults.w3c_now()
+            self.last_execution = executor.date_start_processing
 
         self.save_configuration(True)
 

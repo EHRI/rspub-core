@@ -6,7 +6,7 @@ import os
 from enum import Enum
 from itertools import takewhile
 
-from rspub.util.observe import Observable
+from rspub.util.observe import Observable, ObserverInterruptException
 
 LOG = logging.getLogger(__name__)
 
@@ -16,6 +16,7 @@ class SelectorEvent(Enum):
     file_does_not_exist = 0
     not_a_regular_file = 1
     file_excluded = 2
+    next_file = 10
 
 
 class Selector(Observable):
@@ -62,11 +63,13 @@ class Selector(Observable):
                     for rfile in generator(self._walk_directories(file)):
                         yield  rfile
                 elif os.path.isfile(file):
+                    if not self.observers_confirm(self, SelectorEvent.next_file, filename=file):
+                        raise ObserverInterruptException("Process interrupted on SelectorEvent.next_file")
                     if len(list(takewhile(lambda x: not file.startswith(x), self._abs_excludes))) == self._exc_count:
                         yield file
                     else:
                         if not self.observers_confirm(self, SelectorEvent.file_excluded, filename=file):
-                            break
+                            raise ObserverInterruptException("Process interrupted on SelectorEvent.file_excluded")
                 else:
                     LOG.warning("Not a regular file: %s" % file)
                     self.observers_inform(self, SelectorEvent.not_a_regular_file, filename=file)

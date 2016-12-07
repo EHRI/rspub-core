@@ -322,7 +322,7 @@ class Executor(Observable, metaclass=ABCMeta):
                     else:
                         self.observers_inform(self, ExecutorEvent.rejected_file, file=file)
                 else:
-                    LOG.warn("Not a regular file: %s" % file)
+                    LOG.warning("Not a regular file: %s" % file)
 
         return generator
 
