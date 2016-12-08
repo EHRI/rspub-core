@@ -27,7 +27,7 @@ the necessary sitemap-documents that describe the resources and the changes.
 
 ![Overview](img/rspub.png)
 
-_Fig. 1. Overview of the main features of rspub-core._
+_Fig. 1. Overview of the main features of `rspub-core`._
 
 In essence rspub-core is a one-class, one-method library: class _ResourceSync_, method _execute_.
 But there is more:
