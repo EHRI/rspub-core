@@ -4,9 +4,10 @@
 Core Python library for ResourceSync publishing
 
 ---
-- The component in this repository is intended to be used by developers.
+- The component in this repository is intended to be used by developers and/or system administrators.
 - Source location: [https://github.com/EHRI/rspub-core](https://github.com/EHRI/rspub-core)
 - Source documentation: [http://rspub-core.readthedocs.io/en/latest/](http://rspub-core.readthedocs.io/en/latest/)
+- There is also a GUI based on _rspub-core_. See [https://github.com/EHRI/rspub-gui](https://github.com/EHRI/rspub-gui)
 - In case of questions [contact](https://github.com/EHRI/rspub-core/issues/new) the EHRI team.
 
 ---
@@ -31,11 +32,33 @@ _Fig. 1. Overview of the main features of rspub-core._
 In essence rspub-core is a one-class, one-method library: class _ResourceSync_, method _execute_.
 But there is more:
 
-- RsParameters control the conditions under which the execution takes place. Parameters can
-be saved as configuration and restored from disk.
-- The selection of resources is done by a ResourceGate that works with one-argument
-predicates. How exactly the ResourceGate is 
+- _RsParameters_ control the conditions under which the execution takes place. Multiple sets of parameters can
+be saved as configurations and restored from disk.
+- The set of resources that will be synchronized can be selected and filtered in several ways:
+    - The _execute_ method in the _ResourceSync_ class takes a file, a folder, or a list of files and folders as
+    argument.
+    - It can also take a _Selector_. The _Selector_ class is a simple implementation of a filter based on
+    included and excluded path names. Just like configurations,
+    selectors can be saved and they can be associated with a configuration.
+    - Complementary to the above mentioned execution arguments, there is a pluggable _ResourceGate_.
+    A _ResourceGate_ defines sets of including and excluding one-argument predicates. The one argument for the
+    predicates is the absolute filename of the inspected resource. A predicate can take decisions
+    not only based on filename patterns but also based on contents or validity of, or additional metadata on a resource.
+    You can define your own taste of _ResourceGate_ by plugging-in a _ResourceGateBuilder_.
+- The chosen _Strategy_ determines what kind of process will do the synchronization. At the moment there are _Executors_
+that produce _resourcelists_, _new changelists_ or _incremental changelists_.
 
+A set of parameters, known as a configuration, can precisely define a set of resources, the selection and filter
+mechanisms, the publication strategy and where to store the resourcesync metadata. Dedicated configurations can be defined
+for multiple sets of resources and published in equal amounts of _capabilitylists_. A configuration can be saved on disk,
+restored and run with a minimum effort. This makes _rspub-core_ the ideal library for scripting a publication
+strategy that will serve multiple groups of consumers that may be interested in different sets of resources offered
+by your site.
+
+The command line interface [rspub/cli/rscli.py](http://rspub-core.readthedocs.io/en/latest/rst/rspub.cli.rscli.html) was originally
+used to balance and clearly define the API of the core library. You may use it in a window-less environment like a server
+to compose, save and run configurations. Based on _rspub-core_ the project [rspub-gui](https://github.com/EHRI/rspub-gui)
+offers a graphical user interface to publish resources.
 
 ## Quick install
 

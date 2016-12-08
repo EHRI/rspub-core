@@ -137,13 +137,23 @@ class SelectMode(Enum):
     selector = 1
 
     @staticmethod
+    def names():
+        """
+        :samp:`Get SelectMode names`
+
+        :return: List<str> of names
+        """
+        names = dir(SelectMode)
+        return [x for x in names if not x.startswith("_")]
+
+    @staticmethod
     def select_mode_for(mode):
         try:
             if isinstance(mode, SelectMode):
                 return mode
             elif isinstance(mode, int):
-                return Strategy(mode)
+                return SelectMode(mode)
             else:
-                return Strategy[mode]
+                return SelectMode[mode]
         except KeyError as err:
             raise ValueError(err)

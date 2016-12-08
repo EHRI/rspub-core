@@ -182,7 +182,8 @@ class Executor(Observable, metaclass=ABCMeta):
         capabilitylist_data = self.create_capabilitylist()
         self.update_resource_sync(capabilitylist_data)
 
-        self.observers_inform(self, ExecutorEvent.execution_end, date_end_processing = self.date_end_processing)
+        self.observers_inform(self, ExecutorEvent.execution_end, date_end_processing = self.date_end_processing,
+                              new_sitemaps=sitemap_data_iter)
 
     # # Execution steps - start
     def prepare_metadata_dir(self):

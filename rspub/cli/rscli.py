@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import sys
+import traceback
 
 if sys.version_info[0] < 3:
     raise RuntimeError("Your Python has version 2. This application needs Python3.x")
@@ -17,7 +18,7 @@ from rspub.core.selector import Selector
 from rspub.util.observe import EventObserver
 from rspub.core.rs_paras import RsParameters
 from rspub.core.config import Configuration, Configurations
-from rspub.core.rs_enum import Strategy
+from rspub.core.rs_enum import Strategy, SelectMode
 
 # Set up gnureadline as readline if installed.
 __GNU_READLINE__ = False
@@ -193,9 +194,14 @@ run::
         # [abort]                                             [runs]           [abort]
         # ----------------------------------------------------------------------------------------
         global PARAS
+        global SELECTOR
         run = False     # rs.execute()
         runs = False    # rs.execute(SELECTOR)
         abort = False
+
+        if PARAS.select_mode == SelectMode.simple and PARAS.simple_select_file:
+            SELECTOR = Selector()
+            SELECTOR.include(PARAS.simple_select_file)
 
         if SELECTOR is None:
             if PARAS.selector_file is None:
@@ -221,8 +227,9 @@ run::
                 rs.execute(SELECTOR)   # == rs.execute() if SELECTOR is None for [run]
                 PARAS = RsParameters(**rs.__dict__) # catch up with updated paras
             except Exception as err:
+                traceback.print_exc()
                 print("\nUncompleted run: {0}".format(err))
-        else:
+        else: # we should not end here!
             location = None
             if SELECTOR:
                 location = SELECTOR.abs_location()
@@ -244,8 +251,9 @@ EOF, Ctrl+D, Ctrl+C::
     @staticmethod
     def inform_completed_document(*args, **kwargs):
         event = args[1].name
-        path = ", sitemap: " + kwargs["path"]
-        resource_count = ", resources: " + str(kwargs["resource_count"])
+        sitemap_data = kwargs["sitemap_data"]
+        path = ", sitemap: " + sitemap_data.path
+        resource_count = ", resources: " + str(sitemap_data.resource_count)
         print(event, resource_count, path)
 
     @staticmethod
@@ -515,6 +523,32 @@ discard_selector_file::
                 PARAS.save_configuration(True)
         else:
             print("Configuration '%s' is not associated with a selector." % PARAS.configuration_name())
+
+    def do_select_mode(self, mode):
+        """
+select_mode::
+
+    select_mode         - Get the parameter
+    select_mode [mode]  - Set the parameter
+    ---------------------------------------
+    Mode for selecting resources.
+
+        """
+        print("Was:" if mode else "Current:", PARAS.select_mode)
+        if mode:
+            try:
+                PARAS.select_mode = mode
+                PARAS.save_configuration(True)
+                print("Now:", PARAS.select_mode)
+            except ValueError as err:
+                print("\nIllegal argument: {0}".format(err))
+
+    def complete_select_mode(self, text, line, begidx, endidx):
+        if not text:
+            completions = SelectMode.names()[:]
+        else:
+            completions = [x for x in SelectMode.names() if x.startswith(text)]
+        return completions
 
     def do_plugin_dir(self, path):
         """
