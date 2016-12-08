@@ -1,6 +1,21 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
+"""
+:samp:`Command line interface to publish resources under the ResourceSync Framework`
 
+The module :class:`rscli.py` offers an interface to configure, select and run the publishing of resources under
+the `ResourceSync framework <http://www.openarchives.org/rs/1.0.9/resourcesync>`_. Start `rscli` from anywhere
+on the system::
+
+    python3 rspub/cli/rscli.py
+
+The internals of the command line interface resembles a three-room house. You enter in the house in
+the ``rspub`` room. From there you can enter the rooms ``configure`` and ``select``. You leave the rooms and
+the house by typing ``exit``. In all rooms you can get help by typing ``help``.
+
+.. image:: ../../img/rscli.png
+
+"""
 import sys
 import traceback
 

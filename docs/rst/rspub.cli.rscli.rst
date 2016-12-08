@@ -1,7 +1,7 @@
 Command line interface
 ======================
 
-module: rspub.cli.rscli
+.. rubric:: module: rspub.cli.rscli
 
 .. automodule:: rspub.cli.rscli
     :members:
