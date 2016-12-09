@@ -79,7 +79,7 @@ class RsParameters(object):
         :param str metadata_dir: ``parameter`` :func:`metadata_dir`
         :param str description_dir: ``parameter`` :func:`description_dir`
         :param str url_prefix: ``parameter`` :func:`url_prefix`
-        :param Strategy: ``parameter`` :func:`strategy`
+        :param Strategy strategy: ``parameter`` :func:`strategy`
         :param str selector_file: ``parameter`` :func:`selector_file`
         :param str simple_select_file: ``parameter`` :func:`simple_select_file`
         :param SelectMode select_mode: ``parameter`` :func:`select_mode`

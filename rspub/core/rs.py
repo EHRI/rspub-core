@@ -5,8 +5,8 @@
 
 The class :class:`ResourceSync` is the main entrance to the rspub-core library. It is in essence a one-method
 class, its main method: :func:`~ResourceSync.execute`. This method takes as argument ``filenames``:
-a list of files and/or directories
-to process. Upon execution :class:`ResourceSync` will call the correct :class:`~rspub.core.executors.Executor` that
+an iterable of files and/or directories to process. (List and i.e. :class:`~rspub.core.selector.Selector` are iterables.)
+Upon execution :class:`ResourceSync` will call the correct :class:`~rspub.core.executors.Executor` that
 will walk all the files and directories named in ``filenames`` and that takes care of creating the right type
 of sitemap: resourcelist, changelist etc. and complete the corresponding
 sitemaps as capabilitylist and description.

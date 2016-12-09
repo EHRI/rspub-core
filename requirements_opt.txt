@@ -2,6 +2,8 @@
 
 ### requirements_opt.txt #####################################
 ###
+### Optional requirements
+###
 ### To install, run:
 ###      $ pip install -r requirements_opt.txt
 ###

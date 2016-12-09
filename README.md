@@ -7,7 +7,7 @@ Core Python library for ResourceSync publishing
 - The component in this repository is intended to be used by developers and/or system administrators.
 - Source location: [https://github.com/EHRI/rspub-core](https://github.com/EHRI/rspub-core)
 - Source documentation: [http://rspub-core.readthedocs.io/en/latest/](http://rspub-core.readthedocs.io/en/latest/)
-- There is also a GUI based on _rspub-core_. See [https://github.com/EHRI/rspub-gui](https://github.com/EHRI/rspub-gui)
+- There is a GUI based on `rspub-core`. See [https://github.com/EHRI/rspub-gui](https://github.com/EHRI/rspub-gui)
 - In case of questions [contact](https://github.com/EHRI/rspub-core/issues/new) the EHRI team.
 
 ---

@@ -15,6 +15,7 @@ the house by typing ``exit``. In all rooms you can get help by typing ``help``.
 
 .. image:: ../../img/rscli.png
 
+
 """
 import sys
 import traceback
@@ -110,7 +111,7 @@ class SuperCmd(cmd.Cmd):
         return line
 
     def postcmd(self, stop, line):
-        """Hook method executed just after a command dispatch is finished."""
+        # Hook method executed just after a command dispatch is finished
         return self.stop
 
     def do_exit(self, line):
