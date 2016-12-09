@@ -108,6 +108,10 @@ class ChangeListExecutor(Executor, metaclass=ABCMeta):
             deleted = [r for r in prev_r.values() if r.uri not in curr_r]
             unchang = [r for r in curr_r.values() if r.uri in prev_r and r.md5 == prev_r[r.uri].md5]
 
+            # remove lastmod from deleted resource metadata
+            for resource in deleted:
+                resource.lastmod = None
+
             num_created = len(created)
             num_updated = len(updated)
             num_deleted = len(deleted)
