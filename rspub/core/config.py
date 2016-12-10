@@ -196,7 +196,7 @@ class Configuration(object):
             cls.config_file = os.path.join(cls.config_path, Configuration._get_configuration_filename())
             cls.parser = ConfigParser()
             if os.path.exists(cls.config_file):
-                cls.parser.read(cls.config_file)
+                cls.parser.read(cls.config_file, encoding="utf-8")
         return cls._instance
 
     def config_path(self):
@@ -209,7 +209,7 @@ class Configuration(object):
         return os.path.splitext(os.path.basename(self.config_file))[0]
 
     def persist(self):
-        f = open(self.config_file, "w")
+        f = open(self.config_file, "w", encoding="utf-8")
         self.parser.write(f)
         f.close()
         Configuration.__get__logger().debug("Persisted %s", self.config_file)

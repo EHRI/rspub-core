@@ -59,8 +59,8 @@ def md5_for_file(filename, block_size=2**14):
         d = hashlib.md5()
         for buf in iter(partial(f.read, block_size), b''):
             d.update(buf)
-
-    return base64.b64encode(d.digest()).decode('utf-8')
+    #return base64.b64encode(d.digest()).decode('utf-8')
+    return d.hexdigest()
 
 
 def mime_type(filename):

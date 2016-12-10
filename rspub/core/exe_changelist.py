@@ -72,7 +72,7 @@ class ChangeListExecutor(Executor, metaclass=ABCMeta):
             self.resourcelist_files = sorted(glob(self.para.abs_metadata_path("resourcelist_*.xml")))
             for rl_file_name in self.resourcelist_files:
                 resourcelist = ResourceList()
-                with open(rl_file_name, "r") as rl_file:
+                with open(rl_file_name, "r", encoding="utf-8") as rl_file:
                     sm = Sitemap()
                     sm.parse_xml(rl_file, resources=resourcelist)
 
@@ -86,7 +86,7 @@ class ChangeListExecutor(Executor, metaclass=ABCMeta):
             self.changelist_files = sorted(glob(self.para.abs_metadata_path("changelist_*.xml")))
             for cl_file_name in self.changelist_files:
                 changelist = ChangeList()
-                with open(cl_file_name, "r") as cl_file:
+                with open(cl_file_name, "r", encoding="utf-8") as cl_file:
                     sm = Sitemap()
                     sm.parse_xml(cl_file, resources=changelist)
 

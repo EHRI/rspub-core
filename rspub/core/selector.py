@@ -181,20 +181,20 @@ class Selector(Observable):
         return len(self._includes) + len(self._excludes) == 0
 
     def read_includes(self, filename):
-        with open(filename, "r") as file:
+        with open(filename, "r", encoding="utf-8") as file:
             self.include(file.read().splitlines())
 
     def read_excludes(self, filename):
-        with open(filename, "r") as file:
+        with open(filename, "r", encoding="utf-8") as file:
             self.exclude(file.read().splitlines())
 
     def write_includes(self, filename):
-        with open(filename, 'w') as file:
+        with open(filename, 'w', encoding="utf-8") as file:
             for item in sorted(self._includes):
                 file.write("{}\n".format(item))
 
     def write_excludes(self, filename):
-        with open(filename, 'w') as file:
+        with open(filename, 'w', encoding="utf-8") as file:
             for item in sorted(self._excludes):
                 file.write("{}\n".format(item))
 
@@ -203,7 +203,7 @@ class Selector(Observable):
             filename = self.location
         if filename is None:
             raise RuntimeError("No filename, no location. Cannot save selector.")
-        with open(filename, 'w') as file:
+        with open(filename, 'w', encoding="utf-8") as file:
             writer = csv.writer(file, quoting=csv.QUOTE_ALL)
             for item in self._includes:
                 writer.writerow(["+", item])
@@ -214,7 +214,7 @@ class Selector(Observable):
     def read(self, filename):
         filename = os.path.abspath(filename)
         row_count = 0
-        with open(filename, 'r') as file:
+        with open(filename, 'r', encoding="utf-8") as file:
             reader = csv.reader(file)
             for row in reader:
                 row_count += 1

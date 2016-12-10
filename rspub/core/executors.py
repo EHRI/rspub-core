@@ -368,8 +368,7 @@ class Executor(Observable, metaclass=ABCMeta):
 
         if self.para.is_saving_sitemaps:
             sitemap.pretty_xml = self.para.is_saving_pretty_xml
-            with open(path, "w") as sm_file:
-                sm_file.write(sitemap.as_xml())
+            self.save_sitemap(sitemap, path)
             sitemap_data.document_saved = True
 
         self.observers_inform(self, ExecutorEvent.completed_document, document=sitemap, sitemap_data=sitemap_data)
@@ -388,13 +387,14 @@ class Executor(Observable, metaclass=ABCMeta):
 
     def save_sitemap(self, sitemap, path):
         sitemap.pretty_xml = self.para.is_saving_pretty_xml
-        with open(path, "w") as sm_file:
-            sm_file.write(sitemap.as_xml())
+        # writing the string sitemap.as_xml() to disk results in encoding=ASCII on some systems.
+        # due to https://docs.python.org/3.4/library/xml.etree.elementtree.html#write
+        sitemap.write(path)
 
     def read_sitemap(self, path, sitemap=None):
         if sitemap is None:
             sitemap = ListBaseWithIndex()
-        with open(path, "r") as file:
+        with open(path, "r", encoding="utf-8") as file:
             sm = Sitemap()
             sm.parse_xml(file, resources=sitemap)
         return sitemap
