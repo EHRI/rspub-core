@@ -83,9 +83,12 @@ If these default excluding predicates are not in your way you can append your ex
 in the method :func:`~rspub.util.gates.GateBuilder.build_excludes`.
 
 """
-from rspub.util.gates import GateBuilder, not_
-from rspub.util.resourcefilter import directory_pattern_predicate, hidden_file_predicate
+import os
 
+from rspub.util.gates import GateBuilder, not_
+from rspub.util.resourcefilter import directory_pattern_predicate, hidden_file_predicate, filename_pattern_predicate
+
+WELL_KNOWN = ".well-known/resourcesync"
 
 class ResourceGateBuilder(GateBuilder):
     """
@@ -96,14 +99,13 @@ class ResourceGateBuilder(GateBuilder):
     It will exclude however any file that
     is not in :func:`~rspub.core.rs_paras.RsParameters.resource_dir` or any of its subdirectories, hidden files and
     files from the directories :func:`~rspub.core.rs_paras.RsParameters.metadata_dir`,
-    :func:`~rspub.core.rs_paras.RsParameters.description_dir` and :func:`~rspub.core.rs_paras.RsParameters.plugin_dir`.
+    :func:`~rspub.core.rs_paras.RsParameters.plugin_dir` and `.well-known/resourcesync`.
     """
 
-    def __init__(self, resource_dir=None, metadata_dir=None, plugin_dir=None, description_dir=None):
+    def __init__(self, resource_dir=None, metadata_dir=None, plugin_dir=None):
         self.resource_dir = resource_dir
         self.metadata_dir = metadata_dir
         self.plugin_dir = plugin_dir
-        self.description_dir = description_dir
 
     def build_includes(self, includes: list):
         if self.resource_dir:
@@ -118,14 +120,12 @@ class ResourceGateBuilder(GateBuilder):
             excludes.append(not_(directory_pattern_predicate("^" + self.resource_dir)))
 
         excludes.append(hidden_file_predicate())
+        excludes.append(lambda file_path: file_path.endswith(WELL_KNOWN))
 
         # exclude metadata dir, description_dir and plugin dir
         # (in case they happen to be on the search path and within resource dir).
         if self.metadata_dir:
             excludes.append(directory_pattern_predicate(("^" + self.metadata_dir)))
-
-        if self.description_dir:
-            excludes.append(directory_pattern_predicate(("^" + self.description_dir)))
 
         if self.plugin_dir:
             excludes.append(directory_pattern_predicate(("^" + self.plugin_dir)))
