@@ -13,9 +13,10 @@ The internals of the command line interface resemble a three-room house. You ent
 the ``rspub`` room. From there you can enter the rooms ``configure`` and ``select``. You leave the rooms and
 the house by typing ``exit``. In all rooms you can get help by typing ``help``.
 
-.. image:: ../../img/rscli.png
+.. figure:: ../../img/rscli.png
 
-_Fig. 1. Geography of `rscli`._
+    Fig. 1. Geography of `rscli`.
+
 """
 import sys
 import traceback
