@@ -9,13 +9,13 @@ on the system::
 
     python3 rspub/cli/rscli.py
 
-The internals of the command line interface resembles a three-room house. You enter in the house in
+The internals of the command line interface resemble a three-room house. You enter the house in
 the ``rspub`` room. From there you can enter the rooms ``configure`` and ``select``. You leave the rooms and
 the house by typing ``exit``. In all rooms you can get help by typing ``help``.
 
 .. image:: ../../img/rscli.png
 
-
+_Fig. 1. Geography of `rscli`._
 """
 import sys
 import traceback
