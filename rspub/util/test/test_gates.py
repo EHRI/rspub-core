@@ -2,11 +2,12 @@
 # -*- coding: utf-8 -*-
 import importlib
 import logging
+import os
+import sys
 import unittest
 
-from rspub.util import gates
 from rspub.util.gates import not_, or_, nor_, and_, nand_, xor_, xnor_, gate, is_one_arg_predicate, \
-    set_stop_on_creation_error, PluggedInGateBuilder
+    set_stop_on_creation_error
 
 LOG = logging.getLogger(__name__)
 
@@ -318,6 +319,9 @@ class TestGates(unittest.TestCase):
         self.assertFalse(is_one_arg_predicate(self.make_arg_kwargs()))
         self.assertFalse(is_one_arg_predicate(lambda x, y: x > y))
 
+        app_home = os.path.dirname(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
+        # print(app_home)
+        sys.path.append(app_home)
         module = importlib.import_module("util.gates")
         self.assertFalse(is_one_arg_predicate(module))
 
