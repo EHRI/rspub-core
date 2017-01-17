@@ -144,7 +144,7 @@ class Executor(Observable, metaclass=ABCMeta):
         self.date_start_processing = None
         self.date_end_processing = None
 
-    def resource_gate(self) -> gate:
+    def resource_gate(self):
         """
         :samp:`Construct or return the resource gate`
 

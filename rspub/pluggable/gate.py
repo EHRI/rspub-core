@@ -110,7 +110,8 @@ class ResourceGateBuilder(GateBuilder):
 
     def build_includes(self, includes: list):
         if self.resource_dir:
-            includes.append(directory_pattern_predicate("^" + self.resource_dir))
+            # self.resourcedir always ends with file separator. Take it of for pattern:
+            includes.append(directory_pattern_predicate("^" + self.resource_dir[:-1]))
 
         return includes
 
