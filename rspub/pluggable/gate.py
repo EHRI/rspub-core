@@ -86,9 +86,10 @@ in the method :func:`~rspub.util.gates.GateBuilder.build_excludes`.
 import os
 
 from rspub.util.gates import GateBuilder, not_
-from rspub.util.resourcefilter import directory_pattern_predicate, hidden_file_predicate, filename_pattern_predicate
+from rspub.util.resourcefilter import directory_pattern_predicate, hidden_file_predicate
 
-WELL_KNOWN = ".well-known/resourcesync"
+WELL_KNOWN_PATH = os.path.join(".well-known", "resourcesync")
+
 
 class ResourceGateBuilder(GateBuilder):
     """
@@ -120,7 +121,7 @@ class ResourceGateBuilder(GateBuilder):
             excludes.append(not_(directory_pattern_predicate("^" + self.resource_dir)))
 
         excludes.append(hidden_file_predicate())
-        excludes.append(lambda file_path: file_path.endswith(WELL_KNOWN))
+        excludes.append(lambda file_path: file_path.endswith(WELL_KNOWN_PATH))
 
         # exclude metadata dir, description_dir and plugin dir
         # (in case they happen to be on the search path and within resource dir).

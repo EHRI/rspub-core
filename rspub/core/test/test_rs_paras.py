@@ -83,7 +83,8 @@ class TestRsParameters(unittest.TestCase):
 
         resource_dir = user_home
 
-        rsp = RsParameters(metadata_dir="foo/md1", resource_dir=resource_dir)
+        rsp = RsParameters(metadata_dir=os.path.join("foo", "md1"), resource_dir=resource_dir)
+        # print(rsp.abs_metadata_dir())
         self.assertEquals(rsp.abs_metadata_dir(), os.path.join(resource_dir, "foo", "md1"))
         # @ToDo test for windows pathnames: 'foo\md1', 'C:foo\bar\baz'
 
@@ -96,8 +97,15 @@ class TestRsParameters(unittest.TestCase):
         self.assertEquals(rsp2.abs_metadata_dir(), os.path.join(here, "foo", "md1"))
 
         with self.assertRaises(Exception) as context:
+            rsp.metadata_dir = os.path.expanduser("~")
+        # print(context.exception)
+        self.assertEquals("Invalid value for metadata_dir: path should not be absolute: " + os.path.expanduser("~"),
+                              context.exception.args[0])
+        self.assertIsInstance(context.exception, ValueError)
+
+        with self.assertRaises(Exception) as context:
             rsp.metadata_dir = "/foo/bar"
-            # print(context.exception)
+        # print(context.exception)
         self.assertEquals("Invalid value for metadata_dir: path should not be absolute: /foo/bar",
                               context.exception.args[0])
         self.assertIsInstance(context.exception, ValueError)
@@ -361,10 +369,12 @@ class TestRsParameters(unittest.TestCase):
         self.assertEquals(rsp.description_url(),
                           "http://example.com/bla/foo/bar/some/path/md10/.well-known/resourcesync")
 
+    @unittest.skip
     def test_describe(self):
         rsp = RsParameters()
         print(rsp.describe(True))
 
+    @unittest.skip
     def test_set_with_reflection(self):
         rsp = RsParameters()
 

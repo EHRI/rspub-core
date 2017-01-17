@@ -7,7 +7,7 @@ from rspub.core.selector import Selector
 
 
 def test_dir():
-    return os.path.join(os.path.expanduser("~"), "tmp", "rs")
+    return os.path.join(os.path.expanduser("~"), "tmp", "rs", "test_data")
 
 
 def precondition(as_string=False):
@@ -112,21 +112,21 @@ class TestSelector(unittest.TestCase):
 
         print(len([x for x in selector.list_includes()]))
 
-    @unittest.skipUnless(precondition(), precondition(as_string=True))
+    @unittest.skip
     def test_read_write(self):
         selector = Selector()
-        selector.read_includes(os.path.join(test_dir(), "test_data", "includes.txt"))
-        selector.read_excludes(os.path.join(test_dir(), "test_data", "excludes.txt"))
+        selector.read_includes(os.path.join(test_dir(), "includes.txt"))
+        selector.read_excludes(os.path.join(test_dir(), "excludes.txt"))
 
         print("\nselector 1")
         for filename in selector:
             print(filename)
 
-        selector.write_includes(os.path.join(test_dir(), "test_data", "includes_w.txt"))
-        selector.write_excludes(os.path.join(test_dir(), "test_data", "excludes_w.txt"))
+        selector.write_includes(os.path.join(test_dir(), "includes_w.txt"))
+        selector.write_excludes(os.path.join(test_dir(), "excludes_w.txt"))
 
-        selector.write(os.path.join(test_dir(), "test_data", "selector_1.txt"))
-        selector2 = Selector(os.path.join(test_dir(), "test_data", "selector_1.txt"))
+        selector.write(os.path.join(test_dir(), "selector_1.txt"))
+        selector2 = Selector(os.path.join(test_dir(), "selector_1.txt"))
         #
         print("\nselector 2")
         for filename in selector2:
@@ -134,4 +134,17 @@ class TestSelector(unittest.TestCase):
 
         selector2.clear_excludes()
         selector2.write(os.path.join(test_dir(), "test_data", "selector_2.txt"))
+
+    @unittest.skipUnless(precondition(), precondition(as_string=True))
+    def test_read_write(self):
+        selector = Selector()
+        selector.include("collection1")
+        selector.exclude("collection2")
+
+        selector.write(os.path.join(test_dir(), "test_selector.txt"))
+
+        selector2 = Selector(os.path.join(test_dir(), "test_selector.txt"))
+        self.assertEqual(selector2.get_included_entries().pop(), "collection1")
+        self.assertEqual(selector2.get_excluded_entries().pop(), "collection2")
+
 

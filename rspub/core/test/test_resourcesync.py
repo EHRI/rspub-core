@@ -48,7 +48,7 @@ class TestResourceSync(unittest.TestCase):
         root.setLevel(logging.DEBUG)
         ch = logging.StreamHandler(sys.stdout)
         ch.setLevel(logging.DEBUG)
-        formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(name)s - %(message)s')
+        formatter = logging.Formatter('%(asctime)s - %(levelname)s - [%(filename)s:%(lineno)d] - %(message)s')
         ch.setFormatter(formatter)
         root.addHandler(ch)
         #Configuration().persist()
@@ -60,7 +60,8 @@ class TestResourceSync(unittest.TestCase):
         #rs.max_items_in_list = 3
 
         rs.strategy = Strategy.resourcelist
-        rs.description_dir = "/Users/Shared/foo"
+        # must exist
+        #rs.description_dir = "/Users/Shared/foo"
 
         filenames = [test_resource()]
         rs.execute(filenames)
@@ -76,7 +77,8 @@ class TestResourceSync(unittest.TestCase):
         rs.strategy = Strategy.new_changelist
 
         rs.metadata_dir = "tmp/rs/md1"
-        rs.description_dir = "/Users/Shared/foo"
+        # must exist
+        # rs.description_dir = "/Users/Shared/foo"
 
         filenames = [test_resource()]
         rs.execute(filenames)
@@ -106,6 +108,7 @@ class TestResourceSync(unittest.TestCase):
         metadata = os.path.join("tmp", "rs", "md_select")
 
         selector = Selector()
+        os.makedirs(os.path.join(resource_dir(), "tmp", "rs", "test_data"), exist_ok=True)
         selector.location = os.path.join(resource_dir(), "tmp", "rs", "test_data", "selector1.txt")
         selector.include(test_resource())
         selector.exclude(os.path.join(test_resource(), "collection2"))

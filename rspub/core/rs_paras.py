@@ -25,6 +25,7 @@ from rspub.core.rs_enum import Strategy, SelectMode
 from rspub.util import defaults
 
 WELL_KNOWN_PATH = os.path.join(".well-known", "resourcesync")
+WELL_KNOWN_URL = ".well-known/resourcesync"
 config = None
 
 
@@ -79,7 +80,7 @@ class RsParameters(object):
         :param str metadata_dir: ``parameter`` :func:`metadata_dir`
         :param str description_dir: ``parameter`` :func:`description_dir`
         :param str url_prefix: ``parameter`` :func:`url_prefix`
-        :param Strategy strategy: ``parameter`` :func:`strategy`
+        :param Union[Strategy, int, str] strategy: ``parameter`` :func:`strategy`
         :param str selector_file: ``parameter`` :func:`selector_file`
         :param str simple_select_file: ``parameter`` :func:`simple_select_file`
         :param SelectMode select_mode: ``parameter`` :func:`select_mode`
@@ -624,9 +625,9 @@ class RsParameters(object):
         """
         if self.has_wellknown_at_root:
             r = urllib.parse.urlsplit(self.url_prefix)
-            return urllib.parse.urlunsplit([r[0], r[1], WELL_KNOWN_PATH, "", ""])
+            return urllib.parse.urlunsplit([r[0], r[1], WELL_KNOWN_URL, "", ""])
         else:
-            path = self.abs_metadata_path(WELL_KNOWN_PATH)
+            path = self.abs_metadata_path(WELL_KNOWN_URL)
             rel_path = os.path.relpath(path, self.resource_dir)
             return self.url_prefix + defaults.sanitize_url_path(rel_path)
 

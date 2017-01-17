@@ -13,8 +13,12 @@ def hidden_file_predicate():
 
 
 def directory_pattern_predicate(name_pattern=""):
-    pattern = re.compile(name_pattern)
-    return lambda file_path: isinstance(file_path, str) and pattern.search(os.path.dirname(file_path))
+    pattern = re.compile(windows_to_unix(name_pattern))
+    return lambda file_path: isinstance(file_path, str) and pattern.search(windows_to_unix(os.path.dirname(file_path)))
+
+
+def windows_to_unix(path):
+    return path.replace("\\", "/")
 
 
 def filename_pattern_predicate(name_pattern=""):

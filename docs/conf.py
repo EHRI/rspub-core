@@ -17,7 +17,12 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-import sphinx_rtd_theme
+__SPHINX_RTD_THEME__ = False
+try:
+    import sphinx_rtd_theme
+    __SPHINX_RTD_THEME__ = True
+except:
+    pass
 import os
 import sys
 sys.path.insert(0, os.path.abspath('.'))
@@ -164,7 +169,10 @@ html_theme = "sphinx_rtd_theme"
 
 # Add any paths that contain custom themes here, relative to this directory.
 # html_theme_path = []
-html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
+if __SPHINX_RTD_THEME__:
+    html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
+else:
+    html_theme_path = []
 
 # The name for this set of Sphinx documents.
 # "<project> v<release> documentation" by default.

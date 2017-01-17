@@ -203,7 +203,7 @@ class Selector(Observable):
             filename = self.location
         if filename is None:
             raise RuntimeError("No filename, no location. Cannot save selector.")
-        with open(filename, 'w', encoding="utf-8") as file:
+        with open(filename, 'w', encoding="utf-8", newline='') as file:
             writer = csv.writer(file, quoting=csv.QUOTE_ALL)
             for item in self._includes:
                 writer.writerow(["+", item])
@@ -214,7 +214,7 @@ class Selector(Observable):
     def read(self, filename):
         filename = os.path.abspath(filename)
         row_count = 0
-        with open(filename, 'r', encoding="utf-8") as file:
+        with open(filename, 'r', encoding="utf-8", newline='') as file:
             reader = csv.reader(file)
             for row in reader:
                 row_count += 1
