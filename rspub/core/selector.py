@@ -28,7 +28,7 @@ class Selector(Observable):
         self._excludes = set()
         if self.location:
             self.read(self.location)
-
+        self.dirty = False
         self._abs_excludes = None
         self._exc_count = 0
 
@@ -86,6 +86,7 @@ class Selector(Observable):
                     yield file
 
     def include(self, *filenames):
+        self.dirty = True
         for item in filenames:
             if isinstance(item, str):
                 self._includes.add(item)
@@ -98,6 +99,7 @@ class Selector(Observable):
                 raise ValueError("Illegal argument: %s" % item)
 
     def exclude(self, *filenames):
+        self.dirty = True
         for item in filenames:
             if isinstance(item, str):
                 self._excludes.add(item)
@@ -110,6 +112,7 @@ class Selector(Observable):
                 raise ValueError("Illegal argument: %s" % item)
 
     def discard_include(self, *filenames):
+        self.dirty = True
         for item in filenames:
             if isinstance(item, str):
                 self._includes.discard(item)
@@ -122,6 +125,7 @@ class Selector(Observable):
                 raise ValueError("Illegal argument: %s" % item)
 
     def discard_exclude(self, *filenames):
+        self.dirty = True
         for item in filenames:
             if isinstance(item, str):
                 self._excludes.discard(item)
@@ -134,9 +138,11 @@ class Selector(Observable):
                 raise ValueError("Illegal argument: %s" % item)
 
     def clear_includes(self):
+        self.dirty = True
         self._includes.clear()
 
     def clear_excludes(self):
+        self.dirty = True
         self._excludes.clear()
 
     def list_includes(self):
@@ -164,10 +170,12 @@ class Selector(Observable):
         return generator
 
     def relativize_includes(self, root_path):
+        self.dirty = True
         self._includes = {os.path.relpath(x, root_path) for x in self._includes}
         return self.get_included_entries()
 
     def relativize_excludes(self, root_path):
+        self.dirty = True
         self._excludes = {os.path.relpath(x, root_path) for x in self._excludes}
         return self.get_excluded_entries()
 
@@ -181,10 +189,12 @@ class Selector(Observable):
         return len(self._includes) + len(self._excludes) == 0
 
     def read_includes(self, filename):
+        self.dirty = True
         with open(filename, "r", encoding="utf-8") as file:
             self.include(file.read().splitlines())
 
     def read_excludes(self, filename):
+        self.dirty = True
         with open(filename, "r", encoding="utf-8") as file:
             self.exclude(file.read().splitlines())
 
@@ -210,8 +220,10 @@ class Selector(Observable):
             for item in self._excludes:
                 writer.writerow(["-", item])
         self.location = filename
+        self.dirty = False
 
     def read(self, filename):
+        self.dirty = True
         filename = os.path.abspath(filename)
         row_count = 0
         with open(filename, 'r', encoding="utf-8", newline='') as file:
