@@ -28,6 +28,7 @@ class Selector(Observable):
         self._excludes = set()
         if self.location:
             self.read(self.location)
+        self._abs_includes = None
         self._abs_excludes = None
         self._exc_count = 0
 
@@ -42,10 +43,24 @@ class Selector(Observable):
         #   + less memory but
         #   - repeatedly iterating the abs_excludes but
         #   + sorted output
+        self._abs_includes = Selector.filter_base_paths({os.path.abspath(x) for x in self._includes})
         self._abs_excludes = {os.path.abspath(x) for x in self._excludes}
         self._exc_count = len(self._abs_excludes)
         generator = self._file_generator()
-        return generator(sorted(self._includes))
+        return generator(sorted(self._abs_includes))
+
+    @staticmethod
+    def filter_base_paths(abs_paths):
+        return {x for x in abs_paths if Selector.is_base_path(x, abs_paths)}
+
+    @staticmethod
+    def is_base_path(x, other_paths):
+        base_path = True
+        for test_path in other_paths:
+            if not x == test_path and x.startswith(test_path):
+                base_path = False
+                break
+        return base_path
 
     def __len__(self):
         return len([x for x in self])

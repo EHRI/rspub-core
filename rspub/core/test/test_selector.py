@@ -147,4 +147,10 @@ class TestSelector(unittest.TestCase):
         self.assertEqual(selector2.get_included_entries().pop(), "collection1")
         self.assertEqual(selector2.get_excluded_entries().pop(), "collection2")
 
+    def test_filter_base_path(self):
+        paths = {"abc", "abc/def", "abc/def/ghi", "foo/bar", "abc/def"}
+        base_paths = Selector.filter_base_paths(paths)
+        self.assertEqual(2, len(base_paths))
+        self.assertTrue("abc" in base_paths)
+        self.assertTrue("foo/bar" in base_paths)
 
