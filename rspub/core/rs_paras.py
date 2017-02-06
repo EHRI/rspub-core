@@ -61,8 +61,8 @@ class RsParameters(object):
 
     """
     def __init__(self, config_name=None, resource_dir=config, metadata_dir=config, description_dir=config,
-                 url_prefix=config, strategy=config, selector_file=config, simple_select_file=config,
-                 select_mode=config, plugin_dir=config,
+                 url_prefix=config, document_root=config, strategy=config, selector_file=config,
+                 simple_select_file=config, select_mode=config, plugin_dir=config,
                  history_dir=config, max_items_in_list=config, zero_fill_filename=config, is_saving_pretty_xml=config,
                  is_saving_sitemaps=config, has_wellknown_at_root=config, **kwargs):
         """
@@ -80,6 +80,7 @@ class RsParameters(object):
         :param str metadata_dir: ``parameter`` :func:`metadata_dir`
         :param str description_dir: ``parameter`` :func:`description_dir`
         :param str url_prefix: ``parameter`` :func:`url_prefix`
+        :param str document_root: ``parameter`` :func:`document_root`
         :param Union[Strategy, int, str] strategy: ``parameter`` :func:`strategy`
         :param str selector_file: ``parameter`` :func:`selector_file`
         :param str simple_select_file: ``parameter`` :func:`simple_select_file`
@@ -99,6 +100,7 @@ class RsParameters(object):
             "metadata_dir": metadata_dir,
             "description_dir": description_dir,
             "url_prefix": url_prefix,
+            "document_root": document_root,
             "strategy": strategy,
             "selector_file": selector_file,
             "simple_select_file": simple_select_file,
@@ -131,6 +133,10 @@ class RsParameters(object):
         self._url_prefix = None
         _url_prefix_ = self.__arg__("_url_prefix", cfg.url_prefix(), **kwargs)
         self.url_prefix = _url_prefix_
+
+        self._document_root = None
+        _document_root_ = self.__arg__("_document_root", cfg.document_root(), **kwargs)
+        self.document_root = _document_root_
 
         self._strategy = None
         _strategy_ = self.__arg__("_strategy", cfg.strategy(), **kwargs)
@@ -327,6 +333,40 @@ class RsParameters(object):
         if not value.endswith("/"):
             value += "/"
         self._url_prefix = value
+
+    @property
+    def document_root(self):
+        """
+        ``parameter`` :samp:`The directory from which the server will serve files` (str)
+
+        Example. Paths to resources are relative to the server host::
+
+            url_prefix:         http://www.example.com
+            url to resource:    http://www.example.com/path/to/resource
+            document_root:               /var/www/html/
+            path on server:              /var/www/html/path/to/resource
+
+        Example. Paths to resources are relative to some directory on the server::
+
+            url_prefix:         http://www.example.com/my/resources
+            url to resource:    http://www.example.com/my/resources/path/to/resource
+            document_root:               /var/www/html/my/resources
+            path on server:              /var/www/html/my/resources/path/to/resource
+
+        ``default:`` '/var/www/html/'
+        """
+        return self._document_root
+
+    @document_root.setter
+    def document_root(self, value):
+        if value.endswith("/"):
+            value = value[:-1]
+        if value == "":
+            raise ValueError("Invalid value for document_root: path should not be empty")
+        if not value.endswith("/"):
+            value += "/"
+        self._document_root = value
+
 
     @property
     def strategy(self):
@@ -538,6 +578,7 @@ class RsParameters(object):
         cfg.set_metadata_dir(self.metadata_dir)
         cfg.set_description_dir(self.description_dir)
         cfg.set_url_prefix(self.url_prefix)
+        cfg.set_document_root(self.document_root)
         cfg.set_strategy(self.strategy)
         cfg.set_selector_file(self.selector_file)
         cfg.set_simple_select_file(self.simple_select_file)
@@ -708,6 +749,7 @@ class RsParameters(object):
             [True, "description_dir", self.description_dir],
             [False, "abs_description_path", self.abs_description_path()],
             [True, "url_prefix", self.url_prefix],
+            [True, "document_root", self.document_root],
             [True, "has_wellknown_at_root", self.has_wellknown_at_root],
             [False, "description_url", self.description_url()],
             [False, "capabilitylist_url", self.capabilitylist_url()],

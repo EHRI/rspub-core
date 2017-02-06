@@ -297,6 +297,12 @@ class Configuration(object):
     def set_url_prefix(self, urlprefix):
         self.__set_option__(SECTION_CORE, "url_prefix", urlprefix)
 
+    def document_root(self, fallback="/var/www/html/"):
+        return self.parser.get(SECTION_CORE, "document_root", fallback=fallback)
+
+    def set_document_root(self, document_root):
+        self.__set_option__(SECTION_CORE, "document_root", document_root)
+
     def strategy(self, fallback=Strategy.resourcelist.name):
         return Strategy[self.parser.get(SECTION_CORE, "strategy", fallback=fallback)]
 

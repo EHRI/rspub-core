@@ -12,4 +12,6 @@
 git+https://github.com/EHRI/resync.git@ehribranch#egg=resyncehri
 
 validators
+paramiko
+scp
 -e .
