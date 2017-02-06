@@ -222,7 +222,7 @@ class RsParameters(object):
     def resource_dir(self, path):
         assert isinstance(path, str)
         path = self._assert_directory(path, "resource_dir")
-        if not path.endswith(os.path.sep):
+        if not (path.endswith(os.path.sep) or path.endswith("\\") or path.endswith("/")):
             path += os.path.sep
         self._resource_dir = path
 
