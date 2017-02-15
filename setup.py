@@ -12,5 +12,5 @@ setup(
     author='henk van den berg',
     author_email='henk.van.den.berg at dans.knaw.nl',
     description='Core Python library for ResourceSync publishing',
-    install_requires=['resyncehri', 'validators', 'paramiko', 'scp']
+    install_requires=['validators', 'paramiko', 'scp']
 )
