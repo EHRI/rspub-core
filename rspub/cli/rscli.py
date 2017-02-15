@@ -931,14 +931,13 @@ get_excluded_entries::
         print("=========================================================")
 
     def check_exit(self):
-        if SELECTOR.dirty:
-            save = self.__confirm__("Selector has unsaved changes. Save changes to disk?")
-            if save and SELECTOR.location:
-                self.do_save_selector(SELECTOR.location)
-                return True
-            elif save:
-                print("Use command 'save_selector' to save current selector.")
-                return False
+        save = self.__confirm__("Selector might have unsaved changes. Save changes to disk?")
+        if save and SELECTOR.location:
+            self.do_save_selector(SELECTOR.location)
+            return True
+        elif save:
+            print("Use command 'save_selector' to save current selector.")
+            return False
         return True
 
     def do_exit(self, line):
