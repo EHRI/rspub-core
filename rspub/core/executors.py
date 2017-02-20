@@ -166,6 +166,7 @@ class Executor(Observable, metaclass=ABCMeta):
         current :class:`~rspub.core.rs_paras.RsParameters`.
 
         :param filenames: iter of filenames and/or directories to scan
+        :return: list of :class:`SitemapData` of generated sitemaps
         """
         self.date_start_processing = defaults.w3c_now()
         self.observers_inform(self, ExecutorEvent.execution_start, date_start_processing=self.date_start_processing)
@@ -183,6 +184,7 @@ class Executor(Observable, metaclass=ABCMeta):
 
         self.observers_inform(self, ExecutorEvent.execution_end, date_end_processing = self.date_end_processing,
                               new_sitemaps=sitemap_data_iter)
+        return sitemap_data_iter
 
     # # Execution steps - start
     def prepare_metadata_dir(self):

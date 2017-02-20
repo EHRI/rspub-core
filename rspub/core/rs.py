@@ -186,7 +186,7 @@ class ResourceSync(Observable, RsParameters):
 
         if executor:
             executor.register(*self.observers)
-            executor.execute(filenames)
+            sitemap_data_iter = executor.execute(filenames)
         else:
             raise NotImplementedError("Strategy not implemented: %s" % self.strategy)
 
@@ -201,9 +201,12 @@ class ResourceSync(Observable, RsParameters):
                 except Exception as err:
                     LOG.warning("Unable to save selector: {0}".format(err))
 
-        # set a timestamp
+        # set a timestamp, save paths to newly created sitemaps
         if self.is_saving_sitemaps:
             self.last_execution = executor.date_start_processing
+            self.last_strategy = self.strategy
+            sitemaps = [sitemap.path for sitemap in sitemap_data_iter]
+            self.last_sitemaps = sitemaps
 
         self.save_configuration(True)
 

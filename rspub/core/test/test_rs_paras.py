@@ -343,6 +343,122 @@ class TestRsParameters(unittest.TestCase):
 
         self.save_configuration_test(rsp)
 
+    def test_last_strategy(self):
+        Configuration().core_clear()
+        rsp = RsParameters()
+
+        self.assertIsNone(rsp.last_strategy)
+
+        rsp.last_strategy = Strategy.inc_changelist
+        rsp2 = RsParameters(**rsp.__dict__)
+        self.assertEqual(Strategy.inc_changelist, rsp2.last_strategy)
+
+        self.save_configuration_test(rsp)
+
+    def test_scp_server(self):
+        # defaults to configuration defaults
+        Configuration().core_clear()
+        rsp = RsParameters()
+        self.assertEquals("example.com", rsp.scp_server)
+
+        # contamination test
+        rsp.scp_server = "server.name.com"
+        rsp2 = RsParameters(**rsp.__dict__)
+        self.assertEquals("server.name.com", rsp2.scp_server)
+
+        rsp.scp_server = "server.name.nl"
+        rsp3 = RsParameters(**rsp.__dict__)
+        self.assertEquals("server.name.nl", rsp3.scp_server)
+
+        self.save_configuration_test(rsp)
+
+    def test_scp_port(self):
+        # defaults to configuration defaults
+        Configuration().core_clear()
+        rsp = RsParameters()
+        self.assertEquals(22, rsp.scp_port)
+
+        # contamination test
+        rsp.scp_port = 2222
+        rsp2 = RsParameters(**rsp.__dict__)
+        self.assertEquals(2222, rsp2.scp_port)
+
+        rsp.scp_port = 1234
+        rsp3 = RsParameters(**rsp.__dict__)
+        self.assertEquals(1234, rsp3.scp_port)
+
+        self.save_configuration_test(rsp)
+
+    def test_scp_user(self):
+        # defaults to configuration defaults
+        Configuration().core_clear()
+        rsp = RsParameters()
+        self.assertEquals("username", rsp.scp_user)
+
+        # contamination test
+        rsp.scp_user = "jan"
+        rsp2 = RsParameters(**rsp.__dict__)
+        self.assertEquals("jan", rsp2.scp_user)
+
+        rsp.scp_user = "wim"
+        rsp3 = RsParameters(**rsp.__dict__)
+        self.assertEquals("wim", rsp3.scp_user)
+
+        self.save_configuration_test(rsp)
+
+    def test_scp_document_root(self):
+        # defaults to configuration defaults
+        Configuration().core_clear()
+        rsp = RsParameters()
+        self.assertEquals("/var/www/html/", rsp.scp_document_root)
+
+        # contamination test
+        rsp.scp_document_root = "/opt/rs"
+        rsp2 = RsParameters(**rsp.__dict__)
+        self.assertEquals("/opt/rs/", rsp2.scp_document_root)
+
+        rsp.scp_document_root = "/var/www/html/ehri/rs"
+        rsp3 = RsParameters(**rsp.__dict__)
+        self.assertEquals("/var/www/html/ehri/rs/", rsp3.scp_document_root)
+
+        self.save_configuration_test(rsp)
+
+    def test_scp_document_path(self):
+        # defaults to configuration defaults
+        Configuration().core_clear()
+        rsp = RsParameters()
+        self.assertIsNone(rsp.scp_document_path)
+
+        # contamination test
+        rsp.scp_document_path = "rs/resources"
+        rsp2 = RsParameters(**rsp.__dict__)
+        self.assertEqual("rs/resources", rsp2.scp_document_path)
+
+        self.save_configuration_test(rsp)
+
+    def test_zip_filename(self):
+        # defaults to configuration defaults
+        Configuration().core_clear()
+        rsp = RsParameters()
+        self.assertEqual(os.path.join(os.path.expanduser("~"), "rspub.zip"), rsp.zip_filename)
+
+        rsp.zip_filename = "bar"
+        self.assertEqual("bar.zip", rsp.zip_filename)
+
+        rsp.zip_filename = "foo."
+        self.assertEqual("foo.zip", rsp.zip_filename)
+
+        rsp.zip_filename = "/"
+        self.assertEqual("/.zip", rsp.zip_filename)
+
+        # contamination test
+        rsp.zip_filename = "/foo/bar.zip"
+        rsp2 = RsParameters(**rsp.__dict__)
+        self.assertEqual("/foo/bar.zip", rsp2.zip_filename)
+
+        self.save_configuration_test(rsp)
+
+
     def save_configuration_test(self, rsp):
         Configuration.reset()
         rsp.save_configuration()

@@ -61,10 +61,12 @@ class RsParameters(object):
 
     """
     def __init__(self, config_name=None, resource_dir=config, metadata_dir=config, description_dir=config,
-                 url_prefix=config, document_root=config, strategy=config, selector_file=config,
+                 url_prefix=config, strategy=config, selector_file=config,
                  simple_select_file=config, select_mode=config, plugin_dir=config,
                  history_dir=config, max_items_in_list=config, zero_fill_filename=config, is_saving_pretty_xml=config,
-                 is_saving_sitemaps=config, has_wellknown_at_root=config, **kwargs):
+                 is_saving_sitemaps=config, has_wellknown_at_root=config,
+                 scp_server=config, scp_port=config, scp_user=config,
+                 scp_document_root=config, scp_document_path=config, zip_filename=config, **kwargs):
         """
         :samp:`Construct an instance of {RsParameters}`
 
@@ -80,7 +82,6 @@ class RsParameters(object):
         :param str metadata_dir: ``parameter`` :func:`metadata_dir`
         :param str description_dir: ``parameter`` :func:`description_dir`
         :param str url_prefix: ``parameter`` :func:`url_prefix`
-        :param str document_root: ``parameter`` :func:`document_root`
         :param Union[Strategy, int, str] strategy: ``parameter`` :func:`strategy`
         :param str selector_file: ``parameter`` :func:`selector_file`
         :param str simple_select_file: ``parameter`` :func:`simple_select_file`
@@ -92,6 +93,12 @@ class RsParameters(object):
         :param bool is_saving_pretty_xml: ``parameter`` :func:`is_saving_pretty_xml`
         :param bool is_saving_sitemaps: ``parameter`` :func:`is_saving_sitemaps`
         :param bool has_wellknown_at_root: ``parameter`` :func:`has_wellknown_at_root`
+        :param str scp_server: ``parameter`` :func:`scp_server`
+        :param int scp_port: ``parameter`` :func:`scp_port`
+        :param str scp_user: ``parameter`` :func:`scp_user`
+        :param str scp_document_root: ``parameter`` :func:`scp_document_root`
+        :param str scp_document_path: ``parameter`` :func:`scp_document_path`
+        :param str zip_filename: ``parameter`` :func:`zip_filename`
         :param kwargs: named arguments, same as parameters, but preceded by _
         :raises: :exc:`ValueError` if a parameter is not valid or if the configuration with the given `config_name` is not found
         """
@@ -100,7 +107,6 @@ class RsParameters(object):
             "metadata_dir": metadata_dir,
             "description_dir": description_dir,
             "url_prefix": url_prefix,
-            "document_root": document_root,
             "strategy": strategy,
             "selector_file": selector_file,
             "simple_select_file": simple_select_file,
@@ -111,7 +117,13 @@ class RsParameters(object):
             "zero_fill_filename": zero_fill_filename,
             "is_saving_pretty_xml": is_saving_pretty_xml,
             "is_saving_sitemaps": is_saving_sitemaps,
-            "has_wellknown_at_root": has_wellknown_at_root
+            "has_wellknown_at_root": has_wellknown_at_root,
+            "scp_server": scp_server,
+            "scp_port": scp_port,
+            "scp_user": scp_user,
+            "scp_document_root": scp_document_root,
+            "scp_document_path": scp_document_path,
+            "zip_filename": zip_filename
         })
         if config_name:
             cfg = Configurations.load_configuration(config_name)
@@ -133,10 +145,6 @@ class RsParameters(object):
         self._url_prefix = None
         _url_prefix_ = self.__arg__("_url_prefix", cfg.url_prefix(), **kwargs)
         self.url_prefix = _url_prefix_
-
-        self._document_root = None
-        _document_root_ = self.__arg__("_document_root", cfg.document_root(), **kwargs)
-        self.document_root = _document_root_
 
         self._strategy = None
         _strategy_ = self.__arg__("_strategy", cfg.strategy(), **kwargs)
@@ -174,7 +182,33 @@ class RsParameters(object):
         self._is_saving_sitemaps = self.__arg__("_is_saving_sitemaps", cfg.is_saving_sitemaps(), **kwargs)
         self._has_wellknown_at_root = self.__arg__("_has_wellknown_at_root", cfg.has_wellknown_at_root(), **kwargs)
 
+        self._scp_server = None
+        _scp_server_ = self.__arg__("_scp_server", cfg.scp_server(), **kwargs)
+        self.scp_server = _scp_server_
+
+        self._scp_port = None
+        _scp_port_ = self.__arg__("_scp_port", cfg.scp_port(), **kwargs)
+        self.scp_port = _scp_port_
+
+        self._scp_user = None
+        _scp_user_ = self.__arg__("_scp_user", cfg.scp_user(), **kwargs)
+        self.scp_user = _scp_user_
+
+        self._scp_document_root = None
+        _scp_document_root_ = self.__arg__("_scp_document_root", cfg.scp_document_root(), **kwargs)
+        self.scp_document_root = _scp_document_root_
+
+        self._scp_document_path = None
+        _scp_document_path_ = self.__arg__("_scp_document_path", cfg.scp_document_path(), **kwargs)
+        self.scp_document_path = _scp_document_path_
+
+        self._zip_filename = None
+        _zip_filename_ = self.__arg__("_zip_filename", cfg.zip_filename(), **kwargs)
+        self.zip_filename = _zip_filename_
+
         self.last_execution = self.__arg__("last_execution", cfg.last_excution(), **kwargs)
+        self.last_strategy = self.__arg__("last_strategy", cfg.last_strategy(), **kwargs)
+        self.last_sitemaps = self.__arg__("last_sitemaps", cfg.last_sitemaps(), **kwargs)
 
     @staticmethod
     def __arg__(name, default=None, **kwargs):
@@ -333,40 +367,6 @@ class RsParameters(object):
         if not value.endswith("/"):
             value += "/"
         self._url_prefix = value
-
-    @property
-    def document_root(self):
-        """
-        ``parameter`` :samp:`The directory from which the server will serve files` (str)
-
-        Example. Paths to resources are relative to the server host::
-
-            url_prefix:         http://www.example.com
-            url to resource:    http://www.example.com/path/to/resource
-            document_root:               /var/www/html/
-            path on server:              /var/www/html/path/to/resource
-
-        Example. Paths to resources are relative to some directory on the server::
-
-            url_prefix:         http://www.example.com/my/resources
-            url to resource:    http://www.example.com/my/resources/path/to/resource
-            document_root:               /var/www/html/my/resources
-            path on server:              /var/www/html/my/resources/path/to/resource
-
-        ``default:`` '/var/www/html/'
-        """
-        return self._document_root
-
-    @document_root.setter
-    def document_root(self, value):
-        if value.endswith("/"):
-            value = value[:-1]
-        if value == "":
-            raise ValueError("Invalid value for document_root: path should not be empty")
-        if not value.endswith("/"):
-            value += "/"
-        self._document_root = value
-
 
     @property
     def strategy(self):
@@ -561,6 +561,93 @@ class RsParameters(object):
     def has_wellknown_at_root(self, at_root):
         self._has_wellknown_at_root = at_root
 
+    @property
+    def scp_server(self):
+        return self._scp_server
+
+    @scp_server.setter
+    def scp_server(self, server):
+        if server is None or server == "":
+            raise ValueError("Invalid value for scp_server: server name should not be empty")
+        self._scp_server = server
+
+    @property
+    def scp_port(self):
+        return self._scp_port
+
+    @scp_port.setter
+    def scp_port(self, port):
+        self._assert_number(port, 1, 65535, "scp_port")
+        self._scp_port = port
+
+    @property
+    def scp_user(self):
+        return self._scp_user
+
+    @scp_user.setter
+    def scp_user(self, user):
+        if user is None or user == "":
+            raise ValueError("Invalid value for scp_user: name should not be empty")
+        self._scp_user = user
+
+    @property
+    def scp_document_root(self):
+        """
+        ``parameter`` :samp:`The directory from which the server will serve files` (str)
+
+        Example. Paths to resources are relative to the server host::
+
+            url_prefix:         http://www.example.com
+            url to resource:    http://www.example.com/path/to/resource
+            scp_document_root:           /var/www/html/
+            scp_document_path:
+            path on server:              /var/www/html/path/to/resource
+
+        Example. Paths to resources are relative to some directory on the server::
+
+            url_prefix:         http://www.example.com/my/resources
+            url to resource:    http://www.example.com/my/resources/path/to/resource
+            scp_document_root:           /var/www/html/
+            scp_document_path:                         my/resources
+            path on server:              /var/www/html/my/resources/path/to/resource
+
+        ``default:`` '/var/www/html/'
+        """
+        return self._scp_document_root
+
+    @scp_document_root.setter
+    def scp_document_root(self, value):
+        if value.endswith("/"):
+            value = value[:-1]
+        if value == "":
+            raise ValueError("Invalid value for scp_document_root: path should not be empty")
+        if not value.endswith("/"):
+            value += "/"
+        self._scp_document_root = value
+
+    @property
+    def scp_document_path(self):
+        return self._scp_document_path
+
+    @scp_document_path.setter
+    def scp_document_path(self, value):
+        self._scp_document_path = value
+
+    @property
+    def zip_filename(self):
+        return self._zip_filename
+
+    @zip_filename.setter
+    def zip_filename(self, value):
+        if value is None or value == "":
+            raise ValueError("Invalid value for zip_filename: filename should not be empty")
+        ext = os.path.splitext(value)[1]
+        if ext == "":
+            value += ".zip"
+        if ext == ".":
+            value += "zip"
+        self._zip_filename = value
+
     def save_configuration(self, on_disk=True):
         """
         ``function`` :samp:`Save current configuration`
@@ -578,7 +665,6 @@ class RsParameters(object):
         cfg.set_metadata_dir(self.metadata_dir)
         cfg.set_description_dir(self.description_dir)
         cfg.set_url_prefix(self.url_prefix)
-        cfg.set_document_root(self.document_root)
         cfg.set_strategy(self.strategy)
         cfg.set_selector_file(self.selector_file)
         cfg.set_simple_select_file(self.simple_select_file)
@@ -591,6 +677,16 @@ class RsParameters(object):
         cfg.set_is_saving_sitemaps(self.is_saving_sitemaps)
         cfg.set_has_wellknown_at_root(self.has_wellknown_at_root)
         cfg.set_last_execution(self.last_execution)
+        cfg.set_last_strategy(self.last_strategy)
+        cfg.set_last_sitemaps(self.last_sitemaps)
+        #
+        cfg.set_scp_server(self.scp_server)
+        cfg.set_scp_port(self.scp_port)
+        cfg.set_scp_user(self.scp_user)
+        cfg.set_scp_document_root(self.scp_document_root)
+        cfg.set_scp_document_path(self.scp_document_path)
+        #
+        cfg.set_zip_filename(self.zip_filename)
 
         if on_disk:
             cfg.persist()
@@ -749,7 +845,6 @@ class RsParameters(object):
             [True, "description_dir", self.description_dir],
             [False, "abs_description_path", self.abs_description_path()],
             [True, "url_prefix", self.url_prefix],
-            [True, "document_root", self.document_root],
             [True, "has_wellknown_at_root", self.has_wellknown_at_root],
             [False, "description_url", self.description_url()],
             [False, "capabilitylist_url", self.capabilitylist_url()],
@@ -763,7 +858,17 @@ class RsParameters(object):
             [False, "example_filename", self.example_filename(42)],
             [True, "is_saving_pretty_xml", self.is_saving_pretty_xml],
             [True, "is_saving_sitemaps", self.is_saving_sitemaps],
-            [False, "last_execution", self.last_execution]
+            #
+            [False, "last_execution", self.last_execution],
+            [False, "last_strategy", self.last_strategy],
+            [False, "last_sitemaps_count", len(self.last_sitemaps)]
+            #
+            #[True, "scp_server", self.scp_server],
+            #[True, "scp_port", self.scp_port],
+            #[True, "scp_user", self.scp_user],
+            #[True, "scp_document_root", self.scp_document_root],
+            #[True, "scp_document_path", self.scp_document_path],
+            #[True, "zip_filename", self.zip_filename]
         ]
         if as_string:
             f = "{:" + str(fill) + "s}"

@@ -70,7 +70,7 @@ class TestConfigurations(unittest.TestCase):
         self.assertEquals("test_load_2", cfg3.name())
         self.assertEquals("test_load_1", cfg4.name())
 
-    unittest.skip("visual test")
+    @unittest.skip("visual test")
     def test_rspub_config_dir(self):
         print(Configurations.rspub_config_dir())
 
@@ -166,6 +166,12 @@ class TestConfiguration(unittest.TestCase):
         cfg.set_is_saving_pretty_xml(False)
         self.assertEquals(False, cfg.is_saving_pretty_xml())
 
+        cfg.set_last_sitemaps([])
+        self.assertEquals([], cfg.last_sitemaps())
+
+        cfg.set_last_sitemaps(["foo/bar/bas.txt", "foo/bar/bord.txt", "foo/bar/barst.txt"])
+        self.assertEquals(["foo/bar/bas.txt", "foo/bar/bord.txt", "foo/bar/barst.txt"], cfg.last_sitemaps())
+
         cfg.persist()
         self.assertTrue(os.path.exists(cfg.config_file))
         #time.sleep(1)
@@ -174,7 +180,7 @@ class TestConfiguration(unittest.TestCase):
         cfg2 = Configuration()
         self.assertEquals(42, cfg2.max_items_in_list())
         self.assertEquals(False, cfg2.is_saving_pretty_xml())
-
+        self.assertEquals(["foo/bar/bas.txt", "foo/bar/bord.txt", "foo/bar/barst.txt"], cfg.last_sitemaps())
         #Configuration.reset()
 
 

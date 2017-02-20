@@ -236,6 +236,16 @@ class Configuration(object):
     def __set_boolean__(self, section, option, value):
         self.__set_option__(section, option, str(value))
 
+    def __get_list__(self, section, option, fallback=list()):
+        value = self.parser.get(section, option, fallback="\n".join(fallback))
+        if value == "":
+            return []
+        else:
+            return value.split("\n")
+
+    def __set_list__(self, section, option, value):
+        self.__set_option__(section, option, "\n".join(value))
+
     def core_items(self):
         return self.parser.items(SECTION_CORE)
 
@@ -297,12 +307,6 @@ class Configuration(object):
     def set_url_prefix(self, urlprefix):
         self.__set_option__(SECTION_CORE, "url_prefix", urlprefix)
 
-    def document_root(self, fallback="/var/www/html/"):
-        return self.parser.get(SECTION_CORE, "document_root", fallback=fallback)
-
-    def set_document_root(self, document_root):
-        self.__set_option__(SECTION_CORE, "document_root", document_root)
-
     def strategy(self, fallback=Strategy.resourcelist.name):
         return Strategy[self.parser.get(SECTION_CORE, "strategy", fallback=fallback)]
 
@@ -339,8 +343,65 @@ class Configuration(object):
     def set_has_wellknown_at_root(self, at_root):
         self.__set_boolean__(SECTION_CORE, "has_wellknown_at_root", at_root)
 
+    # execution results
     def last_excution(self):
         return self.parser.get(SECTION_CORE, "last_excution", fallback=None)
 
     def set_last_execution(self, date_string):
         self.__set_option__(SECTION_CORE, "last_excution", date_string)
+
+    def last_strategy(self):
+        value = self.parser.get(SECTION_CORE, "last_strategy", fallback="")
+        if value is None or value == "":
+            return None
+        return Strategy[value]
+
+    def set_last_strategy(self, strategy):
+        if strategy:
+            self.__set_option__(SECTION_CORE, "last_strategy", strategy.name)
+        else:
+            self.__set_option__(SECTION_CORE, "last_strategy", "")
+
+    def last_sitemaps(self, fallback=list()):
+        return self.__get_list__(SECTION_CORE, "last_sitemaps", fallback=fallback)
+
+    def set_last_sitemaps(self, sitemaplist):
+        self.__set_list__(SECTION_CORE, "last_sitemaps", sitemaplist)
+
+    # # scp parameters
+    def scp_server(self, fallback="example.com"):
+        return self.parser.get(SECTION_CORE, "scp_server", fallback=fallback)
+
+    def set_scp_server(self, scp_server):
+        self.__set_option__(SECTION_CORE, "scp_server", scp_server)
+
+    def scp_port(self, fallback=22):
+        return self.__get_int__(SECTION_CORE, "scp_port", fallback=fallback)
+
+    def set_scp_port(self, scp_port):
+        self.__set_int__(SECTION_CORE, "scp_port", scp_port)
+
+    def scp_user(self, fallback="username"):
+        return self.parser.get(SECTION_CORE, "scp_user", fallback=fallback)
+
+    def set_scp_user(self, scp_user):
+        self.__set_option__(SECTION_CORE, "scp_user", scp_user)
+
+    def scp_document_root(self, fallback="/var/www/html/"):
+        return self.parser.get(SECTION_CORE, "scp_document_root", fallback=fallback)
+
+    def set_scp_document_root(self, scp_document_root):
+        self.__set_option__(SECTION_CORE, "scp_document_root", scp_document_root)
+
+    def scp_document_path(self, fallback=None):
+        return self.parser.get(SECTION_CORE, "scp_document_path", fallback=fallback)
+
+    def set_scp_document_path(self, scp_document_path):
+        self.__set_option__(SECTION_CORE, "scp_document_path", scp_document_path)
+
+    # # zip parameters
+    def zip_filename(self, fallback=os.path.join(os.path.expanduser("~"), "rspub.zip")):
+        return self.parser.get(SECTION_CORE, "zip_filename", fallback=fallback)
+
+    def set_zip_filename(self, zip_filename):
+        return self.__set_option__(SECTION_CORE, "zip_filename", zip_filename)

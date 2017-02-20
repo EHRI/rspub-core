@@ -29,8 +29,8 @@ sys.path.insert(0, os.path.abspath('.'))
 sys.path.append("../")
 
 # test python version
-print(sys.version_info)
 if sys.version_info[0] < 3:
+    print(sys.version_info)
     raise RuntimeError("Your Python has version 2. This project is Python 3.x.")
 
 
