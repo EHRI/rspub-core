@@ -41,7 +41,7 @@ class Transport(Observable):
         return self.paras.last_execution is not None
 
     def handle_resources(self, function, all_resources=False, include_description=True):
-        with tempfile.TemporaryDirectory(prefix="rspub.core.transport") as tmpdirname:
+        with tempfile.TemporaryDirectory(prefix="rspub.core.transport_") as tmpdirname:
             LOG.info("Created temporary directory: %s" % tmpdirname)
             self.__copy_resources(tmpdirname, all_resources)
             self.__copy_metadata(tmpdirname)
@@ -132,14 +132,19 @@ class Transport(Observable):
 
     def __copy_description(self, tmpdirname):
         desc_file = self.paras.abs_description_path()
-        dest = os.path.join(tmpdirname, ".well-known", "resourcesync")
+        if not self.paras.has_wellknown_at_root:
+            # description goes in metadata_dir
+            dest = os.path.join(tmpdirname, self.paras.metadata_dir, ".well-known", "resourcesync")
+        else:
+            # description should go at server root. should be moved at server if not correct. keep 1 zip file.
+            dest = os.path.join(tmpdirname, ".well-known", "resourcesync")
         dirs = os.path.dirname(dest)
         os.makedirs(dirs, exist_ok=True)
         shutil.copy2(desc_file, dest)
 
     #############
-    def zip_resources(self, all_resources=False, include_description=True):
-        self.handle_resources(self.function_zip, all_resources, include_description)
+    def zip_resources(self, all_resources=False):
+        self.handle_resources(self.function_zip, all_resources, include_description=True)
 
     def function_zip(self, tmpdirname):
         zip_name = os.path.splitext(self.paras.zip_filename)[0]
@@ -151,9 +156,16 @@ class Transport(Observable):
     #############
     # Password may not be needed with key-based authentication. See fi:
     # https://www.digitalocean.com/community/tutorials/how-to-configure-ssh-key-based-authentication-on-a-linux-server
-    def scp_resources(self, all_resources=False, include_description=True, password="secret"):
+    def scp_resources(self, all_resources=False, password="secret"):
         self.create_ssh_client(password)
-        self.handle_resources(self.function_scp, all_resources, include_description)
+        self.handle_resources(self.function_scp, all_resources,
+                              include_description=not self.paras.has_wellknown_at_root)
+        if self.paras.has_wellknown_at_root:
+            files = self.paras.abs_description_path()
+            # .well-known directory can only be made by root. sudo chmod -R  a=rwx .well-known
+            remote_path = self.paras.scp_document_root + ".well-known"
+            self.scp_put(files, remote_path)
+
 
     def create_ssh_client(self, password):
         if self.sshClient is None:
@@ -173,73 +185,10 @@ class Transport(Observable):
     # mind that directories ending with a slash will transport the contents of the directory,
     # whereas directories not ending with a slash will transport the directory itself.
     def scp_put(self, files, remote_path):
+        print(files, remote_path)
         scp = SCPClient(self.sshClient.get_transport())
         preserve_times = True
         recursive = True  # Can be used both for sending a single file and a directory
         LOG.debug("Sending files: scp -P %d -r [files] %s@%s:%s" % (self.paras.scp_port, self.paras.scp_user,
                                                                     self.paras.scp_server, remote_path))
         scp.put(files=files, remote_path=remote_path, preserve_times=preserve_times, recursive=recursive)
-
-
-# class ScpTransport(Transport):
-#     # LOCAL
-#     # has_wellknown_at_root = True
-#     # description_dir   = /Users/user/another/path
-#     # resource_dir      = /Users/user/some/path/
-#     # url_prefix        = http://example.com/
-#     # metadata_dir      = md/metadata_01
-#     # abs md_dir        = /Users/user/some/path/md/metadata_01
-#     # resourcelist      = /Users/user/some/path/md/metadata_01/resourcelist_0001.xml
-#     # abs description   = /Users/user/another/path/.well-known/resourcesync
-#     # loc resource1     = /Users/user/some/path/resource1.txt
-#     # loc resource2     = /Users/user/some/path/folder1/collection2/resource2.txt
-#     #
-#     # REMOTE
-#     # description
-#     # description       = http://example.com/.well-known/resourcesync
-#     # # scp_put(os.path.dirname(self.paras.abs_description_path(), self.paras.scp_document_root)
-#     #
-#     # metadata
-#     # resourcelist      = http://example.com/md/metadata_01/resourcelist_0001.xml
-#     # firts_md_dir = (first directory of metadata_dir) = pathlib.Path("md/metadata_01").parts[0] = 'md'
-#     # # scp_put(os.path.join(self.paras.resourcedir, first_md_dir), self.paras.scp_document_root)
-#     #
-#     # resources
-#     # paras.last_sitemaps is a list of paths to sitemaps of last execution
-#     # compute relative path from (url - url_prefix)
-#     #
-#     # #
-#
-#
-#     def __init__(self, paras, password):
-#         Transport.__init__(self, paras)
-#         self.sshClient = self.create_ssh_client(password)
-#
-#     def create_ssh_client(self, password):
-#         LOG.debug("Creating ssh client: server=%s, port=%d, user=%s" %
-#                   (self.paras.scp_server, self.paras.scp_port, self.paras.scp_user))
-#         client = paramiko.SSHClient()
-#         client.load_system_host_keys()
-#         client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-#         client.connect(self.paras.scp_server,
-#                        self.paras.scp_port,
-#                        self.paras.scp_user, password)
-#         return client
-#
-    # # files can be a single file, a directory, a list of files and/or directories.
-    # # mind that directories ending with a slash will transport the contents of the directory,
-    # # whereas directories not ending with a slash will transport the directory itself.
-    # def scp_put(self, files, remote_path):
-    #     scp = SCPClient(self.sshClient.get_transport())
-    #     preserve_times = True
-    #     recursive = True # Can be used both for sending a single file and a directory
-    #     LOG.debug("Sending files: scp -P %d -r [files] %s@%s:%s" % (self.paras.scp_port, self.paras.scp_user,
-    #               self.paras.scp_server, remote_path))
-    #     scp.put(files=files, remote_path=remote_path, preserve_times=preserve_times, recursive=recursive)
-#
-#     def send_resources(self):
-#         generator = self.last_resources_generator()
-#         for path in generator():
-#             print(path)
-#             #self.scp_put(path, self.paras.scp_document_root)
-

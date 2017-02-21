@@ -440,7 +440,7 @@ class TestRsParameters(unittest.TestCase):
         # defaults to configuration defaults
         Configuration().core_clear()
         rsp = RsParameters()
-        self.assertEqual(os.path.join(os.path.expanduser("~"), "rspub.zip"), rsp.zip_filename)
+        self.assertEqual(os.path.join(os.path.expanduser("~"), "resourcesync.zip"), rsp.zip_filename)
 
         rsp.zip_filename = "bar"
         self.assertEqual("bar.zip", rsp.zip_filename)

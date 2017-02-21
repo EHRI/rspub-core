@@ -400,7 +400,7 @@ class Configuration(object):
         self.__set_option__(SECTION_CORE, "scp_document_path", scp_document_path)
 
     # # zip parameters
-    def zip_filename(self, fallback=os.path.join(os.path.expanduser("~"), "rspub.zip")):
+    def zip_filename(self, fallback=os.path.join(os.path.expanduser("~"), "resourcesync.zip")):
         return self.parser.get(SECTION_CORE, "zip_filename", fallback=fallback)
 
     def set_zip_filename(self, zip_filename):
