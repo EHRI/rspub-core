@@ -45,7 +45,6 @@ class ExecutorEvent(Enum):
     where ``source`` is the calling instance, ``event`` is the relevant event and ``**kwargs`` hold relevant
     information about the event.
 
-    .. note:: All events are numbered, although numbers may not show in generated documentation.
     """
     # # information events
     # common low-level events

@@ -122,7 +122,7 @@ class EventLogger(Observer):
                 if event.value >= self.event_level:
                     self.logger.log(self.logging_level, "%s, %s, %s" % (source, event.name, kwargs))
             except AttributeError:
-                self.logger.warn("unexpected args: " % args)
+                self.logger.warning("unexpected args: " % args)
         else:
             self.logger.log(self.logging_level, "%s, %s" % (args, kwargs))
 

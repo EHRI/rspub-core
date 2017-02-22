@@ -16,6 +16,8 @@ from rspub.core.transport import Transport
 #       server,port,user,password,document_root,document_path
 # password can be fake if key-based authentication is enabled.
 # see: https://www.digitalocean.com/community/tutorials/how-to-configure-ssh-key-based-authentication-on-a-linux-server
+from rspub.util.observe import EventLogger
+
 CFG_FILE = "src/sender_test_on_zandbak.cfg"
 
 
@@ -58,17 +60,21 @@ class TestTransport(unittest.TestCase):
         if os.path.exists(filename):
             os.remove(filename)
         trans = Transport(paras)
-        trans.zip_resources()
-        self.assertTrue(os.path.exists(filename))
+        trans.register(EventLogger(logging_level=logging.INFO))
+        trans.zip_resources(all_resources=False)
+        if trans.count_resources + trans.count_sitemaps > 0:
+            self.assertTrue(os.path.exists(filename))
 
     @unittest.skipUnless(precondition_remote_server_config(), precondition_remote_server_config(as_string=True))
     def test_scp_resources(self):
         paras, password = self.read_parameters()
         trans = Transport(paras)
+        trans.register(EventLogger(logging_level=logging.INFO))
         # if used with key-based authentication than 'password' is ignored
-        trans.scp_resources(password=password)
+        trans.scp_resources(password=password, all_resources=True)
 
-    @unittest.skipUnless(precondition_remote_server_config(), precondition_remote_server_config(as_string=True))
+    @unittest.skip
+    #@unittest.skipUnless(precondition_remote_server_config(), precondition_remote_server_config(as_string=True))
     def test_scp_put(self):
         paras, password = self.read_parameters()
         trans = Transport(paras)
