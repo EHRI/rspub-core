@@ -61,7 +61,7 @@ instance/
 .scrapy
 
 # Sphinx documentation
-docs/_build/
+docs/_build_old/
 
 # PyBuilder
 target/
@@ -93,4 +93,5 @@ ENV/
 
 # other files
 zee_notes.txt
+docs/_build/
 
