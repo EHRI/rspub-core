@@ -319,7 +319,7 @@ class Transport(Observable):
     def scp_put(self, files, remote_path):
         LOG.info("%s >>>> %s" % (files, remote_path))
         if self.sshClient is None:
-            raise RuntimeError("Missing ssh client: see create_ssh_client(password).")
+            raise RuntimeError("Missing ssh client: see Transport.create_ssh_client(password).")
         scp = SCPClient(self.sshClient.get_transport())
         preserve_times = True
         recursive = True  # Can be used both for sending a single file and a directory
