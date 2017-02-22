@@ -66,9 +66,13 @@ class TransportEvent(Enum):
     """
     ``21`` ``inform`` :samp:`Start transfer of files with scp`
     """
-    scp_exception = 22
+    ssh_client_creation = 22
     """
-    ``22`` ``inform`` :samp:`Encountered exception while transferring files with scp`
+    ``22`` ``inform`` :samp:`Trying to create ssh client`
+    """
+    scp_exception = 23
+    """
+    ``23`` ``inform`` :samp:`Encountered exception while transferring files with scp`
     """
     transport_start = 30
     """
@@ -288,6 +292,10 @@ class Transport(Observable):
         if self.sshClient is None:
             LOG.debug("Creating ssh client: server=%s, port=%d, user=%s" %
                       (self.paras.scp_server, self.paras.scp_port, self.paras.scp_user))
+            self.observers_inform(self, TransportEvent.ssh_client_creation,
+                                  server=self.paras.scp_server,
+                                  port=self.paras.scp_port,
+                                  user=self.paras.scp_user)
             self.sshClient = paramiko.SSHClient()
             self.sshClient.load_system_host_keys()
             self.sshClient.set_missing_host_key_policy(paramiko.AutoAddPolicy())
@@ -300,6 +308,11 @@ class Transport(Observable):
                 self.sshClient = None
             except socket.gaierror as err:
                 LOG.exception("Socket error")
+                self.count_errors += 1
+                self.observers_inform(self, TransportEvent.scp_exception, exception=str(err))
+                self.sshClient = None
+            except TimeoutError as err:
+                LOG.exception("Timeout")
                 self.count_errors += 1
                 self.observers_inform(self, TransportEvent.scp_exception, exception=str(err))
                 self.sshClient = None

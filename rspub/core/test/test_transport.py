@@ -71,7 +71,7 @@ class TestTransport(unittest.TestCase):
         trans = Transport(paras)
         trans.register(EventLogger(logging_level=logging.INFO))
         # if used with key-based authentication than 'password' is ignored
-        trans.scp_resources(password=password, all_resources=True)
+        trans.scp_resources(password=password, all_resources=False)
 
     @unittest.skip
     #@unittest.skipUnless(precondition_remote_server_config(), precondition_remote_server_config(as_string=True))
