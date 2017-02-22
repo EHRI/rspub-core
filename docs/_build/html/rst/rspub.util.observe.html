@@ -1,0 +1,380 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Observable and observers &mdash; rspub-core 1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="rspub-core 1 documentation" href="../index.html"/>
+        <link rel="up" title="rspub.util" href="rspub.util.html"/>
+        <link rel="next" title="Logical functions and gate builders" href="rspub.util.gates.html"/>
+        <link rel="prev" title="rspub.util" href="rspub.util.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> rspub-core
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="rspub.cli.html">rspub.cli</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rspub.core.html">rspub.core</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rspub.pluggable.html">rspub.pluggable</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="rspub.util.html">rspub.util</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Observable and observers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rspub.util.gates.html">Logical functions and gate builders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rspub.util.resourcefilter.html">Resource filters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rspub.util.plugg.html">Light plugin framework</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rspub.util.defaults.html">Defaults</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../index.html">rspub-core</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="rspub.util.html">rspub.util</a> &raquo;</li>
+      
+    <li>Observable and observers</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/rst/rspub.util.observe.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="observable-and-observers">
+<h1>Observable and observers<a class="headerlink" href="#observable-and-observers" title="Permalink to this headline">¶</a></h1>
+<p class="rubric">module: rspub.util.observe</p>
+<span class="target" id="module-rspub.util.observe"></span><dl class="exception">
+<dt id="rspub.util.observe.ObserverInterruptException">
+<em class="property">exception </em><code class="descclassname">rspub.util.observe.</code><code class="descname">ObserverInterruptException</code><a class="reference internal" href="../_modules/rspub/util/observe.html#ObserverInterruptException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.util.observe.ObserverInterruptException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">RuntimeError</span></code></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="rspub.util.observe.Observable">
+<em class="property">class </em><code class="descclassname">rspub.util.observe.</code><code class="descname">Observable</code><a class="reference internal" href="../_modules/rspub/util/observe.html#Observable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.util.observe.Observable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="rspub.util.observe.Observable.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/util/observe.html#Observable.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.util.observe.Observable.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.util.observe.Observable.register">
+<code class="descname">register</code><span class="sig-paren">(</span><em>*observers</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/util/observe.html#Observable.register"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.util.observe.Observable.register" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.util.observe.Observable.unregister">
+<code class="descname">unregister</code><span class="sig-paren">(</span><em>observer</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/util/observe.html#Observable.unregister"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.util.observe.Observable.unregister" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.util.observe.Observable.unregister_all">
+<code class="descname">unregister_all</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/util/observe.html#Observable.unregister_all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.util.observe.Observable.unregister_all" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.util.observe.Observable.observers_inform">
+<code class="descname">observers_inform</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/util/observe.html#Observable.observers_inform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.util.observe.Observable.observers_inform" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.util.observe.Observable.observers_confirm">
+<code class="descname">observers_confirm</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/util/observe.html#Observable.observers_confirm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.util.observe.Observable.observers_confirm" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="rspub.util.observe.Observer">
+<em class="property">class </em><code class="descclassname">rspub.util.observe.</code><code class="descname">Observer</code><a class="reference internal" href="../_modules/rspub/util/observe.html#Observer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.util.observe.Observer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<dl class="method">
+<dt id="rspub.util.observe.Observer.inform">
+<code class="descname">inform</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/util/observe.html#Observer.inform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.util.observe.Observer.inform" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.util.observe.Observer.confirm">
+<code class="descname">confirm</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/util/observe.html#Observer.confirm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.util.observe.Observer.confirm" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="rspub.util.observe.EventObserver">
+<em class="property">class </em><code class="descclassname">rspub.util.observe.</code><code class="descname">EventObserver</code><a class="reference internal" href="../_modules/rspub/util/observe.html#EventObserver"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.util.observe.EventObserver" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#rspub.util.observe.Observer" title="rspub.util.observe.Observer"><code class="xref py py-class docutils literal"><span class="pre">rspub.util.observe.Observer</span></code></a></p>
+<dl class="method">
+<dt id="rspub.util.observe.EventObserver.inform">
+<code class="descname">inform</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/util/observe.html#EventObserver.inform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.util.observe.EventObserver.inform" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.util.observe.EventObserver.pass_inform">
+<code class="descname">pass_inform</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/util/observe.html#EventObserver.pass_inform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.util.observe.EventObserver.pass_inform" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.util.observe.EventObserver.confirm">
+<code class="descname">confirm</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/util/observe.html#EventObserver.confirm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.util.observe.EventObserver.confirm" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.util.observe.EventObserver.pass_confirm">
+<code class="descname">pass_confirm</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/util/observe.html#EventObserver.pass_confirm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.util.observe.EventObserver.pass_confirm" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="rspub.util.observe.EventPrinter">
+<em class="property">class </em><code class="descclassname">rspub.util.observe.</code><code class="descname">EventPrinter</code><span class="sig-paren">(</span><em>event_level=0</em>, <em>print_kwargs=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/util/observe.html#EventPrinter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.util.observe.EventPrinter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#rspub.util.observe.Observer" title="rspub.util.observe.Observer"><code class="xref py py-class docutils literal"><span class="pre">rspub.util.observe.Observer</span></code></a></p>
+<dl class="method">
+<dt id="rspub.util.observe.EventPrinter.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>event_level=0</em>, <em>print_kwargs=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/util/observe.html#EventPrinter.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.util.observe.EventPrinter.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.util.observe.EventPrinter.inform">
+<code class="descname">inform</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/util/observe.html#EventPrinter.inform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.util.observe.EventPrinter.inform" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.util.observe.EventPrinter.confirm">
+<code class="descname">confirm</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/util/observe.html#EventPrinter.confirm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.util.observe.EventPrinter.confirm" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="rspub.util.observe.EventLogger">
+<em class="property">class </em><code class="descclassname">rspub.util.observe.</code><code class="descname">EventLogger</code><span class="sig-paren">(</span><em>logging_level=10</em>, <em>event_level=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/util/observe.html#EventLogger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.util.observe.EventLogger" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#rspub.util.observe.Observer" title="rspub.util.observe.Observer"><code class="xref py py-class docutils literal"><span class="pre">rspub.util.observe.Observer</span></code></a></p>
+<dl class="method">
+<dt id="rspub.util.observe.EventLogger.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>logging_level=10</em>, <em>event_level=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/util/observe.html#EventLogger.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.util.observe.EventLogger.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.util.observe.EventLogger.inform">
+<code class="descname">inform</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/util/observe.html#EventLogger.inform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.util.observe.EventLogger.inform" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.util.observe.EventLogger.confirm">
+<code class="descname">confirm</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/util/observe.html#EventLogger.confirm"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.util.observe.EventLogger.confirm" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="rspub.util.observe.SelectiveEventPrinter">
+<em class="property">class </em><code class="descclassname">rspub.util.observe.</code><code class="descname">SelectiveEventPrinter</code><span class="sig-paren">(</span><em>*events</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/util/observe.html#SelectiveEventPrinter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.util.observe.SelectiveEventPrinter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#rspub.util.observe.Observer" title="rspub.util.observe.Observer"><code class="xref py py-class docutils literal"><span class="pre">rspub.util.observe.Observer</span></code></a></p>
+<dl class="method">
+<dt id="rspub.util.observe.SelectiveEventPrinter.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>*events</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/util/observe.html#SelectiveEventPrinter.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.util.observe.SelectiveEventPrinter.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.util.observe.SelectiveEventPrinter.inform">
+<code class="descname">inform</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/util/observe.html#SelectiveEventPrinter.inform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.util.observe.SelectiveEventPrinter.inform" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="rspub.util.observe.SelectiveEventLogger">
+<em class="property">class </em><code class="descclassname">rspub.util.observe.</code><code class="descname">SelectiveEventLogger</code><span class="sig-paren">(</span><em>*events</em>, <em>*</em>, <em>level=10</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/util/observe.html#SelectiveEventLogger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.util.observe.SelectiveEventLogger" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#rspub.util.observe.Observer" title="rspub.util.observe.Observer"><code class="xref py py-class docutils literal"><span class="pre">rspub.util.observe.Observer</span></code></a></p>
+<dl class="method">
+<dt id="rspub.util.observe.SelectiveEventLogger.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>*events</em>, <em>*</em>, <em>level=10</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/util/observe.html#SelectiveEventLogger.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.util.observe.SelectiveEventLogger.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.util.observe.SelectiveEventLogger.inform">
+<code class="descname">inform</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/util/observe.html#SelectiveEventLogger.inform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.util.observe.SelectiveEventLogger.inform" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="rspub.util.gates.html" class="btn btn-neutral float-right" title="Logical functions and gate builders" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="rspub.util.html" class="btn btn-neutral" title="rspub.util" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, DANS-KNAW.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+  
+     
+    <li><a href="https://github.com/EHRI/rspub-core">rspub-core at GitHub</a></li>
+
+
+</body>
+</html>

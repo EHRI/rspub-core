@@ -63,6 +63,22 @@ class TestTransport(unittest.TestCase):
 
     @unittest.skipUnless(precondition_remote_server_config(), precondition_remote_server_config(as_string=True))
     def test_scp_resources(self):
+        paras, password = self.read_parameters()
+        trans = Transport(paras)
+        # if used with key-based authentication than 'password' is ignored
+        trans.scp_resources(password=password)
+
+    @unittest.skipUnless(precondition_remote_server_config(), precondition_remote_server_config(as_string=True))
+    def test_scp_put(self):
+        paras, password = self.read_parameters()
+        trans = Transport(paras)
+        trans.create_ssh_client(password)
+
+        files = ["test_transport.py", "test_strategy.py"]
+        remote_path = "~"
+        trans.scp_put(files, remote_path)
+
+    def read_parameters(self):
         paras = RsParameters(config_name="DEFAULT")
         # configuration:
         cfg_file = os.path.join(os.path.expanduser("~"), CFG_FILE)
@@ -75,8 +91,8 @@ class TestTransport(unittest.TestCase):
         password = spup[3]
         paras.scp_document_root = spup[4]
         paras.scp_document_path = spup[5].strip()
+        return paras, password
 
-        trans = Transport(paras)
-        # if used with key-based authentication than 'password' is ignored
-        trans.scp_resources(password=password)
+
+
 

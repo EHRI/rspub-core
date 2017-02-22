@@ -1,0 +1,430 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>rspub.core.rs &mdash; rspub-core 1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../../genindex.html"/>
+        <link rel="search" title="Search" href="../../../search.html"/>
+    <link rel="top" title="rspub-core 1 documentation" href="../../../index.html"/>
+        <link rel="up" title="Module code" href="../../index.html"/> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> rspub-core
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../rst/rspub.cli.html">rspub.cli</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../rst/rspub.core.html">rspub.core</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../rst/rspub.pluggable.html">rspub.pluggable</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../rst/rspub.util.html">rspub.util</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../../index.html">rspub-core</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+      
+    <li>rspub.core.rs</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for rspub.core.rs</h1><div class="highlight"><pre>
+<span></span><span class="ch">#! /usr/bin/env python3</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">:samp:`Publish resources under the ResourceSync Framework`</span>
+
+<span class="sd">The class :class:`ResourceSync` is the main entrance to the rspub-core library. It is in essence a one-method</span>
+<span class="sd">class, its main method: :func:`~ResourceSync.execute`. This method takes as argument ``filenames``:</span>
+<span class="sd">an iterable of files and/or directories to process. (List and i.e. :class:`~rspub.core.selector.Selector` are iterables.)</span>
+<span class="sd">Upon execution :class:`ResourceSync` will call the correct :class:`~rspub.core.executors.Executor` that</span>
+<span class="sd">will walk all the files and directories named in ``filenames`` and that takes care of creating the right type</span>
+<span class="sd">of sitemap: resourcelist, changelist etc. and complete the corresponding</span>
+<span class="sd">sitemaps as capabilitylist and description.</span>
+
+<span class="sd">Before you call :func:`~ResourceSync.execute` on :class:`ResourceSync` it may be advisable to set the proper</span>
+<span class="sd">parameters for your synchronization. :class:`ResourceSync` is a subclass of :class:`~rspub.core.rs_paras.RsParameters`</span>
+<span class="sd">and the description of ``parameters`` in that class is a good starting point to learn about the type, meaning and</span>
+<span class="sd">function of these parameters. Here we will highlight some and discuss aspects of these parameters.</span>
+
+<span class="sd">Selecting resources</span>
+<span class="sd">-------------------</span>
+
+<span class="sd">The algorithm for selecting resources can be shaped by you, the user of this library. If the default algorithm</span>
+<span class="sd">suites you - so much for the better - then you don&#39;t have to do anything and you can safely skip this paragraph.</span>
+
+<span class="sd">The default algorithm is implemented</span>
+<span class="sd">by the :class:`~rspub.util.gates.GateBuilder` class :class:`~rspub.pluggable.gate.ResourceGateBuilder`. This</span>
+<span class="sd">default class builds a :func:`~rspub.util.gates.gate` that allows any file that is encountered in the list</span>
+<span class="sd">of files and directories of the ``filenames`` argument. It will exclude however any file that</span>
+<span class="sd">is not in :func:`~rspub.core.rs_paras.RsParameters.resource_dir` or any of its subdirectories, hidden files and</span>
+<span class="sd">files from the directories :func:`~rspub.core.rs_paras.RsParameters.metadata_dir`,</span>
+<span class="sd">:func:`~rspub.core.rs_paras.RsParameters.description_dir` and :func:`~rspub.core.rs_paras.RsParameters.plugin_dir`</span>
+<span class="sd">in case any of these directories are situated on the search-paths described in ``filenames``.</span>
+
+<span class="sd">You can implement your own resource :func:`~rspub.util.gates.gate` by supplying a class named</span>
+<span class="sd">`ResourceGateBuilder` in a directory you specify under the</span>
+<span class="sd">:func:`~rspub.core.rs_paras.RsParameters.plugin_dir` ``parameter``. Your `ResourceGateBuilder` should subclass</span>
+<span class="sd">:class:`~rspub.pluggable.gate.ResourceGateBuilder` or at least implement the methods</span>
+<span class="sd">:func:`~rspub.util.gates.GateBuilder.build_includes` and :func:`~rspub.util.gates.GateBuilder.build_excludes`.</span>
+<span class="sd">A detailed description of how to create your own `ResourceGateBuilder` can be found in</span>
+<span class="sd">:doc:`rspub.pluggable.gate &lt;rspub.pluggable.gate&gt;`.</span>
+
+<span class="sd">By shaping your own selection algorithm you could for instance say &quot;include all the files from directory `x` but</span>
+<span class="sd">exclude the subdirectory `y` and from directory `z` choose only those files whose filenames start with &#39;abc&#39; and</span>
+<span class="sd">from directory `z/b` choose only xml-files where the x-path expression `//such/and/so` yields &#39;foo&#39; or &#39;bar&#39;.&quot;</span>
+<span class="sd">Anything goes, as long as you can express it as a predicate, that is, say &#39;yes&#39; or &#39;no&#39; to a resource, given</span>
+<span class="sd">the filename of the resource.</span>
+
+
+<span class="sd">.. seealso:: :doc:`rspub.util.gates &lt;rspub.util.gates&gt;`, :doc:`rspub.pluggable.gate &lt;rspub.pluggable.gate&gt;`</span>
+
+<span class="sd">Strategies and executors</span>
+<span class="sd">------------------------</span>
+
+<span class="sd">The :class:`~rspub.core.rs_enum.Strategy` tells :class:`ResourceSync` in what way you want your resources processed.</span>
+<span class="sd">Or better: :class:`ResourceSync` will choose the :class:`~rspub.core.executors.Executor` that fits your chosen strategy.</span>
+<span class="sd">Do you want new resourcelists every time you call :func:`ResourceSync.execute`, do you want</span>
+<span class="sd">new changelists or perhaps an incremental changelist. There are slots for other strategies in rspub-core,</span>
+<span class="sd">such as resourcedump and changedump, but these strategies are not yet implemented.</span>
+
+<span class="sd">If new changelist or incremental changelist is your strategy and there is no resourcelist.xml yet in your</span>
+<span class="sd">:func:`~rspub.core.rs_paras.RsParameters.metadata_dir` then :class:`ResourceSync` will create a resourcelist.xml</span>
+<span class="sd">the first time you call :func:`~ResourceSync.execute`.</span>
+
+<span class="sd">The :class:`~rspub.core.rs_enum.Strategy` ``resourcelist`` does not require much system resources. Resources will</span>
+<span class="sd">be processed one after the other and sitemap documents are written to disk once they are processed and</span>
+<span class="sd">these sitemaps will at most take 50000 records. The strategies ``new_changelist`` and ``inc_changelist`` will</span>
+<span class="sd">compare previous and present state of all your selected resources. In order to do so they collect metadata from</span>
+<span class="sd">all the present resources in your selection and compare it to the previous state as recorded in resourcelists</span>
+<span class="sd">and subsequent changelists.</span>
+<span class="sd">This will be perfectly OK in most situations, however if the number of resources is very large this</span>
+<span class="sd">comparison might be undoable. Anyway, large amounts of resources will probably be managed by some kind of</span>
+<span class="sd">repository system that enables to query for the requested data. It is perfectly alright to write your own</span>
+<span class="sd">:class:`~rspub.core.executors.Executor` that handles the synchronisation of resources in your repository system</span>
+<span class="sd">and you are invited to share these executors. A suitable plugin mechanism to accommodate such extraterrestrial</span>
+<span class="sd">executors could be accomplished in a next version of rspub-core.</span>
+
+<span class="sd">.. seealso:: :func:`rspub.core.rs_paras.RsParameters.strategy`, :class:`rspub.core.rs_enum.Strategy`, :doc:`rspub.core.executors &lt;rspub.core.executors&gt;`</span>
+
+<span class="sd">Multiple collections</span>
+<span class="sd">--------------------</span>
+
+<span class="sd">:class:`ResourceSync` is a subclass of :class:`~rspub.core.rs_paras.RsParameters` and so the parameters set on</span>
+<span class="sd">:class:`ResourceSync` can be saved and reinstituted later on. :class:`~rspub.core.config.Configurations` has</span>
+<span class="sd">methods for listing and removing previously saved configurations. Multiple collections of resources</span>
+<span class="sd">could be synchronized, each collection with its own configuration. Synchronizing the collection &#39;spam&#39; could</span>
+<span class="sd">go along these lines::</span>
+
+<span class="sd">    # get a list of previously saved configurations</span>
+<span class="sd">    [print(x) for x in Configurations.list_configurations()]</span>
+<span class="sd">    # rspub_core</span>
+<span class="sd">    # spam_config</span>
+<span class="sd">    # eggs_config</span>
+
+<span class="sd">    # prepare for synchronization of collection &#39;all about spam&#39;</span>
+<span class="sd">    resourcesync = ResourceSync(config_name=&quot;spam_config&quot;)</span>
+<span class="sd">    # spam resources are in two directories</span>
+<span class="sd">    filenames = [&quot;resources/green_spam&quot;, &quot;resources/blue_spam&quot;]</span>
+<span class="sd">    # do the synchronization</span>
+<span class="sd">    resourcesync.execute(filenames)</span>
+
+
+<span class="sd">.. seealso:: :class:`rspub.core.rs_paras.RsParameters`, :class:`rspub.core.config.Configurations`, :func:`~rspub.core.rs_paras.RsParameters.save_configuration_as`</span>
+
+<span class="sd">Observe execution</span>
+<span class="sd">-----------------</span>
+
+<span class="sd">:class:`ResourceSync` is a subclass of :class:`~rspub.util.observe.Observable`. The executor to which the execution</span>
+<span class="sd">is delegated inherits all observers registered with :class:`ResourceSync`. :class:`ResourceSync` it self does not</span>
+<span class="sd">fire events.</span>
+
+<span class="sd">.. seealso::  :doc:`rspub.util.observe &lt;rspub.util.observe&gt;`, :class:`rspub.core.executors.ExecutorEvent`</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">glob</span> <span class="k">import</span> <span class="n">glob</span>
+
+<span class="kn">from</span> <span class="nn">rspub.core.exe_changelist</span> <span class="k">import</span> <span class="n">NewChangeListExecutor</span><span class="p">,</span> <span class="n">IncrementalChangeListExecutor</span>
+<span class="kn">from</span> <span class="nn">rspub.core.exe_resourcelist</span> <span class="k">import</span> <span class="n">ResourceListExecutor</span>
+<span class="kn">from</span> <span class="nn">rspub.core.rs_enum</span> <span class="k">import</span> <span class="n">Strategy</span>
+<span class="kn">from</span> <span class="nn">rspub.core.rs_paras</span> <span class="k">import</span> <span class="n">RsParameters</span>
+<span class="kn">from</span> <span class="nn">rspub.core.selector</span> <span class="k">import</span> <span class="n">Selector</span>
+<span class="kn">from</span> <span class="nn">rspub.util</span> <span class="k">import</span> <span class="n">defaults</span>
+<span class="kn">from</span> <span class="nn">rspub.util.observe</span> <span class="k">import</span> <span class="n">Observable</span><span class="p">,</span> <span class="n">EventObserver</span>
+
+<span class="n">LOG</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="ResourceSync"><a class="viewcode-back" href="../../../rst/rspub.core.rs.html#rspub.core.rs.ResourceSync">[docs]</a><span class="k">class</span> <span class="nc">ResourceSync</span><span class="p">(</span><span class="n">Observable</span><span class="p">,</span> <span class="n">RsParameters</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :samp:`Main class for ResourceSync publishing`</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ResourceSync.__init__"><a class="viewcode-back" href="../../../rst/rspub.core.rs.html#rspub.core.rs.ResourceSync.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :samp:`Initialization`</span>
+
+<span class="sd">        :param str config_name: the name of the configuration to read. If given, sets the current configuration.</span>
+<span class="sd">        :param kwargs: see :func:`rspub.core.rs_paras.RsParameters.__init__`</span>
+
+<span class="sd">        .. seealso::  :doc:`rspub.core.rs_paras &lt;rspub.core.rs_paras&gt;`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">Observable</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">RsParameters</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ResourceSync.execute"><a class="viewcode-back" href="../../../rst/rspub.core.rs.html#rspub.core.rs.ResourceSync.execute">[docs]</a>    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filenames</span><span class="p">:</span> <span class="nb">iter</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">start_new</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :samp:`Publish ResourceSync documents under conditions of current {parameters}`</span>
+
+<span class="sd">        Call appropriate executor and publish sitemap documents on the resources found in `filenames`.</span>
+
+<span class="sd">        If no file/files &#39;resourcelist_*.xml&#39; are found in metadata directory will always dispatch to</span>
+<span class="sd">        strategy (new) ``resourcelist``.</span>
+
+<span class="sd">        If ``parameter`` :func:`~rspub.core.rs_paras.RsParameters.is_saving_sitemaps` is ``False`` will do</span>
+<span class="sd">        a dry run: no existing sitemaps will be changed and no new sitemaps will be written to disk.</span>
+
+<span class="sd">        :param filenames: filenames and/or directories to scan</span>
+<span class="sd">        :param start_new: erase metadata directory and create new resourcelists</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># always start fresh publication with resourcelist</span>
+        <span class="n">resourcelist_files</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">glob</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">abs_metadata_path</span><span class="p">(</span><span class="s2">&quot;resourcelist_*.xml&quot;</span><span class="p">)))</span>
+        <span class="n">start_new</span> <span class="o">=</span> <span class="n">start_new</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">resourcelist_files</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span>
+
+        <span class="c1"># do we have filenames or look for a saved Selector?</span>
+        <span class="k">if</span> <span class="n">filenames</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">selector_file</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">filenames</span> <span class="o">=</span> <span class="n">Selector</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">selector_file</span><span class="p">)</span>
+                <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Loaded selector from &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">selector_file</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+                <span class="n">LOG</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Unable to load selector: </span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">err</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">filenames</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Unable to execute: no filenames.&quot;</span><span class="p">)</span>
+
+        <span class="n">paras</span> <span class="o">=</span> <span class="n">RsParameters</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">__dict__</span><span class="p">)</span>
+        <span class="n">executor</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">strategy</span> <span class="o">==</span> <span class="n">Strategy</span><span class="o">.</span><span class="n">resourcelist</span> <span class="ow">or</span> <span class="n">start_new</span><span class="p">:</span>
+            <span class="n">executor</span> <span class="o">=</span> <span class="n">ResourceListExecutor</span><span class="p">(</span><span class="n">paras</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">strategy</span> <span class="o">==</span> <span class="n">Strategy</span><span class="o">.</span><span class="n">new_changelist</span><span class="p">:</span>
+            <span class="n">executor</span> <span class="o">=</span> <span class="n">NewChangeListExecutor</span><span class="p">(</span><span class="n">paras</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">strategy</span> <span class="o">==</span> <span class="n">Strategy</span><span class="o">.</span><span class="n">inc_changelist</span><span class="p">:</span>
+            <span class="n">executor</span> <span class="o">=</span> <span class="n">IncrementalChangeListExecutor</span><span class="p">(</span><span class="n">paras</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">executor</span><span class="p">:</span>
+            <span class="n">executor</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">observers</span><span class="p">)</span>
+            <span class="n">sitemap_data_iter</span> <span class="o">=</span> <span class="n">executor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">filenames</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Strategy not implemented: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">strategy</span><span class="p">)</span>
+
+        <span class="c1"># associate current parameters with a selector</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">filenames</span><span class="p">,</span> <span class="n">Selector</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">filenames</span><span class="o">.</span><span class="n">location</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">filenames</span><span class="o">.</span><span class="n">write</span><span class="p">()</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">selector_file</span> <span class="o">=</span> <span class="n">filenames</span><span class="o">.</span><span class="n">abs_location</span><span class="p">()</span>
+                    <span class="n">LOG</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Associated parameters &#39;</span><span class="si">%s</span><span class="s2">&#39; with selector at &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span>
+                             <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">configuration_name</span><span class="p">(),</span> <span class="bp">self</span><span class="o">.</span><span class="n">selector_file</span><span class="p">))</span>
+                <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+                    <span class="n">LOG</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Unable to save selector: </span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">err</span><span class="p">))</span>
+
+        <span class="c1"># set a timestamp, save paths to newly created sitemaps</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_saving_sitemaps</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">last_execution</span> <span class="o">=</span> <span class="n">executor</span><span class="o">.</span><span class="n">date_start_processing</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">last_strategy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">strategy</span>
+            <span class="n">sitemaps</span> <span class="o">=</span> <span class="p">[</span><span class="n">sitemap</span><span class="o">.</span><span class="n">path</span> <span class="k">for</span> <span class="n">sitemap</span> <span class="ow">in</span> <span class="n">sitemap_data_iter</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">last_sitemaps</span> <span class="o">=</span> <span class="n">sitemaps</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">save_configuration</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="ExecutionHistory"><a class="viewcode-back" href="../../../rst/rspub.core.rs.html#rspub.core.rs.ExecutionHistory">[docs]</a><span class="k">class</span> <span class="nc">ExecutionHistory</span><span class="p">(</span><span class="n">EventObserver</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :samp:`Execution report creator`</span>
+
+<span class="sd">    Currently not in use.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="ExecutionHistory.__init__"><a class="viewcode-back" href="../../../rst/rspub.core.rs.html#rspub.core.rs.ExecutionHistory.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">history_dir</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">history_dir</span> <span class="o">=</span> <span class="n">history_dir</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">history_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">history_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">history_dir</span><span class="p">,</span> <span class="s2">&quot;his.txt&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ExecutionHistory.pass_inform"><a class="viewcode-back" href="../../../rst/rspub.core.rs.html#rspub.core.rs.ExecutionHistory.pass_inform">[docs]</a>    <span class="k">def</span> <span class="nf">pass_inform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="c1">#print(args)</span>
+        <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="ExecutionHistory.inform_execution_start"><a class="viewcode-back" href="../../../rst/rspub.core.rs.html#rspub.core.rs.ExecutionHistory.inform_execution_start">[docs]</a>    <span class="k">def</span> <span class="nf">inform_execution_start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, DANS-KNAW.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+  
+     
+    <li><a href="https://github.com/EHRI/rspub-core">rspub-core at GitHub</a></li>
+
+
+</body>
+</html>

@@ -1,0 +1,411 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>ResourceSync &mdash; rspub-core 1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="rspub-core 1 documentation" href="../index.html"/>
+        <link rel="up" title="rspub.core" href="rspub.core.html"/>
+        <link rel="next" title="Executors" href="rspub.core.executors.html"/>
+        <link rel="prev" title="Selector" href="rspub.core.selector.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> rspub-core
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="rspub.cli.html">rspub.cli</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="rspub.core.html">rspub.core</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="rspub.core.config.html">Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rspub.core.rs_paras.html">Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rspub.core.selector.html">Selector</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">ResourceSync</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#selecting-resources">Selecting resources</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#strategies-and-executors">Strategies and executors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#multiple-collections">Multiple collections</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#observe-execution">Observe execution</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="rspub.core.executors.html">Executors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rspub.core.exe_resourcelist.html">Create resourcelists</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rspub.core.exe_changelist.html">Create changelists</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rspub.core.transport.html">Transport</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rspub.core.rs_enum.html">Enumerations</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="rspub.pluggable.html">rspub.pluggable</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rspub.util.html">rspub.util</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../index.html">rspub-core</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="rspub.core.html">rspub.core</a> &raquo;</li>
+      
+    <li>ResourceSync</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/rst/rspub.core.rs.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="resourcesync">
+<h1>ResourceSync<a class="headerlink" href="#resourcesync" title="Permalink to this headline">¶</a></h1>
+<p class="rubric">module: rspub.core.rs</p>
+<span class="target" id="module-rspub.core.rs"></span><p><code class="samp docutils literal"><span class="pre">Publish</span> <span class="pre">resources</span> <span class="pre">under</span> <span class="pre">the</span> <span class="pre">ResourceSync</span> <span class="pre">Framework</span></code></p>
+<p>The class <a class="reference internal" href="#rspub.core.rs.ResourceSync" title="rspub.core.rs.ResourceSync"><code class="xref py py-class docutils literal"><span class="pre">ResourceSync</span></code></a> is the main entrance to the rspub-core library. It is in essence a one-method
+class, its main method: <a class="reference internal" href="#rspub.core.rs.ResourceSync.execute" title="rspub.core.rs.ResourceSync.execute"><code class="xref py py-func docutils literal"><span class="pre">execute()</span></code></a>. This method takes as argument <code class="docutils literal"><span class="pre">filenames</span></code>:
+an iterable of files and/or directories to process. (List and i.e. <a class="reference internal" href="rspub.core.selector.html#rspub.core.selector.Selector" title="rspub.core.selector.Selector"><code class="xref py py-class docutils literal"><span class="pre">Selector</span></code></a> are iterables.)
+Upon execution <a class="reference internal" href="#rspub.core.rs.ResourceSync" title="rspub.core.rs.ResourceSync"><code class="xref py py-class docutils literal"><span class="pre">ResourceSync</span></code></a> will call the correct <a class="reference internal" href="rspub.core.executors.html#rspub.core.executors.Executor" title="rspub.core.executors.Executor"><code class="xref py py-class docutils literal"><span class="pre">Executor</span></code></a> that
+will walk all the files and directories named in <code class="docutils literal"><span class="pre">filenames</span></code> and that takes care of creating the right type
+of sitemap: resourcelist, changelist etc. and complete the corresponding
+sitemaps as capabilitylist and description.</p>
+<p>Before you call <a class="reference internal" href="#rspub.core.rs.ResourceSync.execute" title="rspub.core.rs.ResourceSync.execute"><code class="xref py py-func docutils literal"><span class="pre">execute()</span></code></a> on <a class="reference internal" href="#rspub.core.rs.ResourceSync" title="rspub.core.rs.ResourceSync"><code class="xref py py-class docutils literal"><span class="pre">ResourceSync</span></code></a> it may be advisable to set the proper
+parameters for your synchronization. <a class="reference internal" href="#rspub.core.rs.ResourceSync" title="rspub.core.rs.ResourceSync"><code class="xref py py-class docutils literal"><span class="pre">ResourceSync</span></code></a> is a subclass of <a class="reference internal" href="rspub.core.rs_paras.html#rspub.core.rs_paras.RsParameters" title="rspub.core.rs_paras.RsParameters"><code class="xref py py-class docutils literal"><span class="pre">RsParameters</span></code></a>
+and the description of <code class="docutils literal"><span class="pre">parameters</span></code> in that class is a good starting point to learn about the type, meaning and
+function of these parameters. Here we will highlight some and discuss aspects of these parameters.</p>
+<div class="section" id="selecting-resources">
+<h2>Selecting resources<a class="headerlink" href="#selecting-resources" title="Permalink to this headline">¶</a></h2>
+<p>The algorithm for selecting resources can be shaped by you, the user of this library. If the default algorithm
+suites you - so much for the better - then you don&#8217;t have to do anything and you can safely skip this paragraph.</p>
+<p>The default algorithm is implemented
+by the <a class="reference internal" href="rspub.util.gates.html#rspub.util.gates.GateBuilder" title="rspub.util.gates.GateBuilder"><code class="xref py py-class docutils literal"><span class="pre">GateBuilder</span></code></a> class <a class="reference internal" href="rspub.pluggable.gate.html#rspub.pluggable.gate.ResourceGateBuilder" title="rspub.pluggable.gate.ResourceGateBuilder"><code class="xref py py-class docutils literal"><span class="pre">ResourceGateBuilder</span></code></a>. This
+default class builds a <a class="reference internal" href="rspub.util.gates.html#rspub.util.gates.gate" title="rspub.util.gates.gate"><code class="xref py py-func docutils literal"><span class="pre">gate()</span></code></a> that allows any file that is encountered in the list
+of files and directories of the <code class="docutils literal"><span class="pre">filenames</span></code> argument. It will exclude however any file that
+is not in <a class="reference internal" href="rspub.core.rs_paras.html#rspub.core.rs_paras.RsParameters.resource_dir" title="rspub.core.rs_paras.RsParameters.resource_dir"><code class="xref py py-func docutils literal"><span class="pre">resource_dir()</span></code></a> or any of its subdirectories, hidden files and
+files from the directories <a class="reference internal" href="rspub.core.rs_paras.html#rspub.core.rs_paras.RsParameters.metadata_dir" title="rspub.core.rs_paras.RsParameters.metadata_dir"><code class="xref py py-func docutils literal"><span class="pre">metadata_dir()</span></code></a>,
+<a class="reference internal" href="rspub.core.rs_paras.html#rspub.core.rs_paras.RsParameters.description_dir" title="rspub.core.rs_paras.RsParameters.description_dir"><code class="xref py py-func docutils literal"><span class="pre">description_dir()</span></code></a> and <a class="reference internal" href="rspub.core.rs_paras.html#rspub.core.rs_paras.RsParameters.plugin_dir" title="rspub.core.rs_paras.RsParameters.plugin_dir"><code class="xref py py-func docutils literal"><span class="pre">plugin_dir()</span></code></a>
+in case any of these directories are situated on the search-paths described in <code class="docutils literal"><span class="pre">filenames</span></code>.</p>
+<p>You can implement your own resource <a class="reference internal" href="rspub.util.gates.html#rspub.util.gates.gate" title="rspub.util.gates.gate"><code class="xref py py-func docutils literal"><span class="pre">gate()</span></code></a> by supplying a class named
+<cite>ResourceGateBuilder</cite> in a directory you specify under the
+<a class="reference internal" href="rspub.core.rs_paras.html#rspub.core.rs_paras.RsParameters.plugin_dir" title="rspub.core.rs_paras.RsParameters.plugin_dir"><code class="xref py py-func docutils literal"><span class="pre">plugin_dir()</span></code></a> <code class="docutils literal"><span class="pre">parameter</span></code>. Your <cite>ResourceGateBuilder</cite> should subclass
+<a class="reference internal" href="rspub.pluggable.gate.html#rspub.pluggable.gate.ResourceGateBuilder" title="rspub.pluggable.gate.ResourceGateBuilder"><code class="xref py py-class docutils literal"><span class="pre">ResourceGateBuilder</span></code></a> or at least implement the methods
+<a class="reference internal" href="rspub.util.gates.html#rspub.util.gates.GateBuilder.build_includes" title="rspub.util.gates.GateBuilder.build_includes"><code class="xref py py-func docutils literal"><span class="pre">build_includes()</span></code></a> and <a class="reference internal" href="rspub.util.gates.html#rspub.util.gates.GateBuilder.build_excludes" title="rspub.util.gates.GateBuilder.build_excludes"><code class="xref py py-func docutils literal"><span class="pre">build_excludes()</span></code></a>.
+A detailed description of how to create your own <cite>ResourceGateBuilder</cite> can be found in
+<a class="reference internal" href="rspub.pluggable.gate.html"><span class="doc">rspub.pluggable.gate</span></a>.</p>
+<p>By shaping your own selection algorithm you could for instance say &#8220;include all the files from directory <cite>x</cite> but
+exclude the subdirectory <cite>y</cite> and from directory <cite>z</cite> choose only those files whose filenames start with &#8216;abc&#8217; and
+from directory <cite>z/b</cite> choose only xml-files where the x-path expression <cite>//such/and/so</cite> yields &#8216;foo&#8217; or &#8216;bar&#8217;.&#8221;
+Anything goes, as long as you can express it as a predicate, that is, say &#8216;yes&#8217; or &#8216;no&#8217; to a resource, given
+the filename of the resource.</p>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="rspub.util.gates.html"><span class="doc">rspub.util.gates</span></a>, <a class="reference internal" href="rspub.pluggable.gate.html"><span class="doc">rspub.pluggable.gate</span></a></p>
+</div>
+</div>
+<div class="section" id="strategies-and-executors">
+<h2>Strategies and executors<a class="headerlink" href="#strategies-and-executors" title="Permalink to this headline">¶</a></h2>
+<p>The <a class="reference internal" href="rspub.core.rs_enum.html#rspub.core.rs_enum.Strategy" title="rspub.core.rs_enum.Strategy"><code class="xref py py-class docutils literal"><span class="pre">Strategy</span></code></a> tells <a class="reference internal" href="#rspub.core.rs.ResourceSync" title="rspub.core.rs.ResourceSync"><code class="xref py py-class docutils literal"><span class="pre">ResourceSync</span></code></a> in what way you want your resources processed.
+Or better: <a class="reference internal" href="#rspub.core.rs.ResourceSync" title="rspub.core.rs.ResourceSync"><code class="xref py py-class docutils literal"><span class="pre">ResourceSync</span></code></a> will choose the <a class="reference internal" href="rspub.core.executors.html#rspub.core.executors.Executor" title="rspub.core.executors.Executor"><code class="xref py py-class docutils literal"><span class="pre">Executor</span></code></a> that fits your chosen strategy.
+Do you want new resourcelists every time you call <a class="reference internal" href="#rspub.core.rs.ResourceSync.execute" title="rspub.core.rs.ResourceSync.execute"><code class="xref py py-func docutils literal"><span class="pre">ResourceSync.execute()</span></code></a>, do you want
+new changelists or perhaps an incremental changelist. There are slots for other strategies in rspub-core,
+such as resourcedump and changedump, but these strategies are not yet implemented.</p>
+<p>If new changelist or incremental changelist is your strategy and there is no resourcelist.xml yet in your
+<a class="reference internal" href="rspub.core.rs_paras.html#rspub.core.rs_paras.RsParameters.metadata_dir" title="rspub.core.rs_paras.RsParameters.metadata_dir"><code class="xref py py-func docutils literal"><span class="pre">metadata_dir()</span></code></a> then <a class="reference internal" href="#rspub.core.rs.ResourceSync" title="rspub.core.rs.ResourceSync"><code class="xref py py-class docutils literal"><span class="pre">ResourceSync</span></code></a> will create a resourcelist.xml
+the first time you call <a class="reference internal" href="#rspub.core.rs.ResourceSync.execute" title="rspub.core.rs.ResourceSync.execute"><code class="xref py py-func docutils literal"><span class="pre">execute()</span></code></a>.</p>
+<p>The <a class="reference internal" href="rspub.core.rs_enum.html#rspub.core.rs_enum.Strategy" title="rspub.core.rs_enum.Strategy"><code class="xref py py-class docutils literal"><span class="pre">Strategy</span></code></a> <code class="docutils literal"><span class="pre">resourcelist</span></code> does not require much system resources. Resources will
+be processed one after the other and sitemap documents are written to disk once they are processed and
+these sitemaps will at most take 50000 records. The strategies <code class="docutils literal"><span class="pre">new_changelist</span></code> and <code class="docutils literal"><span class="pre">inc_changelist</span></code> will
+compare previous and present state of all your selected resources. In order to do so they collect metadata from
+all the present resources in your selection and compare it to the previous state as recorded in resourcelists
+and subsequent changelists.
+This will be perfectly OK in most situations, however if the number of resources is very large this
+comparison might be undoable. Anyway, large amounts of resources will probably be managed by some kind of
+repository system that enables to query for the requested data. It is perfectly alright to write your own
+<a class="reference internal" href="rspub.core.executors.html#rspub.core.executors.Executor" title="rspub.core.executors.Executor"><code class="xref py py-class docutils literal"><span class="pre">Executor</span></code></a> that handles the synchronisation of resources in your repository system
+and you are invited to share these executors. A suitable plugin mechanism to accommodate such extraterrestrial
+executors could be accomplished in a next version of rspub-core.</p>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="rspub.core.rs_paras.html#rspub.core.rs_paras.RsParameters.strategy" title="rspub.core.rs_paras.RsParameters.strategy"><code class="xref py py-func docutils literal"><span class="pre">rspub.core.rs_paras.RsParameters.strategy()</span></code></a>, <a class="reference internal" href="rspub.core.rs_enum.html#rspub.core.rs_enum.Strategy" title="rspub.core.rs_enum.Strategy"><code class="xref py py-class docutils literal"><span class="pre">rspub.core.rs_enum.Strategy</span></code></a>, <a class="reference internal" href="rspub.core.executors.html"><span class="doc">rspub.core.executors</span></a></p>
+</div>
+</div>
+<div class="section" id="multiple-collections">
+<h2>Multiple collections<a class="headerlink" href="#multiple-collections" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="#rspub.core.rs.ResourceSync" title="rspub.core.rs.ResourceSync"><code class="xref py py-class docutils literal"><span class="pre">ResourceSync</span></code></a> is a subclass of <a class="reference internal" href="rspub.core.rs_paras.html#rspub.core.rs_paras.RsParameters" title="rspub.core.rs_paras.RsParameters"><code class="xref py py-class docutils literal"><span class="pre">RsParameters</span></code></a> and so the parameters set on
+<a class="reference internal" href="#rspub.core.rs.ResourceSync" title="rspub.core.rs.ResourceSync"><code class="xref py py-class docutils literal"><span class="pre">ResourceSync</span></code></a> can be saved and reinstituted later on. <a class="reference internal" href="rspub.core.config.html#rspub.core.config.Configurations" title="rspub.core.config.Configurations"><code class="xref py py-class docutils literal"><span class="pre">Configurations</span></code></a> has
+methods for listing and removing previously saved configurations. Multiple collections of resources
+could be synchronized, each collection with its own configuration. Synchronizing the collection &#8216;spam&#8217; could
+go along these lines:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1"># get a list of previously saved configurations</span>
+<span class="p">[</span><span class="nb">print</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">Configurations</span><span class="o">.</span><span class="n">list_configurations</span><span class="p">()]</span>
+<span class="c1"># rspub_core</span>
+<span class="c1"># spam_config</span>
+<span class="c1"># eggs_config</span>
+
+<span class="c1"># prepare for synchronization of collection &#39;all about spam&#39;</span>
+<span class="n">resourcesync</span> <span class="o">=</span> <span class="n">ResourceSync</span><span class="p">(</span><span class="n">config_name</span><span class="o">=</span><span class="s2">&quot;spam_config&quot;</span><span class="p">)</span>
+<span class="c1"># spam resources are in two directories</span>
+<span class="n">filenames</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;resources/green_spam&quot;</span><span class="p">,</span> <span class="s2">&quot;resources/blue_spam&quot;</span><span class="p">]</span>
+<span class="c1"># do the synchronization</span>
+<span class="n">resourcesync</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">filenames</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="rspub.core.rs_paras.html#rspub.core.rs_paras.RsParameters" title="rspub.core.rs_paras.RsParameters"><code class="xref py py-class docutils literal"><span class="pre">rspub.core.rs_paras.RsParameters</span></code></a>, <a class="reference internal" href="rspub.core.config.html#rspub.core.config.Configurations" title="rspub.core.config.Configurations"><code class="xref py py-class docutils literal"><span class="pre">rspub.core.config.Configurations</span></code></a>, <a class="reference internal" href="rspub.core.rs_paras.html#rspub.core.rs_paras.RsParameters.save_configuration_as" title="rspub.core.rs_paras.RsParameters.save_configuration_as"><code class="xref py py-func docutils literal"><span class="pre">save_configuration_as()</span></code></a></p>
+</div>
+</div>
+<div class="section" id="observe-execution">
+<h2>Observe execution<a class="headerlink" href="#observe-execution" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="#rspub.core.rs.ResourceSync" title="rspub.core.rs.ResourceSync"><code class="xref py py-class docutils literal"><span class="pre">ResourceSync</span></code></a> is a subclass of <a class="reference internal" href="rspub.util.observe.html#rspub.util.observe.Observable" title="rspub.util.observe.Observable"><code class="xref py py-class docutils literal"><span class="pre">Observable</span></code></a>. The executor to which the execution
+is delegated inherits all observers registered with <a class="reference internal" href="#rspub.core.rs.ResourceSync" title="rspub.core.rs.ResourceSync"><code class="xref py py-class docutils literal"><span class="pre">ResourceSync</span></code></a>. <a class="reference internal" href="#rspub.core.rs.ResourceSync" title="rspub.core.rs.ResourceSync"><code class="xref py py-class docutils literal"><span class="pre">ResourceSync</span></code></a> it self does not
+fire events.</p>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="rspub.util.observe.html"><span class="doc">rspub.util.observe</span></a>, <a class="reference internal" href="rspub.core.executors.html#rspub.core.executors.ExecutorEvent" title="rspub.core.executors.ExecutorEvent"><code class="xref py py-class docutils literal"><span class="pre">rspub.core.executors.ExecutorEvent</span></code></a></p>
+</div>
+<dl class="class">
+<dt id="rspub.core.rs.ResourceSync">
+<em class="property">class </em><code class="descclassname">rspub.core.rs.</code><code class="descname">ResourceSync</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/rs.html#ResourceSync"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.rs.ResourceSync" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="rspub.util.observe.html#rspub.util.observe.Observable" title="rspub.util.observe.Observable"><code class="xref py py-class docutils literal"><span class="pre">rspub.util.observe.Observable</span></code></a>, <a class="reference internal" href="rspub.core.rs_paras.html#rspub.core.rs_paras.RsParameters" title="rspub.core.rs_paras.RsParameters"><code class="xref py py-class docutils literal"><span class="pre">rspub.core.rs_paras.RsParameters</span></code></a></p>
+<p><code class="samp docutils literal"><span class="pre">Main</span> <span class="pre">class</span> <span class="pre">for</span> <span class="pre">ResourceSync</span> <span class="pre">publishing</span></code></p>
+<dl class="method">
+<dt id="rspub.core.rs.ResourceSync.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/rs.html#ResourceSync.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.rs.ResourceSync.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p><code class="samp docutils literal"><span class="pre">Initialization</span></code></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>config_name</strong> (<em>str</em>) &#8211; the name of the configuration to read. If given, sets the current configuration.</li>
+<li><strong>kwargs</strong> &#8211; see <a class="reference internal" href="rspub.core.rs_paras.html#rspub.core.rs_paras.RsParameters.__init__" title="rspub.core.rs_paras.RsParameters.__init__"><code class="xref py py-func docutils literal"><span class="pre">rspub.core.rs_paras.RsParameters.__init__()</span></code></a></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="rspub.core.rs_paras.html"><span class="doc">rspub.core.rs_paras</span></a></p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="rspub.core.rs.ResourceSync.execute">
+<code class="descname">execute</code><span class="sig-paren">(</span><em>filenames: &lt;built-in function iter&gt; = None</em>, <em>start_new=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/rs.html#ResourceSync.execute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.rs.ResourceSync.execute" title="Permalink to this definition">¶</a></dt>
+<dd><p><code class="samp docutils literal"><span class="pre">Publish</span> <span class="pre">ResourceSync</span> <span class="pre">documents</span> <span class="pre">under</span> <span class="pre">conditions</span> <span class="pre">of</span> <span class="pre">current</span> <em><span class="pre">parameters</span></em></code></p>
+<p>Call appropriate executor and publish sitemap documents on the resources found in <cite>filenames</cite>.</p>
+<p>If no file/files &#8216;resourcelist_*.xml&#8217; are found in metadata directory will always dispatch to
+strategy (new) <code class="docutils literal"><span class="pre">resourcelist</span></code>.</p>
+<p>If <code class="docutils literal"><span class="pre">parameter</span></code> <a class="reference internal" href="rspub.core.rs_paras.html#rspub.core.rs_paras.RsParameters.is_saving_sitemaps" title="rspub.core.rs_paras.RsParameters.is_saving_sitemaps"><code class="xref py py-func docutils literal"><span class="pre">is_saving_sitemaps()</span></code></a> is <code class="docutils literal"><span class="pre">False</span></code> will do
+a dry run: no existing sitemaps will be changed and no new sitemaps will be written to disk.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>filenames</strong> &#8211; filenames and/or directories to scan</li>
+<li><strong>start_new</strong> &#8211; erase metadata directory and create new resourcelists</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="rspub.core.rs.ExecutionHistory">
+<em class="property">class </em><code class="descclassname">rspub.core.rs.</code><code class="descname">ExecutionHistory</code><span class="sig-paren">(</span><em>history_dir</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/rs.html#ExecutionHistory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.rs.ExecutionHistory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="rspub.util.observe.html#rspub.util.observe.EventObserver" title="rspub.util.observe.EventObserver"><code class="xref py py-class docutils literal"><span class="pre">rspub.util.observe.EventObserver</span></code></a></p>
+<p><code class="samp docutils literal"><span class="pre">Execution</span> <span class="pre">report</span> <span class="pre">creator</span></code></p>
+<p>Currently not in use.</p>
+<dl class="method">
+<dt id="rspub.core.rs.ExecutionHistory.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>history_dir</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/rs.html#ExecutionHistory.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.rs.ExecutionHistory.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.core.rs.ExecutionHistory.pass_inform">
+<code class="descname">pass_inform</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/rs.html#ExecutionHistory.pass_inform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.rs.ExecutionHistory.pass_inform" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.core.rs.ExecutionHistory.inform_execution_start">
+<code class="descname">inform_execution_start</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/rs.html#ExecutionHistory.inform_execution_start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.rs.ExecutionHistory.inform_execution_start" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="rspub.core.executors.html" class="btn btn-neutral float-right" title="Executors" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="rspub.core.selector.html" class="btn btn-neutral" title="Selector" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, DANS-KNAW.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+  
+     
+    <li><a href="https://github.com/EHRI/rspub-core">rspub-core at GitHub</a></li>
+
+
+</body>
+</html>

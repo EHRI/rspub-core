@@ -1,0 +1,299 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Transport &mdash; rspub-core 1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="rspub-core 1 documentation" href="../index.html"/>
+        <link rel="up" title="rspub.core" href="rspub.core.html"/>
+        <link rel="next" title="Enumerations" href="rspub.core.rs_enum.html"/>
+        <link rel="prev" title="Create changelists" href="rspub.core.exe_changelist.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> rspub-core
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="rspub.cli.html">rspub.cli</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="rspub.core.html">rspub.core</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="rspub.core.config.html">Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rspub.core.rs_paras.html">Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rspub.core.selector.html">Selector</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rspub.core.rs.html">ResourceSync</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rspub.core.executors.html">Executors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rspub.core.exe_resourcelist.html">Create resourcelists</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rspub.core.exe_changelist.html">Create changelists</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Transport</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rspub.core.rs_enum.html">Enumerations</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="rspub.pluggable.html">rspub.pluggable</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rspub.util.html">rspub.util</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../index.html">rspub-core</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="rspub.core.html">rspub.core</a> &raquo;</li>
+      
+    <li>Transport</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/rst/rspub.core.transport.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="transport">
+<h1>Transport<a class="headerlink" href="#transport" title="Permalink to this headline">¶</a></h1>
+<p class="rubric">module: rspub.core.transport</p>
+<span class="target" id="module-rspub.core.transport"></span><p><code class="samp docutils literal"><span class="pre">Transport</span> <span class="pre">resources</span> <span class="pre">and</span> <span class="pre">sitemaps</span> <span class="pre">to</span> <span class="pre">the</span> <span class="pre">web</span> <span class="pre">server</span></code></p>
+<dl class="exception">
+<dt id="rspub.core.transport.TransportException">
+<em class="property">exception </em><code class="descclassname">rspub.core.transport.</code><code class="descname">TransportException</code><a class="reference internal" href="../_modules/rspub/core/transport.html#TransportException"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.transport.TransportException" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">Exception</span></code></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="rspub.core.transport.Transport">
+<em class="property">class </em><code class="descclassname">rspub.core.transport.</code><code class="descname">Transport</code><span class="sig-paren">(</span><em>paras</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/transport.html#Transport"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.transport.Transport" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="rspub.util.observe.html#rspub.util.observe.Observable" title="rspub.util.observe.Observable"><code class="xref py py-class docutils literal"><span class="pre">rspub.util.observe.Observable</span></code></a></p>
+<dl class="method">
+<dt id="rspub.core.transport.Transport.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>paras</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/transport.html#Transport.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.transport.Transport.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.core.transport.Transport.enabled">
+<code class="descname">enabled</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/transport.html#Transport.enabled"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.transport.Transport.enabled" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.core.transport.Transport.handle_resources">
+<code class="descname">handle_resources</code><span class="sig-paren">(</span><em>function</em>, <em>all_resources=False</em>, <em>include_description=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/transport.html#Transport.handle_resources"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.transport.Transport.handle_resources" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.core.transport.Transport.all_resources">
+<code class="descname">all_resources</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/transport.html#Transport.all_resources"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.transport.Transport.all_resources" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.core.transport.Transport.all_resources_generator">
+<code class="descname">all_resources_generator</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/transport.html#Transport.all_resources_generator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.transport.Transport.all_resources_generator" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.core.transport.Transport.last_resources_generator">
+<code class="descname">last_resources_generator</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/transport.html#Transport.last_resources_generator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.transport.Transport.last_resources_generator" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.core.transport.Transport.zip_resources">
+<code class="descname">zip_resources</code><span class="sig-paren">(</span><em>all_resources=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/transport.html#Transport.zip_resources"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.transport.Transport.zip_resources" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.core.transport.Transport.function_zip">
+<code class="descname">function_zip</code><span class="sig-paren">(</span><em>tmpdirname</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/transport.html#Transport.function_zip"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.transport.Transport.function_zip" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.core.transport.Transport.scp_resources">
+<code class="descname">scp_resources</code><span class="sig-paren">(</span><em>all_resources=False</em>, <em>password='secret'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/transport.html#Transport.scp_resources"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.transport.Transport.scp_resources" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.core.transport.Transport.create_ssh_client">
+<code class="descname">create_ssh_client</code><span class="sig-paren">(</span><em>password</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/transport.html#Transport.create_ssh_client"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.transport.Transport.create_ssh_client" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.core.transport.Transport.function_scp">
+<code class="descname">function_scp</code><span class="sig-paren">(</span><em>tmpdirname</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/transport.html#Transport.function_scp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.transport.Transport.function_scp" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.core.transport.Transport.scp_put">
+<code class="descname">scp_put</code><span class="sig-paren">(</span><em>files</em>, <em>remote_path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/transport.html#Transport.scp_put"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.transport.Transport.scp_put" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="rspub.core.rs_enum.html" class="btn btn-neutral float-right" title="Enumerations" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="rspub.core.exe_changelist.html" class="btn btn-neutral" title="Create changelists" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, DANS-KNAW.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+  
+     
+    <li><a href="https://github.com/EHRI/rspub-core">rspub-core at GitHub</a></li>
+
+
+</body>
+</html>

@@ -1,0 +1,627 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Configuration &mdash; rspub-core 1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="rspub-core 1 documentation" href="../index.html"/>
+        <link rel="up" title="rspub.core" href="rspub.core.html"/>
+        <link rel="next" title="Parameters" href="rspub.core.rs_paras.html"/>
+        <link rel="prev" title="rspub.core" href="rspub.core.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> rspub-core
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="rspub.cli.html">rspub.cli</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="rspub.core.html">rspub.core</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rspub.core.rs_paras.html">Parameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rspub.core.selector.html">Selector</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rspub.core.rs.html">ResourceSync</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rspub.core.executors.html">Executors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rspub.core.exe_resourcelist.html">Create resourcelists</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rspub.core.exe_changelist.html">Create changelists</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rspub.core.transport.html">Transport</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rspub.core.rs_enum.html">Enumerations</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="rspub.pluggable.html">rspub.pluggable</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rspub.util.html">rspub.util</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../index.html">rspub-core</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="rspub.core.html">rspub.core</a> &raquo;</li>
+      
+    <li>Configuration</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/rst/rspub.core.config.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="configuration">
+<h1>Configuration<a class="headerlink" href="#configuration" title="Permalink to this headline">¶</a></h1>
+<p class="rubric">module: rspub.core.config</p>
+<span class="target" id="module-rspub.core.config"></span><p><code class="samp docutils literal"><span class="pre">Save</span> <span class="pre">and</span> <span class="pre">load</span> <span class="pre">multiple</span> <span class="pre">configurations</span></code></p>
+<p>The class <a class="reference internal" href="#rspub.core.config.Configurations" title="rspub.core.config.Configurations"><code class="xref py py-class docutils literal"><span class="pre">Configurations</span></code></a> (mark the <cite>s</cite> at the end) enables you to save, load, remove and list
+multiple configurations.</p>
+<p>Class <a class="reference internal" href="#rspub.core.config.Configuration" title="rspub.core.config.Configuration"><code class="xref py py-class docutils literal"><span class="pre">Configuration</span></code></a> (mark the absence of <cite>s</cite> at the end) is a singleton.
+It should not be used directly. In stead use <a class="reference internal" href="rspub.core.rs_paras.html#rspub.core.rs_paras.RsParameters" title="rspub.core.rs_paras.RsParameters"><code class="xref py py-class docutils literal"><span class="pre">rspub.core.rs_paras.RsParameters</span></code></a>.</p>
+<p>The location where configurations are stored is system-dependent:</p>
+<blockquote>
+<div><ul class="simple">
+<li><code class="docutils literal"><span class="pre">{user-home}\AppData\Local\Programs\rspub\config\</span></code> on Windows</li>
+<li><code class="docutils literal"><span class="pre">{user-home}/.config/rspub/config/</span></code> on Mac and Linux</li>
+<li><code class="docutils literal"><span class="pre">{user-home}/rspub/config/</span></code> fallback</li>
+</ul>
+</div></blockquote>
+<div class="admonition seealso">
+<p class="first admonition-title">See also</p>
+<p class="last"><a class="reference internal" href="rspub.core.rs_paras.html"><span class="doc">RsParameters</span></a></p>
+</div>
+<dl class="class">
+<dt id="rspub.core.config.Configurations">
+<em class="property">class </em><code class="descclassname">rspub.core.config.</code><code class="descname">Configurations</code><a class="reference internal" href="../_modules/rspub/core/config.html#Configurations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.config.Configurations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p><code class="samp docutils literal"><span class="pre">Enables</span> <span class="pre">saving,</span> <span class="pre">loading,</span> <span class="pre">listing</span> <span class="pre">and</span> <span class="pre">removing</span> <em><span class="pre">configurations</span></em></code></p>
+<p>All methods are static:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Configurations</span><span class="o">.</span><span class="n">list_configurations</span><span class="p">()</span>
+<span class="n">Configurations</span><span class="o">.</span><span class="n">load_configuration</span><span class="p">(</span><span class="s2">&quot;collection_1&quot;</span><span class="p">)</span>
+<span class="c1"># etc.</span>
+</pre></div>
+</div>
+<dl class="staticmethod">
+<dt id="rspub.core.config.Configurations.list_configurations">
+<em class="property">static </em><code class="descname">list_configurations</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &rarr; list<a class="reference internal" href="../_modules/rspub/core/config.html#Configurations.list_configurations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.config.Configurations.list_configurations" title="Permalink to this definition">¶</a></dt>
+<dd><p><code class="samp docutils literal"><span class="pre">List</span> <span class="pre">available</span> <span class="pre">configurations</span></code></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">list of names of previously saved configurations</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="rspub.core.config.Configurations.load_configuration">
+<em class="property">static </em><code class="descname">load_configuration</code><span class="sig-paren">(</span><em>name: str</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/config.html#Configurations.load_configuration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.config.Configurations.load_configuration" title="Permalink to this definition">¶</a></dt>
+<dd><p><code class="samp docutils literal"><span class="pre">Load</span> <span class="pre">the</span> <span class="pre">configuration</span> <span class="pre">with</span> <span class="pre">the</span> <span class="pre">given</span> <span class="pre">name</span></code></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>name</strong> &#8211; name of a previously saved configuration</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">the restored Configuration</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="rspub.core.config.Configurations.save_configuration_as">
+<em class="property">static </em><code class="descname">save_configuration_as</code><span class="sig-paren">(</span><em>name: str</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/config.html#Configurations.save_configuration_as"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.config.Configurations.save_configuration_as" title="Permalink to this definition">¶</a></dt>
+<dd><p><code class="samp docutils literal"><span class="pre">Save</span> <span class="pre">the</span> <span class="pre">current</span> <span class="pre">configuration</span> <span class="pre">under</span> <span class="pre">the</span> <span class="pre">given</span> <span class="pre">name</span></code></p>
+<p>Any previously saved configurations with the same name will be overwritten without warning.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>name</strong> &#8211; name under which the configuration will be saved</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="rspub.core.config.Configurations.remove_configuration">
+<em class="property">static </em><code class="descname">remove_configuration</code><span class="sig-paren">(</span><em>name: str</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/config.html#Configurations.remove_configuration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.config.Configurations.remove_configuration" title="Permalink to this definition">¶</a></dt>
+<dd><p><code class="samp docutils literal"><span class="pre">Remove</span> <span class="pre">the</span> <span class="pre">configuration</span> <span class="pre">with</span> <span class="pre">the</span> <span class="pre">given</span> <span class="pre">name</span></code></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>name</strong> &#8211; the name of the configuration to remove</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><strong>True</strong> if the configuration was successfully removed, <strong>False</strong> otherwise</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="rspub.core.config.Configurations.current_configuration_name">
+<em class="property">static </em><code class="descname">current_configuration_name</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/config.html#Configurations.current_configuration_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.config.Configurations.current_configuration_name" title="Permalink to this definition">¶</a></dt>
+<dd><p><code class="samp docutils literal"><span class="pre">Get</span> <span class="pre">the</span> <span class="pre">name</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">current</span> <span class="pre">configuration</span></code></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">name of the current configuration</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="rspub.core.config.Configurations.rspub_config_dir">
+<em class="property">static </em><code class="descname">rspub_config_dir</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/config.html#Configurations.rspub_config_dir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.config.Configurations.rspub_config_dir" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="rspub.core.config.Configuration">
+<em class="property">class </em><code class="descclassname">rspub.core.config.</code><code class="descname">Configuration</code><a class="reference internal" href="../_modules/rspub/core/config.html#Configuration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.config.Configuration" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p><code class="samp docutils literal"><span class="pre">Singleton</span> <span class="pre">persisting</span> <span class="pre">object</span> <span class="pre">for</span> <span class="pre">storing</span> <span class="pre">configuration</span> <span class="pre">parameters</span></code></p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Do not use class Configuration directly. Use <a class="reference internal" href="rspub.core.rs_paras.html"><span class="doc">RsParameters</span></a> in stead.</p>
+</div>
+<dl class="staticmethod">
+<dt id="rspub.core.config.Configuration.reset">
+<em class="property">static </em><code class="descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/config.html#Configuration.reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.config.Configuration.reset" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="rspub.core.config.Configuration.config_path">
+<code class="descname">config_path</code><em class="property"> = '/Users/ecco/.config/rspub/core'</em><a class="headerlink" href="#rspub.core.config.Configuration.config_path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="rspub.core.config.Configuration.config_file">
+<code class="descname">config_file</code><em class="property"> = '/Users/ecco/.config/rspub/core/DEFAULT.cfg'</em><a class="headerlink" href="#rspub.core.config.Configuration.config_file" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.core.config.Configuration.name">
+<code class="descname">name</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/config.html#Configuration.name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.config.Configuration.name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.core.config.Configuration.persist">
+<code class="descname">persist</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/config.html#Configuration.persist"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.config.Configuration.persist" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.core.config.Configuration.core_items">
+<code class="descname">core_items</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/config.html#Configuration.core_items"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.config.Configuration.core_items" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.core.config.Configuration.core_clear">
+<code class="descname">core_clear</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/config.html#Configuration.core_clear"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.config.Configuration.core_clear" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.core.config.Configuration.resource_dir">
+<code class="descname">resource_dir</code><span class="sig-paren">(</span><em>fallback='/Users/ecco'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/config.html#Configuration.resource_dir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.config.Configuration.resource_dir" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.core.config.Configuration.set_resource_dir">
+<code class="descname">set_resource_dir</code><span class="sig-paren">(</span><em>resource_dir</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/config.html#Configuration.set_resource_dir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.config.Configuration.set_resource_dir" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.core.config.Configuration.metadata_dir">
+<code class="descname">metadata_dir</code><span class="sig-paren">(</span><em>fallback='metadata'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/config.html#Configuration.metadata_dir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.config.Configuration.metadata_dir" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.core.config.Configuration.set_metadata_dir">
+<code class="descname">set_metadata_dir</code><span class="sig-paren">(</span><em>metadata_dir</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/config.html#Configuration.set_metadata_dir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.config.Configuration.set_metadata_dir" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.core.config.Configuration.description_dir">
+<code class="descname">description_dir</code><span class="sig-paren">(</span><em>fallback=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/config.html#Configuration.description_dir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.config.Configuration.description_dir" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.core.config.Configuration.set_description_dir">
+<code class="descname">set_description_dir</code><span class="sig-paren">(</span><em>description_dir</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/config.html#Configuration.set_description_dir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.config.Configuration.set_description_dir" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.core.config.Configuration.selector_file">
+<code class="descname">selector_file</code><span class="sig-paren">(</span><em>fallback=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/config.html#Configuration.selector_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.config.Configuration.selector_file" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.core.config.Configuration.set_selector_file">
+<code class="descname">set_selector_file</code><span class="sig-paren">(</span><em>selector_file</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/config.html#Configuration.set_selector_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.config.Configuration.set_selector_file" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.core.config.Configuration.simple_select_file">
+<code class="descname">simple_select_file</code><span class="sig-paren">(</span><em>fallback=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/config.html#Configuration.simple_select_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.config.Configuration.simple_select_file" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.core.config.Configuration.set_simple_select_file">
+<code class="descname">set_simple_select_file</code><span class="sig-paren">(</span><em>simple_file</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/config.html#Configuration.set_simple_select_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.config.Configuration.set_simple_select_file" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.core.config.Configuration.select_mode">
+<code class="descname">select_mode</code><span class="sig-paren">(</span><em>fallback='simple'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/config.html#Configuration.select_mode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.config.Configuration.select_mode" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.core.config.Configuration.set_select_mode">
+<code class="descname">set_select_mode</code><span class="sig-paren">(</span><em>mode</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/config.html#Configuration.set_select_mode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.config.Configuration.set_select_mode" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.core.config.Configuration.plugin_dir">
+<code class="descname">plugin_dir</code><span class="sig-paren">(</span><em>fallback=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/config.html#Configuration.plugin_dir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.config.Configuration.plugin_dir" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.core.config.Configuration.set_plugin_dir">
+<code class="descname">set_plugin_dir</code><span class="sig-paren">(</span><em>plugin_dir</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/config.html#Configuration.set_plugin_dir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.config.Configuration.set_plugin_dir" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.core.config.Configuration.history_dir">
+<code class="descname">history_dir</code><span class="sig-paren">(</span><em>fallback=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/config.html#Configuration.history_dir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.config.Configuration.history_dir" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.core.config.Configuration.set_history_dir">
+<code class="descname">set_history_dir</code><span class="sig-paren">(</span><em>history_dir</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/config.html#Configuration.set_history_dir"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.config.Configuration.set_history_dir" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.core.config.Configuration.url_prefix">
+<code class="descname">url_prefix</code><span class="sig-paren">(</span><em>fallback='http://www.example.com'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/config.html#Configuration.url_prefix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.config.Configuration.url_prefix" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.core.config.Configuration.set_url_prefix">
+<code class="descname">set_url_prefix</code><span class="sig-paren">(</span><em>urlprefix</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/config.html#Configuration.set_url_prefix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.config.Configuration.set_url_prefix" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.core.config.Configuration.strategy">
+<code class="descname">strategy</code><span class="sig-paren">(</span><em>fallback='resourcelist'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/config.html#Configuration.strategy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.config.Configuration.strategy" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.core.config.Configuration.set_strategy">
+<code class="descname">set_strategy</code><span class="sig-paren">(</span><em>strategy</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/config.html#Configuration.set_strategy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.config.Configuration.set_strategy" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.core.config.Configuration.max_items_in_list">
+<code class="descname">max_items_in_list</code><span class="sig-paren">(</span><em>fallback=50000</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/config.html#Configuration.max_items_in_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.config.Configuration.max_items_in_list" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.core.config.Configuration.set_max_items_in_list">
+<code class="descname">set_max_items_in_list</code><span class="sig-paren">(</span><em>max_items</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/config.html#Configuration.set_max_items_in_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.config.Configuration.set_max_items_in_list" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.core.config.Configuration.zero_fill_filename">
+<code class="descname">zero_fill_filename</code><span class="sig-paren">(</span><em>fallback=4</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/config.html#Configuration.zero_fill_filename"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.config.Configuration.zero_fill_filename" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.core.config.Configuration.set_zero_fill_filename">
+<code class="descname">set_zero_fill_filename</code><span class="sig-paren">(</span><em>zfill</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/config.html#Configuration.set_zero_fill_filename"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.config.Configuration.set_zero_fill_filename" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.core.config.Configuration.is_saving_pretty_xml">
+<code class="descname">is_saving_pretty_xml</code><span class="sig-paren">(</span><em>fallback=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/config.html#Configuration.is_saving_pretty_xml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.config.Configuration.is_saving_pretty_xml" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.core.config.Configuration.set_is_saving_pretty_xml">
+<code class="descname">set_is_saving_pretty_xml</code><span class="sig-paren">(</span><em>p_xml</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/config.html#Configuration.set_is_saving_pretty_xml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.config.Configuration.set_is_saving_pretty_xml" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.core.config.Configuration.is_saving_sitemaps">
+<code class="descname">is_saving_sitemaps</code><span class="sig-paren">(</span><em>fallback=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/config.html#Configuration.is_saving_sitemaps"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.config.Configuration.is_saving_sitemaps" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.core.config.Configuration.set_is_saving_sitemaps">
+<code class="descname">set_is_saving_sitemaps</code><span class="sig-paren">(</span><em>is_saving</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/config.html#Configuration.set_is_saving_sitemaps"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.config.Configuration.set_is_saving_sitemaps" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.core.config.Configuration.has_wellknown_at_root">
+<code class="descname">has_wellknown_at_root</code><span class="sig-paren">(</span><em>fallback=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/config.html#Configuration.has_wellknown_at_root"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.config.Configuration.has_wellknown_at_root" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.core.config.Configuration.set_has_wellknown_at_root">
+<code class="descname">set_has_wellknown_at_root</code><span class="sig-paren">(</span><em>at_root</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/config.html#Configuration.set_has_wellknown_at_root"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.config.Configuration.set_has_wellknown_at_root" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.core.config.Configuration.last_excution">
+<code class="descname">last_excution</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/config.html#Configuration.last_excution"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.config.Configuration.last_excution" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.core.config.Configuration.set_last_execution">
+<code class="descname">set_last_execution</code><span class="sig-paren">(</span><em>date_string</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/config.html#Configuration.set_last_execution"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.config.Configuration.set_last_execution" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.core.config.Configuration.last_strategy">
+<code class="descname">last_strategy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/config.html#Configuration.last_strategy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.config.Configuration.last_strategy" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.core.config.Configuration.set_last_strategy">
+<code class="descname">set_last_strategy</code><span class="sig-paren">(</span><em>strategy</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/config.html#Configuration.set_last_strategy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.config.Configuration.set_last_strategy" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.core.config.Configuration.last_sitemaps">
+<code class="descname">last_sitemaps</code><span class="sig-paren">(</span><em>fallback=[]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/config.html#Configuration.last_sitemaps"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.config.Configuration.last_sitemaps" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.core.config.Configuration.set_last_sitemaps">
+<code class="descname">set_last_sitemaps</code><span class="sig-paren">(</span><em>sitemaplist</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/config.html#Configuration.set_last_sitemaps"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.config.Configuration.set_last_sitemaps" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.core.config.Configuration.scp_server">
+<code class="descname">scp_server</code><span class="sig-paren">(</span><em>fallback='example.com'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/config.html#Configuration.scp_server"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.config.Configuration.scp_server" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.core.config.Configuration.set_scp_server">
+<code class="descname">set_scp_server</code><span class="sig-paren">(</span><em>scp_server</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/config.html#Configuration.set_scp_server"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.config.Configuration.set_scp_server" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.core.config.Configuration.scp_port">
+<code class="descname">scp_port</code><span class="sig-paren">(</span><em>fallback=22</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/config.html#Configuration.scp_port"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.config.Configuration.scp_port" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.core.config.Configuration.set_scp_port">
+<code class="descname">set_scp_port</code><span class="sig-paren">(</span><em>scp_port</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/config.html#Configuration.set_scp_port"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.config.Configuration.set_scp_port" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.core.config.Configuration.scp_user">
+<code class="descname">scp_user</code><span class="sig-paren">(</span><em>fallback='username'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/config.html#Configuration.scp_user"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.config.Configuration.scp_user" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.core.config.Configuration.set_scp_user">
+<code class="descname">set_scp_user</code><span class="sig-paren">(</span><em>scp_user</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/config.html#Configuration.set_scp_user"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.config.Configuration.set_scp_user" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.core.config.Configuration.scp_document_root">
+<code class="descname">scp_document_root</code><span class="sig-paren">(</span><em>fallback='/var/www/html/'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/config.html#Configuration.scp_document_root"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.config.Configuration.scp_document_root" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.core.config.Configuration.set_scp_document_root">
+<code class="descname">set_scp_document_root</code><span class="sig-paren">(</span><em>scp_document_root</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/config.html#Configuration.set_scp_document_root"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.config.Configuration.set_scp_document_root" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.core.config.Configuration.scp_document_path">
+<code class="descname">scp_document_path</code><span class="sig-paren">(</span><em>fallback=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/config.html#Configuration.scp_document_path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.config.Configuration.scp_document_path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.core.config.Configuration.set_scp_document_path">
+<code class="descname">set_scp_document_path</code><span class="sig-paren">(</span><em>scp_document_path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/config.html#Configuration.set_scp_document_path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.config.Configuration.set_scp_document_path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.core.config.Configuration.zip_filename">
+<code class="descname">zip_filename</code><span class="sig-paren">(</span><em>fallback='/Users/ecco/resourcesync.zip'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/config.html#Configuration.zip_filename"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.config.Configuration.zip_filename" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.core.config.Configuration.set_zip_filename">
+<code class="descname">set_zip_filename</code><span class="sig-paren">(</span><em>zip_filename</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/config.html#Configuration.set_zip_filename"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.config.Configuration.set_zip_filename" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="rspub.core.config.Configuration.parser">
+<code class="descname">parser</code><em class="property"> = &lt;configparser.ConfigParser object&gt;</em><a class="headerlink" href="#rspub.core.config.Configuration.parser" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="rspub.core.rs_paras.html" class="btn btn-neutral float-right" title="Parameters" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="rspub.core.html" class="btn btn-neutral" title="rspub.core" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, DANS-KNAW.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+  
+     
+    <li><a href="https://github.com/EHRI/rspub-core">rspub-core at GitHub</a></li>
+
+
+</body>
+</html>

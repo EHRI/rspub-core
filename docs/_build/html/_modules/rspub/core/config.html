@@ -1,0 +1,606 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>rspub.core.config &mdash; rspub-core 1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../../genindex.html"/>
+        <link rel="search" title="Search" href="../../../search.html"/>
+    <link rel="top" title="rspub-core 1 documentation" href="../../../index.html"/>
+        <link rel="up" title="Module code" href="../../index.html"/> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> rspub-core
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../rst/rspub.cli.html">rspub.cli</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../rst/rspub.core.html">rspub.core</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../rst/rspub.pluggable.html">rspub.pluggable</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../rst/rspub.util.html">rspub.util</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../../index.html">rspub-core</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+      
+    <li>rspub.core.config</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for rspub.core.config</h1><div class="highlight"><pre>
+<span></span><span class="ch">#! /usr/bin/env python3</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">:samp:`Save and load multiple configurations`</span>
+
+<span class="sd">The class :class:`Configurations` (mark the `s` at the end) enables you to save, load, remove and list</span>
+<span class="sd">multiple configurations.</span>
+
+<span class="sd">Class :class:`Configuration` (mark the absence of `s` at the end) is a singleton.</span>
+<span class="sd">It should not be used directly. In stead use :class:`rspub.core.rs_paras.RsParameters`.</span>
+
+<span class="sd">The location where configurations are stored is system-dependent:</span>
+
+<span class="sd"> - ``{user-home}\\AppData\\Local\\Programs\\rspub\\config\\`` on Windows</span>
+<span class="sd"> - ``{user-home}/.config/rspub/config/`` on Mac and Linux</span>
+<span class="sd"> - ``{user-home}/rspub/config/`` fallback</span>
+
+<span class="sd">.. seealso:: :doc:`RsParameters &lt;rspub.core.rs_paras&gt;`</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">platform</span>
+<span class="kn">from</span> <span class="nn">configparser</span> <span class="k">import</span> <span class="n">ConfigParser</span>
+<span class="kn">from</span> <span class="nn">glob</span> <span class="k">import</span> <span class="n">glob</span>
+
+<span class="kn">from</span> <span class="nn">rspub.core.rs_enum</span> <span class="k">import</span> <span class="n">Strategy</span><span class="p">,</span> <span class="n">SelectMode</span>
+
+<span class="n">CFG_FILENAME</span> <span class="o">=</span> <span class="s2">&quot;DEFAULT.cfg&quot;</span>
+<span class="n">CFG_DIRNAME</span> <span class="o">=</span> <span class="s2">&quot;core&quot;</span>
+<span class="n">SECTION_CORE</span> <span class="o">=</span> <span class="s2">&quot;core&quot;</span>
+<span class="n">EXT</span> <span class="o">=</span> <span class="s2">&quot;.cfg&quot;</span>
+
+
+<div class="viewcode-block" id="Configurations"><a class="viewcode-back" href="../../../rst/rspub.core.config.html#rspub.core.config.Configurations">[docs]</a><span class="k">class</span> <span class="nc">Configurations</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :samp:`Enables saving, loading, listing and removing {configurations}`</span>
+
+<span class="sd">    All methods are static::</span>
+
+<span class="sd">        Configurations.list_configurations()</span>
+<span class="sd">        Configurations.load_configuration(&quot;collection_1&quot;)</span>
+<span class="sd">        # etc.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">__get__logger</span><span class="p">():</span>
+        <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">logger</span>
+
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Configurations.list_configurations"><a class="viewcode-back" href="../../../rst/rspub.core.config.html#rspub.core.config.Configurations.list_configurations">[docs]</a>    <span class="k">def</span> <span class="nf">list_configurations</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :samp:`List available configurations`</span>
+
+<span class="sd">        :return: list of names of previously saved configurations</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">config_path</span> <span class="o">=</span> <span class="n">Configuration</span><span class="o">.</span><span class="n">_get_config_path</span><span class="p">()</span>
+        <span class="n">config_files</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">glob</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">config_path</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span> <span class="o">+</span> <span class="n">EXT</span><span class="p">)))</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">x</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">config_files</span><span class="p">]</span></div>
+
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Configurations.load_configuration"><a class="viewcode-back" href="../../../rst/rspub.core.config.html#rspub.core.config.Configurations.load_configuration">[docs]</a>    <span class="k">def</span> <span class="nf">load_configuration</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :samp:`Load the configuration with the given name`</span>
+
+<span class="sd">        :param name: name of a previously saved configuration</span>
+<span class="sd">        :return: the restored Configuration</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">Configurations</span><span class="o">.</span><span class="n">list_configurations</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No configuration named &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span> <span class="o">%</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">Configuration</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+        <span class="n">Configuration</span><span class="o">.</span><span class="n">_set_configuration_filename</span><span class="p">(</span><span class="n">name</span> <span class="o">+</span> <span class="n">EXT</span><span class="p">)</span>
+        <span class="n">Configurations</span><span class="o">.</span><span class="n">__get__logger</span><span class="p">()</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Loaded configuration </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Configuration</span><span class="p">()</span></div>
+
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Configurations.save_configuration_as"><a class="viewcode-back" href="../../../rst/rspub.core.config.html#rspub.core.config.Configurations.save_configuration_as">[docs]</a>    <span class="k">def</span> <span class="nf">save_configuration_as</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :samp:`Save the current configuration under the given name`</span>
+
+<span class="sd">        Any previously saved configurations with the same name will be overwritten without warning.</span>
+
+<span class="sd">        :param name: name under which the configuration will be saved</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid configuration name. (None or empty string)&quot;</span><span class="p">)</span>
+        <span class="n">nam</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">name</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">config_path</span> <span class="o">=</span> <span class="n">Configuration</span><span class="o">.</span><span class="n">_get_config_path</span><span class="p">()</span>
+        <span class="n">config_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">config_path</span><span class="p">,</span> <span class="n">nam</span> <span class="o">+</span> <span class="n">EXT</span><span class="p">)</span>
+        <span class="n">current_cfg</span> <span class="o">=</span> <span class="n">Configuration</span><span class="p">()</span>
+        <span class="n">current_cfg</span><span class="o">.</span><span class="n">config_file</span> <span class="o">=</span> <span class="n">config_file</span>
+        <span class="n">current_cfg</span><span class="o">.</span><span class="n">persist</span><span class="p">()</span>
+        <span class="n">Configurations</span><span class="o">.</span><span class="n">__get__logger</span><span class="p">()</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Saved configuration </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">name</span><span class="p">)</span></div>
+
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Configurations.remove_configuration"><a class="viewcode-back" href="../../../rst/rspub.core.config.html#rspub.core.config.Configurations.remove_configuration">[docs]</a>    <span class="k">def</span> <span class="nf">remove_configuration</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :samp:`Remove the configuration with the given name`</span>
+
+<span class="sd">        :param name: the name of the configuration to remove</span>
+<span class="sd">        :return: **True** if the configuration was successfully removed, **False** otherwise</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Invalid configuration name &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+        <span class="n">nam</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">name</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">config_path</span> <span class="o">=</span> <span class="n">Configuration</span><span class="o">.</span><span class="n">_get_config_path</span><span class="p">()</span>
+        <span class="n">config_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">config_path</span><span class="p">,</span> <span class="n">nam</span> <span class="o">+</span> <span class="n">EXT</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">config_file</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">config_file</span><span class="p">)</span>
+            <span class="n">Configurations</span><span class="o">.</span><span class="n">__get__logger</span><span class="p">()</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Removed configuration </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">name</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span></div>
+
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Configurations.current_configuration_name"><a class="viewcode-back" href="../../../rst/rspub.core.config.html#rspub.core.config.Configurations.current_configuration_name">[docs]</a>    <span class="k">def</span> <span class="nf">current_configuration_name</span><span class="p">():</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :samp:`Get the name of the current configuration`</span>
+
+<span class="sd">        :return: name of the current configuration</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">current_cfg</span> <span class="o">=</span> <span class="n">Configuration</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">current_cfg</span><span class="o">.</span><span class="n">config_file</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span></div>
+
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Configurations.rspub_config_dir"><a class="viewcode-back" href="../../../rst/rspub.core.config.html#rspub.core.config.Configurations.rspub_config_dir">[docs]</a>    <span class="k">def</span> <span class="nf">rspub_config_dir</span><span class="p">():</span>
+        <span class="n">current_cfg</span> <span class="o">=</span> <span class="n">Configuration</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">current_cfg</span><span class="o">.</span><span class="n">config_file</span><span class="p">))</span></div></div>
+
+
+<div class="viewcode-block" id="Configuration"><a class="viewcode-back" href="../../../rst/rspub.core.config.html#rspub.core.config.Configuration">[docs]</a><span class="k">class</span> <span class="nc">Configuration</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :samp:`Singleton persisting object for storing configuration parameters`</span>
+
+<span class="sd">    .. warning::</span>
+
+<span class="sd">        Do not use class Configuration directly. Use :doc:`RsParameters &lt;rspub.core.rs_paras&gt;` in stead.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">_configuration_filename</span> <span class="o">=</span> <span class="n">CFG_FILENAME</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">__get__logger</span><span class="p">():</span>
+        <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">logger</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_set_configuration_filename</span><span class="p">(</span><span class="n">cfg_filename</span><span class="p">):</span>
+        <span class="n">Configuration</span><span class="o">.</span><span class="n">__get__logger</span><span class="p">()</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Setting configuration filename to </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">cfg_filename</span><span class="p">)</span>
+        <span class="n">Configuration</span><span class="o">.</span><span class="n">_configuration_filename</span> <span class="o">=</span> <span class="n">cfg_filename</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_get_configuration_filename</span><span class="p">():</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">Configuration</span><span class="o">.</span><span class="n">_configuration_filename</span><span class="p">:</span>
+            <span class="n">Configuration</span><span class="o">.</span><span class="n">_set_configuration_filename</span><span class="p">(</span><span class="n">CFG_FILENAME</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">Configuration</span><span class="o">.</span><span class="n">_configuration_filename</span>
+
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="Configuration.reset"><a class="viewcode-back" href="../../../rst/rspub.core.config.html#rspub.core.config.Configuration.reset">[docs]</a>    <span class="k">def</span> <span class="nf">reset</span><span class="p">():</span>
+        <span class="n">Configuration</span><span class="o">.</span><span class="n">_instance</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">Configuration</span><span class="o">.</span><span class="n">__get__logger</span><span class="p">()</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Configuration was reset.&quot;</span><span class="p">)</span></div>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">_get_config_path</span><span class="p">():</span>
+
+        <span class="n">c_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s2">&quot;~&quot;</span><span class="p">)</span>
+        <span class="n">opsys</span> <span class="o">=</span> <span class="n">platform</span><span class="o">.</span><span class="n">system</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">opsys</span> <span class="o">==</span> <span class="s2">&quot;Windows&quot;</span><span class="p">:</span>
+            <span class="n">win_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">c_path</span><span class="p">,</span> <span class="s2">&quot;AppData&quot;</span><span class="p">,</span> <span class="s2">&quot;Local&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">win_path</span><span class="p">):</span> <span class="n">c_path</span> <span class="o">=</span> <span class="n">win_path</span>
+        <span class="k">elif</span> <span class="n">opsys</span> <span class="o">==</span> <span class="s2">&quot;Darwin&quot;</span><span class="p">:</span>
+            <span class="n">dar_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">c_path</span><span class="p">,</span> <span class="s2">&quot;.config&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">dar_path</span><span class="p">):</span> <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">dar_path</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">dar_path</span><span class="p">):</span> <span class="n">c_path</span> <span class="o">=</span> <span class="n">dar_path</span>
+        <span class="k">elif</span> <span class="n">opsys</span> <span class="o">==</span> <span class="s2">&quot;Linux&quot;</span><span class="p">:</span>
+            <span class="n">lin_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">c_path</span><span class="p">,</span> <span class="s2">&quot;.config&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">lin_path</span><span class="p">):</span> <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">lin_path</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">lin_path</span><span class="p">):</span> <span class="n">c_path</span> <span class="o">=</span> <span class="n">lin_path</span>
+
+        <span class="n">c_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">c_path</span><span class="p">,</span> <span class="s2">&quot;rspub&quot;</span><span class="p">,</span> <span class="n">CFG_DIRNAME</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">c_path</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">c_path</span><span class="p">)</span>
+        <span class="c1">#Configuration.__get__logger().info(&quot;Configuration directory: %s&quot;, c_path)</span>
+        <span class="k">return</span> <span class="n">c_path</span>
+
+    <span class="n">_instance</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">__new__</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">cls</span><span class="o">.</span><span class="n">_instance</span><span class="p">:</span>
+            <span class="n">Configuration</span><span class="o">.</span><span class="n">__get__logger</span><span class="p">()</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Creating Configuration._instance&quot;</span><span class="p">)</span>
+            <span class="n">cls</span><span class="o">.</span><span class="n">_instance</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="n">Configuration</span><span class="p">,</span> <span class="n">cls</span><span class="p">)</span><span class="o">.</span><span class="n">__new__</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">)</span>
+            <span class="n">cls</span><span class="o">.</span><span class="n">config_path</span> <span class="o">=</span> <span class="n">cls</span><span class="o">.</span><span class="n">_get_config_path</span><span class="p">()</span>
+            <span class="n">cls</span><span class="o">.</span><span class="n">config_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cls</span><span class="o">.</span><span class="n">config_path</span><span class="p">,</span> <span class="n">Configuration</span><span class="o">.</span><span class="n">_get_configuration_filename</span><span class="p">())</span>
+            <span class="n">cls</span><span class="o">.</span><span class="n">parser</span> <span class="o">=</span> <span class="n">ConfigParser</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">cls</span><span class="o">.</span><span class="n">config_file</span><span class="p">):</span>
+                <span class="n">cls</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="n">cls</span><span class="o">.</span><span class="n">config_file</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">cls</span><span class="o">.</span><span class="n">_instance</span>
+
+    <span class="k">def</span> <span class="nf">config_path</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">config_path</span>
+
+    <span class="k">def</span> <span class="nf">config_file</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">config_file</span>
+
+<div class="viewcode-block" id="Configuration.name"><a class="viewcode-back" href="../../../rst/rspub.core.config.html#rspub.core.config.Configuration.name">[docs]</a>    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config_file</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Configuration.persist"><a class="viewcode-back" href="../../../rst/rspub.core.config.html#rspub.core.config.Configuration.persist">[docs]</a>    <span class="k">def</span> <span class="nf">persist</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config_file</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="n">Configuration</span><span class="o">.</span><span class="n">__get__logger</span><span class="p">()</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Persisted </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config_file</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">__set_option__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">section</span><span class="p">,</span> <span class="n">option</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">has_section</span><span class="p">(</span><span class="n">section</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">add_section</span><span class="p">(</span><span class="n">section</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">remove_option</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="n">option</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="n">option</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__get_int__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">section</span><span class="p">,</span> <span class="n">option</span><span class="p">,</span> <span class="n">fallback</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="n">option</span><span class="p">,</span> <span class="n">fallback</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">fallback</span><span class="p">))</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__set_int__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">section</span><span class="p">,</span> <span class="n">option</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__set_option__</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="n">option</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">__get_boolean__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">section</span><span class="p">,</span> <span class="n">option</span><span class="p">,</span> <span class="n">fallback</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="n">option</span><span class="p">,</span> <span class="n">fallback</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">fallback</span><span class="p">))</span>
+        <span class="k">return</span> <span class="ow">not</span><span class="p">(</span><span class="n">value</span> <span class="o">==</span> <span class="s2">&quot;False&quot;</span> <span class="ow">or</span> <span class="n">value</span> <span class="o">==</span> <span class="s2">&quot;None&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__set_boolean__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">section</span><span class="p">,</span> <span class="n">option</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__set_option__</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="n">option</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">__get_list__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">section</span><span class="p">,</span> <span class="n">option</span><span class="p">,</span> <span class="n">fallback</span><span class="o">=</span><span class="nb">list</span><span class="p">()):</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="n">option</span><span class="p">,</span> <span class="n">fallback</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">fallback</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">value</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__set_list__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">section</span><span class="p">,</span> <span class="n">option</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__set_option__</span><span class="p">(</span><span class="n">section</span><span class="p">,</span> <span class="n">option</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">value</span><span class="p">))</span>
+
+<div class="viewcode-block" id="Configuration.core_items"><a class="viewcode-back" href="../../../rst/rspub.core.config.html#rspub.core.config.Configuration.core_items">[docs]</a>    <span class="k">def</span> <span class="nf">core_items</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">items</span><span class="p">(</span><span class="n">SECTION_CORE</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Configuration.core_clear"><a class="viewcode-back" href="../../../rst/rspub.core.config.html#rspub.core.config.Configuration.core_clear">[docs]</a>    <span class="k">def</span> <span class="nf">core_clear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">remove_section</span><span class="p">(</span><span class="n">SECTION_CORE</span><span class="p">)</span></div>
+
+    <span class="c1"># core settings</span>
+<div class="viewcode-block" id="Configuration.resource_dir"><a class="viewcode-back" href="../../../rst/rspub.core.config.html#rspub.core.config.Configuration.resource_dir">[docs]</a>    <span class="k">def</span> <span class="nf">resource_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fallback</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s2">&quot;~&quot;</span><span class="p">)):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">SECTION_CORE</span><span class="p">,</span> <span class="s2">&quot;resource_dir&quot;</span><span class="p">,</span> <span class="n">fallback</span><span class="o">=</span><span class="n">fallback</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Configuration.set_resource_dir"><a class="viewcode-back" href="../../../rst/rspub.core.config.html#rspub.core.config.Configuration.set_resource_dir">[docs]</a>    <span class="k">def</span> <span class="nf">set_resource_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">resource_dir</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__set_option__</span><span class="p">(</span><span class="n">SECTION_CORE</span><span class="p">,</span> <span class="s2">&quot;resource_dir&quot;</span><span class="p">,</span> <span class="n">resource_dir</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Configuration.metadata_dir"><a class="viewcode-back" href="../../../rst/rspub.core.config.html#rspub.core.config.Configuration.metadata_dir">[docs]</a>    <span class="k">def</span> <span class="nf">metadata_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fallback</span><span class="o">=</span><span class="s2">&quot;metadata&quot;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">SECTION_CORE</span><span class="p">,</span> <span class="s2">&quot;metadata_dir&quot;</span><span class="p">,</span> <span class="n">fallback</span><span class="o">=</span><span class="n">fallback</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Configuration.set_metadata_dir"><a class="viewcode-back" href="../../../rst/rspub.core.config.html#rspub.core.config.Configuration.set_metadata_dir">[docs]</a>    <span class="k">def</span> <span class="nf">set_metadata_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">metadata_dir</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__set_option__</span><span class="p">(</span><span class="n">SECTION_CORE</span><span class="p">,</span> <span class="s2">&quot;metadata_dir&quot;</span><span class="p">,</span> <span class="n">metadata_dir</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Configuration.description_dir"><a class="viewcode-back" href="../../../rst/rspub.core.config.html#rspub.core.config.Configuration.description_dir">[docs]</a>    <span class="k">def</span> <span class="nf">description_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fallback</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">SECTION_CORE</span><span class="p">,</span> <span class="s2">&quot;description_dir&quot;</span><span class="p">,</span> <span class="n">fallback</span><span class="o">=</span><span class="n">fallback</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Configuration.set_description_dir"><a class="viewcode-back" href="../../../rst/rspub.core.config.html#rspub.core.config.Configuration.set_description_dir">[docs]</a>    <span class="k">def</span> <span class="nf">set_description_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">description_dir</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__set_option__</span><span class="p">(</span><span class="n">SECTION_CORE</span><span class="p">,</span> <span class="s2">&quot;description_dir&quot;</span><span class="p">,</span> <span class="n">description_dir</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Configuration.selector_file"><a class="viewcode-back" href="../../../rst/rspub.core.config.html#rspub.core.config.Configuration.selector_file">[docs]</a>    <span class="k">def</span> <span class="nf">selector_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fallback</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">SECTION_CORE</span><span class="p">,</span> <span class="s2">&quot;selector_file&quot;</span><span class="p">,</span> <span class="n">fallback</span><span class="o">=</span><span class="n">fallback</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Configuration.set_selector_file"><a class="viewcode-back" href="../../../rst/rspub.core.config.html#rspub.core.config.Configuration.set_selector_file">[docs]</a>    <span class="k">def</span> <span class="nf">set_selector_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">selector_file</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__set_option__</span><span class="p">(</span><span class="n">SECTION_CORE</span><span class="p">,</span> <span class="s2">&quot;selector_file&quot;</span><span class="p">,</span> <span class="n">selector_file</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Configuration.simple_select_file"><a class="viewcode-back" href="../../../rst/rspub.core.config.html#rspub.core.config.Configuration.simple_select_file">[docs]</a>    <span class="k">def</span> <span class="nf">simple_select_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fallback</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">SECTION_CORE</span><span class="p">,</span> <span class="s2">&quot;simple_select_file&quot;</span><span class="p">,</span> <span class="n">fallback</span><span class="o">=</span><span class="n">fallback</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Configuration.set_simple_select_file"><a class="viewcode-back" href="../../../rst/rspub.core.config.html#rspub.core.config.Configuration.set_simple_select_file">[docs]</a>    <span class="k">def</span> <span class="nf">set_simple_select_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">simple_file</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__set_option__</span><span class="p">(</span><span class="n">SECTION_CORE</span><span class="p">,</span> <span class="s2">&quot;simple_select_file&quot;</span><span class="p">,</span> <span class="n">simple_file</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Configuration.select_mode"><a class="viewcode-back" href="../../../rst/rspub.core.config.html#rspub.core.config.Configuration.select_mode">[docs]</a>    <span class="k">def</span> <span class="nf">select_mode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fallback</span><span class="o">=</span><span class="n">SelectMode</span><span class="o">.</span><span class="n">simple</span><span class="o">.</span><span class="n">name</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">SelectMode</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">SECTION_CORE</span><span class="p">,</span> <span class="s2">&quot;select_mode&quot;</span><span class="p">,</span> <span class="n">fallback</span><span class="o">=</span><span class="n">fallback</span><span class="p">)]</span></div>
+
+<div class="viewcode-block" id="Configuration.set_select_mode"><a class="viewcode-back" href="../../../rst/rspub.core.config.html#rspub.core.config.Configuration.set_select_mode">[docs]</a>    <span class="k">def</span> <span class="nf">set_select_mode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__set_int__</span><span class="p">(</span><span class="n">SECTION_CORE</span><span class="p">,</span> <span class="s2">&quot;select_mode&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">.</span><span class="n">name</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Configuration.plugin_dir"><a class="viewcode-back" href="../../../rst/rspub.core.config.html#rspub.core.config.Configuration.plugin_dir">[docs]</a>    <span class="k">def</span> <span class="nf">plugin_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fallback</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">SECTION_CORE</span><span class="p">,</span> <span class="s2">&quot;plugin_dir&quot;</span><span class="p">,</span> <span class="n">fallback</span><span class="o">=</span><span class="n">fallback</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Configuration.set_plugin_dir"><a class="viewcode-back" href="../../../rst/rspub.core.config.html#rspub.core.config.Configuration.set_plugin_dir">[docs]</a>    <span class="k">def</span> <span class="nf">set_plugin_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plugin_dir</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__set_option__</span><span class="p">(</span><span class="n">SECTION_CORE</span><span class="p">,</span> <span class="s2">&quot;plugin_dir&quot;</span><span class="p">,</span> <span class="n">plugin_dir</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Configuration.history_dir"><a class="viewcode-back" href="../../../rst/rspub.core.config.html#rspub.core.config.Configuration.history_dir">[docs]</a>    <span class="k">def</span> <span class="nf">history_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fallback</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">SECTION_CORE</span><span class="p">,</span> <span class="s2">&quot;history_dir&quot;</span><span class="p">,</span> <span class="n">fallback</span><span class="o">=</span><span class="n">fallback</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Configuration.set_history_dir"><a class="viewcode-back" href="../../../rst/rspub.core.config.html#rspub.core.config.Configuration.set_history_dir">[docs]</a>    <span class="k">def</span> <span class="nf">set_history_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">history_dir</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__set_option__</span><span class="p">(</span><span class="n">SECTION_CORE</span><span class="p">,</span> <span class="s2">&quot;history_dir&quot;</span><span class="p">,</span> <span class="n">history_dir</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Configuration.url_prefix"><a class="viewcode-back" href="../../../rst/rspub.core.config.html#rspub.core.config.Configuration.url_prefix">[docs]</a>    <span class="k">def</span> <span class="nf">url_prefix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fallback</span><span class="o">=</span><span class="s2">&quot;http://www.example.com&quot;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">SECTION_CORE</span><span class="p">,</span> <span class="s2">&quot;url_prefix&quot;</span><span class="p">,</span> <span class="n">fallback</span><span class="o">=</span><span class="n">fallback</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Configuration.set_url_prefix"><a class="viewcode-back" href="../../../rst/rspub.core.config.html#rspub.core.config.Configuration.set_url_prefix">[docs]</a>    <span class="k">def</span> <span class="nf">set_url_prefix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">urlprefix</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__set_option__</span><span class="p">(</span><span class="n">SECTION_CORE</span><span class="p">,</span> <span class="s2">&quot;url_prefix&quot;</span><span class="p">,</span> <span class="n">urlprefix</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Configuration.strategy"><a class="viewcode-back" href="../../../rst/rspub.core.config.html#rspub.core.config.Configuration.strategy">[docs]</a>    <span class="k">def</span> <span class="nf">strategy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fallback</span><span class="o">=</span><span class="n">Strategy</span><span class="o">.</span><span class="n">resourcelist</span><span class="o">.</span><span class="n">name</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">Strategy</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">SECTION_CORE</span><span class="p">,</span> <span class="s2">&quot;strategy&quot;</span><span class="p">,</span> <span class="n">fallback</span><span class="o">=</span><span class="n">fallback</span><span class="p">)]</span></div>
+
+<div class="viewcode-block" id="Configuration.set_strategy"><a class="viewcode-back" href="../../../rst/rspub.core.config.html#rspub.core.config.Configuration.set_strategy">[docs]</a>    <span class="k">def</span> <span class="nf">set_strategy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">strategy</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__set_option__</span><span class="p">(</span><span class="n">SECTION_CORE</span><span class="p">,</span> <span class="s2">&quot;strategy&quot;</span><span class="p">,</span> <span class="n">strategy</span><span class="o">.</span><span class="n">name</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Configuration.max_items_in_list"><a class="viewcode-back" href="../../../rst/rspub.core.config.html#rspub.core.config.Configuration.max_items_in_list">[docs]</a>    <span class="k">def</span> <span class="nf">max_items_in_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fallback</span><span class="o">=</span><span class="mi">50000</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_int__</span><span class="p">(</span><span class="n">SECTION_CORE</span><span class="p">,</span> <span class="s2">&quot;max_items_in_list&quot;</span><span class="p">,</span> <span class="n">fallback</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Configuration.set_max_items_in_list"><a class="viewcode-back" href="../../../rst/rspub.core.config.html#rspub.core.config.Configuration.set_max_items_in_list">[docs]</a>    <span class="k">def</span> <span class="nf">set_max_items_in_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">max_items</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__set_int__</span><span class="p">(</span><span class="n">SECTION_CORE</span><span class="p">,</span> <span class="s2">&quot;max_items_in_list&quot;</span><span class="p">,</span> <span class="n">max_items</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Configuration.zero_fill_filename"><a class="viewcode-back" href="../../../rst/rspub.core.config.html#rspub.core.config.Configuration.zero_fill_filename">[docs]</a>    <span class="k">def</span> <span class="nf">zero_fill_filename</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fallback</span><span class="o">=</span><span class="mi">4</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_int__</span><span class="p">(</span><span class="n">SECTION_CORE</span><span class="p">,</span> <span class="s2">&quot;zero_fill_filename&quot;</span><span class="p">,</span> <span class="n">fallback</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Configuration.set_zero_fill_filename"><a class="viewcode-back" href="../../../rst/rspub.core.config.html#rspub.core.config.Configuration.set_zero_fill_filename">[docs]</a>    <span class="k">def</span> <span class="nf">set_zero_fill_filename</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">zfill</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__set_int__</span><span class="p">(</span><span class="n">SECTION_CORE</span><span class="p">,</span> <span class="s2">&quot;zero_fill_filename&quot;</span><span class="p">,</span> <span class="n">zfill</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Configuration.is_saving_pretty_xml"><a class="viewcode-back" href="../../../rst/rspub.core.config.html#rspub.core.config.Configuration.is_saving_pretty_xml">[docs]</a>    <span class="k">def</span> <span class="nf">is_saving_pretty_xml</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fallback</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_boolean__</span><span class="p">(</span><span class="n">SECTION_CORE</span><span class="p">,</span> <span class="s2">&quot;is_saving_pretty_xml&quot;</span><span class="p">,</span> <span class="n">fallback</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Configuration.set_is_saving_pretty_xml"><a class="viewcode-back" href="../../../rst/rspub.core.config.html#rspub.core.config.Configuration.set_is_saving_pretty_xml">[docs]</a>    <span class="k">def</span> <span class="nf">set_is_saving_pretty_xml</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p_xml</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__set_boolean__</span><span class="p">(</span><span class="n">SECTION_CORE</span><span class="p">,</span> <span class="s2">&quot;is_saving_pretty_xml&quot;</span><span class="p">,</span> <span class="n">p_xml</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Configuration.is_saving_sitemaps"><a class="viewcode-back" href="../../../rst/rspub.core.config.html#rspub.core.config.Configuration.is_saving_sitemaps">[docs]</a>    <span class="k">def</span> <span class="nf">is_saving_sitemaps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fallback</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_boolean__</span><span class="p">(</span><span class="n">SECTION_CORE</span><span class="p">,</span> <span class="s2">&quot;is_saving_sitemaps&quot;</span><span class="p">,</span> <span class="n">fallback</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Configuration.set_is_saving_sitemaps"><a class="viewcode-back" href="../../../rst/rspub.core.config.html#rspub.core.config.Configuration.set_is_saving_sitemaps">[docs]</a>    <span class="k">def</span> <span class="nf">set_is_saving_sitemaps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">is_saving</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__set_boolean__</span><span class="p">(</span><span class="n">SECTION_CORE</span><span class="p">,</span> <span class="s2">&quot;is_saving_sitemaps&quot;</span><span class="p">,</span> <span class="n">is_saving</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Configuration.has_wellknown_at_root"><a class="viewcode-back" href="../../../rst/rspub.core.config.html#rspub.core.config.Configuration.has_wellknown_at_root">[docs]</a>    <span class="k">def</span> <span class="nf">has_wellknown_at_root</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fallback</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_boolean__</span><span class="p">(</span><span class="n">SECTION_CORE</span><span class="p">,</span> <span class="s2">&quot;has_wellknown_at_root&quot;</span><span class="p">,</span> <span class="n">fallback</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Configuration.set_has_wellknown_at_root"><a class="viewcode-back" href="../../../rst/rspub.core.config.html#rspub.core.config.Configuration.set_has_wellknown_at_root">[docs]</a>    <span class="k">def</span> <span class="nf">set_has_wellknown_at_root</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">at_root</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__set_boolean__</span><span class="p">(</span><span class="n">SECTION_CORE</span><span class="p">,</span> <span class="s2">&quot;has_wellknown_at_root&quot;</span><span class="p">,</span> <span class="n">at_root</span><span class="p">)</span></div>
+
+    <span class="c1"># execution results</span>
+<div class="viewcode-block" id="Configuration.last_excution"><a class="viewcode-back" href="../../../rst/rspub.core.config.html#rspub.core.config.Configuration.last_excution">[docs]</a>    <span class="k">def</span> <span class="nf">last_excution</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">SECTION_CORE</span><span class="p">,</span> <span class="s2">&quot;last_excution&quot;</span><span class="p">,</span> <span class="n">fallback</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Configuration.set_last_execution"><a class="viewcode-back" href="../../../rst/rspub.core.config.html#rspub.core.config.Configuration.set_last_execution">[docs]</a>    <span class="k">def</span> <span class="nf">set_last_execution</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">date_string</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__set_option__</span><span class="p">(</span><span class="n">SECTION_CORE</span><span class="p">,</span> <span class="s2">&quot;last_excution&quot;</span><span class="p">,</span> <span class="n">date_string</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Configuration.last_strategy"><a class="viewcode-back" href="../../../rst/rspub.core.config.html#rspub.core.config.Configuration.last_strategy">[docs]</a>    <span class="k">def</span> <span class="nf">last_strategy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">SECTION_CORE</span><span class="p">,</span> <span class="s2">&quot;last_strategy&quot;</span><span class="p">,</span> <span class="n">fallback</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">value</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="n">Strategy</span><span class="p">[</span><span class="n">value</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Configuration.set_last_strategy"><a class="viewcode-back" href="../../../rst/rspub.core.config.html#rspub.core.config.Configuration.set_last_strategy">[docs]</a>    <span class="k">def</span> <span class="nf">set_last_strategy</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">strategy</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">strategy</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__set_option__</span><span class="p">(</span><span class="n">SECTION_CORE</span><span class="p">,</span> <span class="s2">&quot;last_strategy&quot;</span><span class="p">,</span> <span class="n">strategy</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__set_option__</span><span class="p">(</span><span class="n">SECTION_CORE</span><span class="p">,</span> <span class="s2">&quot;last_strategy&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Configuration.last_sitemaps"><a class="viewcode-back" href="../../../rst/rspub.core.config.html#rspub.core.config.Configuration.last_sitemaps">[docs]</a>    <span class="k">def</span> <span class="nf">last_sitemaps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fallback</span><span class="o">=</span><span class="nb">list</span><span class="p">()):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_list__</span><span class="p">(</span><span class="n">SECTION_CORE</span><span class="p">,</span> <span class="s2">&quot;last_sitemaps&quot;</span><span class="p">,</span> <span class="n">fallback</span><span class="o">=</span><span class="n">fallback</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Configuration.set_last_sitemaps"><a class="viewcode-back" href="../../../rst/rspub.core.config.html#rspub.core.config.Configuration.set_last_sitemaps">[docs]</a>    <span class="k">def</span> <span class="nf">set_last_sitemaps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sitemaplist</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__set_list__</span><span class="p">(</span><span class="n">SECTION_CORE</span><span class="p">,</span> <span class="s2">&quot;last_sitemaps&quot;</span><span class="p">,</span> <span class="n">sitemaplist</span><span class="p">)</span></div>
+
+    <span class="c1"># # scp parameters</span>
+<div class="viewcode-block" id="Configuration.scp_server"><a class="viewcode-back" href="../../../rst/rspub.core.config.html#rspub.core.config.Configuration.scp_server">[docs]</a>    <span class="k">def</span> <span class="nf">scp_server</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fallback</span><span class="o">=</span><span class="s2">&quot;example.com&quot;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">SECTION_CORE</span><span class="p">,</span> <span class="s2">&quot;scp_server&quot;</span><span class="p">,</span> <span class="n">fallback</span><span class="o">=</span><span class="n">fallback</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Configuration.set_scp_server"><a class="viewcode-back" href="../../../rst/rspub.core.config.html#rspub.core.config.Configuration.set_scp_server">[docs]</a>    <span class="k">def</span> <span class="nf">set_scp_server</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scp_server</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__set_option__</span><span class="p">(</span><span class="n">SECTION_CORE</span><span class="p">,</span> <span class="s2">&quot;scp_server&quot;</span><span class="p">,</span> <span class="n">scp_server</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Configuration.scp_port"><a class="viewcode-back" href="../../../rst/rspub.core.config.html#rspub.core.config.Configuration.scp_port">[docs]</a>    <span class="k">def</span> <span class="nf">scp_port</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fallback</span><span class="o">=</span><span class="mi">22</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_int__</span><span class="p">(</span><span class="n">SECTION_CORE</span><span class="p">,</span> <span class="s2">&quot;scp_port&quot;</span><span class="p">,</span> <span class="n">fallback</span><span class="o">=</span><span class="n">fallback</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Configuration.set_scp_port"><a class="viewcode-back" href="../../../rst/rspub.core.config.html#rspub.core.config.Configuration.set_scp_port">[docs]</a>    <span class="k">def</span> <span class="nf">set_scp_port</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scp_port</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__set_int__</span><span class="p">(</span><span class="n">SECTION_CORE</span><span class="p">,</span> <span class="s2">&quot;scp_port&quot;</span><span class="p">,</span> <span class="n">scp_port</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Configuration.scp_user"><a class="viewcode-back" href="../../../rst/rspub.core.config.html#rspub.core.config.Configuration.scp_user">[docs]</a>    <span class="k">def</span> <span class="nf">scp_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fallback</span><span class="o">=</span><span class="s2">&quot;username&quot;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">SECTION_CORE</span><span class="p">,</span> <span class="s2">&quot;scp_user&quot;</span><span class="p">,</span> <span class="n">fallback</span><span class="o">=</span><span class="n">fallback</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Configuration.set_scp_user"><a class="viewcode-back" href="../../../rst/rspub.core.config.html#rspub.core.config.Configuration.set_scp_user">[docs]</a>    <span class="k">def</span> <span class="nf">set_scp_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scp_user</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__set_option__</span><span class="p">(</span><span class="n">SECTION_CORE</span><span class="p">,</span> <span class="s2">&quot;scp_user&quot;</span><span class="p">,</span> <span class="n">scp_user</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Configuration.scp_document_root"><a class="viewcode-back" href="../../../rst/rspub.core.config.html#rspub.core.config.Configuration.scp_document_root">[docs]</a>    <span class="k">def</span> <span class="nf">scp_document_root</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fallback</span><span class="o">=</span><span class="s2">&quot;/var/www/html/&quot;</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">SECTION_CORE</span><span class="p">,</span> <span class="s2">&quot;scp_document_root&quot;</span><span class="p">,</span> <span class="n">fallback</span><span class="o">=</span><span class="n">fallback</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Configuration.set_scp_document_root"><a class="viewcode-back" href="../../../rst/rspub.core.config.html#rspub.core.config.Configuration.set_scp_document_root">[docs]</a>    <span class="k">def</span> <span class="nf">set_scp_document_root</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scp_document_root</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__set_option__</span><span class="p">(</span><span class="n">SECTION_CORE</span><span class="p">,</span> <span class="s2">&quot;scp_document_root&quot;</span><span class="p">,</span> <span class="n">scp_document_root</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Configuration.scp_document_path"><a class="viewcode-back" href="../../../rst/rspub.core.config.html#rspub.core.config.Configuration.scp_document_path">[docs]</a>    <span class="k">def</span> <span class="nf">scp_document_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fallback</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">SECTION_CORE</span><span class="p">,</span> <span class="s2">&quot;scp_document_path&quot;</span><span class="p">,</span> <span class="n">fallback</span><span class="o">=</span><span class="n">fallback</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Configuration.set_scp_document_path"><a class="viewcode-back" href="../../../rst/rspub.core.config.html#rspub.core.config.Configuration.set_scp_document_path">[docs]</a>    <span class="k">def</span> <span class="nf">set_scp_document_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">scp_document_path</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__set_option__</span><span class="p">(</span><span class="n">SECTION_CORE</span><span class="p">,</span> <span class="s2">&quot;scp_document_path&quot;</span><span class="p">,</span> <span class="n">scp_document_path</span><span class="p">)</span></div>
+
+    <span class="c1"># # zip parameters</span>
+<div class="viewcode-block" id="Configuration.zip_filename"><a class="viewcode-back" href="../../../rst/rspub.core.config.html#rspub.core.config.Configuration.zip_filename">[docs]</a>    <span class="k">def</span> <span class="nf">zip_filename</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fallback</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">expanduser</span><span class="p">(</span><span class="s2">&quot;~&quot;</span><span class="p">),</span> <span class="s2">&quot;resourcesync.zip&quot;</span><span class="p">)):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parser</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">SECTION_CORE</span><span class="p">,</span> <span class="s2">&quot;zip_filename&quot;</span><span class="p">,</span> <span class="n">fallback</span><span class="o">=</span><span class="n">fallback</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Configuration.set_zip_filename"><a class="viewcode-back" href="../../../rst/rspub.core.config.html#rspub.core.config.Configuration.set_zip_filename">[docs]</a>    <span class="k">def</span> <span class="nf">set_zip_filename</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">zip_filename</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__set_option__</span><span class="p">(</span><span class="n">SECTION_CORE</span><span class="p">,</span> <span class="s2">&quot;zip_filename&quot;</span><span class="p">,</span> <span class="n">zip_filename</span><span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, DANS-KNAW.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+  
+     
+    <li><a href="https://github.com/EHRI/rspub-core">rspub-core at GitHub</a></li>
+
+
+</body>
+</html>

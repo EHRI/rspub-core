@@ -1,5 +1,9 @@
 #! /usr/bin/env python3
 # -*- coding: utf-8 -*-
+"""
+:samp:`Transport resources and sitemaps to the web server`
+
+"""
 import logging
 import os
 import shutil
@@ -162,10 +166,11 @@ class Transport(Observable):
                               include_description=not self.paras.has_wellknown_at_root)
         if self.paras.has_wellknown_at_root:
             files = self.paras.abs_description_path()
-            # .well-known directory can only be made by root. sudo chmod -R  a=rwx .well-known
+            # .well-known directory can only be made by root.
+            # sudo mkdir .well-known
+            # sudo chmod -R  a=rwx .well-known
             remote_path = self.paras.scp_document_root + ".well-known"
             self.scp_put(files, remote_path)
-
 
     def create_ssh_client(self, password):
         if self.sshClient is None:
@@ -185,7 +190,7 @@ class Transport(Observable):
     # mind that directories ending with a slash will transport the contents of the directory,
     # whereas directories not ending with a slash will transport the directory itself.
     def scp_put(self, files, remote_path):
-        print(files, remote_path)
+        LOG.info("%s >>>> %s" % (files, remote_path))
         scp = SCPClient(self.sshClient.get_transport())
         preserve_times = True
         recursive = True  # Can be used both for sending a single file and a directory

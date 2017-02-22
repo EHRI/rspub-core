@@ -1,0 +1,328 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Resource gate builder &mdash; rspub-core 1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="rspub-core 1 documentation" href="../index.html"/>
+        <link rel="up" title="rspub.pluggable" href="rspub.pluggable.html"/>
+        <link rel="next" title="rspub.util" href="rspub.util.html"/>
+        <link rel="prev" title="rspub.pluggable" href="rspub.pluggable.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> rspub-core
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="rspub.cli.html">rspub.cli</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rspub.core.html">rspub.core</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="rspub.pluggable.html">rspub.pluggable</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Resource gate builder</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#build-your-own">Build your own</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#register-a-resourcegatebuilder">Register a ResourceGateBuilder</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#build-predicates">Build predicates</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#implement-the-build-methods">Implement the build methods</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="rspub.util.html">rspub.util</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../index.html">rspub-core</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="rspub.pluggable.html">rspub.pluggable</a> &raquo;</li>
+      
+    <li>Resource gate builder</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/rst/rspub.pluggable.gate.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="resource-gate-builder">
+<h1>Resource gate builder<a class="headerlink" href="#resource-gate-builder" title="Permalink to this headline">¶</a></h1>
+<p class="rubric">module: rspub.pluggable.gate</p>
+<span class="target" id="module-rspub.pluggable.gate"></span><p><code class="samp docutils literal"><span class="pre">Pluggable</span> <span class="pre">resource</span> <span class="pre">gate</span> <span class="pre">and</span> <span class="pre">builder</span></code></p>
+<div class="section" id="build-your-own">
+<h2>Build your own<a class="headerlink" href="#build-your-own" title="Permalink to this headline">¶</a></h2>
+<p>The selection mechanism for resources is implemented as a <a class="reference internal" href="rspub.util.gates.html#rspub.util.gates.gate" title="rspub.util.gates.gate"><code class="xref py py-func docutils literal"><span class="pre">gate()</span></code></a> that uses
+predicates for including and excluding resources based on their filename.
+The <a class="reference internal" href="#rspub.pluggable.gate.ResourceGateBuilder" title="rspub.pluggable.gate.ResourceGateBuilder"><code class="xref py py-class docutils literal"><span class="pre">ResourceGateBuilder</span></code></a> hook allows you to shape this resource gate and adapt it
+completely to your needs. You can build your own ResourceGateBuilder by creating a class that subclasses
+<a class="reference internal" href="#rspub.pluggable.gate.ResourceGateBuilder" title="rspub.pluggable.gate.ResourceGateBuilder"><code class="xref py py-class docutils literal"><span class="pre">rspub.pluggable.gate.ResourceGateBuilder</span></code></a> or - to avoid dependencies in your code - that implements the two
+methods <a class="reference internal" href="rspub.util.gates.html#rspub.util.gates.GateBuilder.build_includes" title="rspub.util.gates.GateBuilder.build_includes"><code class="xref py py-func docutils literal"><span class="pre">build_includes()</span></code></a> and <a class="reference internal" href="rspub.util.gates.html#rspub.util.gates.GateBuilder.build_excludes" title="rspub.util.gates.GateBuilder.build_excludes"><code class="xref py py-func docutils literal"><span class="pre">build_excludes()</span></code></a>.
+In any case your gate builder should be named ResourceGateBuilder, because by this name your plugin will be
+recognized by rspub-core.</p>
+<div class="section" id="register-a-resourcegatebuilder">
+<h3>Register a ResourceGateBuilder<a class="headerlink" href="#register-a-resourcegatebuilder" title="Permalink to this headline">¶</a></h3>
+<p>Your ResourceGateBuilder should be placed in a directory that is registered
+as <a class="reference internal" href="rspub.core.rs_paras.html#rspub.core.rs_paras.RsParameters.plugin_dir" title="rspub.core.rs_paras.RsParameters.plugin_dir"><code class="xref py py-func docutils literal"><span class="pre">plugin_dir()</span></code></a> at <a class="reference internal" href="rspub.core.rs.html#rspub.core.rs.ResourceSync" title="rspub.core.rs.ResourceSync"><code class="xref py py-class docutils literal"><span class="pre">ResourceSync</span></code></a>.
+(There may be multiple ResourceGateBuilders in your plugin directory but this could unnecessarily complicate
+the building process.)</p>
+</div>
+<div class="section" id="build-predicates">
+<h3>Build predicates<a class="headerlink" href="#build-predicates" title="Permalink to this headline">¶</a></h3>
+<p>Predicates you supply in the lists of including and excluding predicates should be one-argument predicates
+that take the filename of a resource as input. The logic in your predicates could take advantage of the
+logical functions offered by <a class="reference internal" href="rspub.util.gates.html#module-rspub.util.gates" title="rspub.util.gates"><code class="xref py py-mod docutils literal"><span class="pre">rspub.util.gates</span></code></a> and file selection filters offered
+in <a class="reference internal" href="rspub.util.resourcefilter.html#module-rspub.util.resourcefilter" title="rspub.util.resourcefilter"><code class="xref py py-mod docutils literal"><span class="pre">rspub.util.resourcefilter</span></code></a>.</p>
+<p>Example: Construct a predicate for directory names that end with &#8216;abc&#8217;:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">rspub.util.resourcefilter</span> <span class="k">as</span> <span class="nn">rf</span>
+<span class="n">dir_ends_with_abc</span> <span class="o">=</span> <span class="n">rf</span><span class="o">.</span><span class="n">directory_pattern_predicate</span><span class="p">(</span><span class="s2">&quot;abc$&quot;</span><span class="p">)</span>
+
+<span class="k">assert</span> <span class="n">dir_ends_with_abc</span><span class="p">(</span><span class="s2">&quot;/foo/bar/folder_abc/my_resource.txt&quot;</span><span class="p">)</span>
+<span class="k">assert</span> <span class="ow">not</span> <span class="n">dir_ends_with_abc</span><span class="p">(</span><span class="s2">&quot;/foo/bar/folder_def/my_resource.txt&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Example: Construct a predicate for xml files:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">xml_file</span> <span class="o">=</span> <span class="n">rf</span><span class="o">.</span><span class="n">filename_pattern_predicate</span><span class="p">(</span><span class="s2">&quot;.xml$&quot;</span><span class="p">)</span>
+
+<span class="k">assert</span> <span class="n">xml_file</span><span class="p">(</span><span class="s2">&quot;my_resource.xml&quot;</span><span class="p">)</span>
+<span class="k">assert</span> <span class="ow">not</span> <span class="n">xml_file</span><span class="p">(</span><span class="s2">&quot;my_resource.txt&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Example: Construct a predicate for xml files in folders that end with &#8216;abc&#8217;:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">rspub.util.gates</span> <span class="k">as</span> <span class="nn">lf</span>
+<span class="n">xml_file_in_abc</span> <span class="o">=</span> <span class="n">lf</span><span class="o">.</span><span class="n">and_</span><span class="p">(</span><span class="n">dir_ends_with_abc</span><span class="p">,</span> <span class="n">xml_file</span><span class="p">)</span>
+
+<span class="k">assert</span> <span class="n">xml_file_in_abc</span><span class="p">(</span><span class="s2">&quot;/foo/bar/folder_abc/my_resource.xml&quot;</span><span class="p">)</span>
+<span class="k">assert</span> <span class="ow">not</span> <span class="n">xml_file_in_abc</span><span class="p">(</span><span class="s2">&quot;/foo/bar/folder_abc/my_resource.txt&quot;</span><span class="p">)</span>
+<span class="k">assert</span> <span class="ow">not</span> <span class="n">xml_file_in_abc</span><span class="p">(</span><span class="s2">&quot;/foo/bar/folder_def/my_resource.xml&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Example: Construct a predicate for files modified after 31 July 2016:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">recent</span> <span class="o">=</span> <span class="n">rf</span><span class="o">.</span><span class="n">last_modified_after_predicate</span><span class="p">(</span><span class="s2">&quot;2016-08-01&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Example: Test a gate that will allow xml files from folders that end with &#8216;abc&#8217;, but that excludes files modified
+after 31 July 2016:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">includes</span> <span class="o">=</span> <span class="p">[</span><span class="n">xml_files_in_abc</span><span class="p">]</span>
+<span class="n">excludes</span> <span class="o">=</span> <span class="p">[</span><span class="n">recent</span><span class="p">]</span>
+<span class="n">resource_gate</span> <span class="o">=</span> <span class="n">lf</span><span class="o">.</span><span class="n">gate</span><span class="p">(</span><span class="n">includes</span><span class="p">,</span> <span class="n">excludes</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If you are satisfied with your gate the <cite>includes</cite> and <cite>excludes</cite> can be contributed by your ResourceGateBuilder.</p>
+</div>
+<div class="section" id="implement-the-build-methods">
+<h3>Implement the build methods<a class="headerlink" href="#implement-the-build-methods" title="Permalink to this headline">¶</a></h3>
+<p>When implementing the build methods <a class="reference internal" href="rspub.util.gates.html#rspub.util.gates.GateBuilder.build_includes" title="rspub.util.gates.GateBuilder.build_includes"><code class="xref py py-func docutils literal"><span class="pre">build_includes()</span></code></a>
+and <a class="reference internal" href="rspub.util.gates.html#rspub.util.gates.GateBuilder.build_excludes" title="rspub.util.gates.GateBuilder.build_excludes"><code class="xref py py-func docutils literal"><span class="pre">build_excludes()</span></code></a> it is good to know that the first builder in the chain
+is the default <a class="reference internal" href="#rspub.pluggable.gate.ResourceGateBuilder" title="rspub.pluggable.gate.ResourceGateBuilder"><code class="xref py py-class docutils literal"><span class="pre">ResourceGateBuilder</span></code></a> as implemented below. It defines the includes very wide: allow anything
+found in the <a class="reference internal" href="rspub.core.rs_paras.html#rspub.core.rs_paras.RsParameters.resource_dir" title="rspub.core.rs_paras.RsParameters.resource_dir"><code class="xref py py-func docutils literal"><span class="pre">resource_dir()</span></code></a>. In order to effectively contribute your
+including predicates, you should not append them to the given list but replace the list with your own list
+of predicates. The excluding list as defined by the default class:<cite>ResourceGateBuilder</cite> contains niceties as
+filter out hidden files, exclude files in your <a class="reference internal" href="rspub.core.rs_paras.html#rspub.core.rs_paras.RsParameters.metadata_dir" title="rspub.core.rs_paras.RsParameters.metadata_dir"><code class="xref py py-func docutils literal"><span class="pre">metadata_dir()</span></code></a> etc.
+If these default excluding predicates are not in your way you can append your excludes to this default list
+in the method <a class="reference internal" href="rspub.util.gates.html#rspub.util.gates.GateBuilder.build_excludes" title="rspub.util.gates.GateBuilder.build_excludes"><code class="xref py py-func docutils literal"><span class="pre">build_excludes()</span></code></a>.</p>
+<dl class="class">
+<dt id="rspub.pluggable.gate.ResourceGateBuilder">
+<em class="property">class </em><code class="descclassname">rspub.pluggable.gate.</code><code class="descname">ResourceGateBuilder</code><span class="sig-paren">(</span><em>resource_dir=None</em>, <em>metadata_dir=None</em>, <em>plugin_dir=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/pluggable/gate.html#ResourceGateBuilder"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.pluggable.gate.ResourceGateBuilder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="rspub.util.gates.html#rspub.util.gates.GateBuilder" title="rspub.util.gates.GateBuilder"><code class="xref py py-class docutils literal"><span class="pre">rspub.util.gates.GateBuilder</span></code></a></p>
+<p><code class="samp docutils literal"><span class="pre">Default</span> <em><span class="pre">ResourceGateBuilder</span></em></code></p>
+<p>This
+default class builds a <a class="reference internal" href="rspub.util.gates.html#rspub.util.gates.gate" title="rspub.util.gates.gate"><code class="xref py py-func docutils literal"><span class="pre">gate()</span></code></a> that allows any file that is encountered.
+It will exclude however any file that
+is not in <a class="reference internal" href="rspub.core.rs_paras.html#rspub.core.rs_paras.RsParameters.resource_dir" title="rspub.core.rs_paras.RsParameters.resource_dir"><code class="xref py py-func docutils literal"><span class="pre">resource_dir()</span></code></a> or any of its subdirectories, hidden files and
+files from the directories <a class="reference internal" href="rspub.core.rs_paras.html#rspub.core.rs_paras.RsParameters.metadata_dir" title="rspub.core.rs_paras.RsParameters.metadata_dir"><code class="xref py py-func docutils literal"><span class="pre">metadata_dir()</span></code></a>,
+<a class="reference internal" href="rspub.core.rs_paras.html#rspub.core.rs_paras.RsParameters.plugin_dir" title="rspub.core.rs_paras.RsParameters.plugin_dir"><code class="xref py py-func docutils literal"><span class="pre">plugin_dir()</span></code></a> and <cite>.well-known/resourcesync</cite>.</p>
+<dl class="method">
+<dt id="rspub.pluggable.gate.ResourceGateBuilder.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>resource_dir=None</em>, <em>metadata_dir=None</em>, <em>plugin_dir=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/pluggable/gate.html#ResourceGateBuilder.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.pluggable.gate.ResourceGateBuilder.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.pluggable.gate.ResourceGateBuilder.build_includes">
+<code class="descname">build_includes</code><span class="sig-paren">(</span><em>includes: list</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/pluggable/gate.html#ResourceGateBuilder.build_includes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.pluggable.gate.ResourceGateBuilder.build_includes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.pluggable.gate.ResourceGateBuilder.build_excludes">
+<code class="descname">build_excludes</code><span class="sig-paren">(</span><em>excludes: list</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/pluggable/gate.html#ResourceGateBuilder.build_excludes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.pluggable.gate.ResourceGateBuilder.build_excludes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="rspub.util.html" class="btn btn-neutral float-right" title="rspub.util" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="rspub.pluggable.html" class="btn btn-neutral" title="rspub.pluggable" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, DANS-KNAW.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+  
+     
+    <li><a href="https://github.com/EHRI/rspub-core">rspub-core at GitHub</a></li>
+
+
+</body>
+</html>

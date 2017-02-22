@@ -1,0 +1,600 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>rspub.core.executors &mdash; rspub-core 1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../../../genindex.html"/>
+        <link rel="search" title="Search" href="../../../search.html"/>
+    <link rel="top" title="rspub-core 1 documentation" href="../../../index.html"/>
+        <link rel="up" title="Module code" href="../../index.html"/> 
+
+  
+  <script src="../../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> rspub-core
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../rst/rspub.cli.html">rspub.cli</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../rst/rspub.core.html">rspub.core</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../rst/rspub.pluggable.html">rspub.pluggable</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../rst/rspub.util.html">rspub.util</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../../index.html">rspub-core</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+      
+    <li>rspub.core.executors</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for rspub.core.executors</h1><div class="highlight"><pre>
+<span></span><span class="ch">#! /usr/bin/env python3</span>
+<span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">:samp:`Events and base classes for execution`</span>
+
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">from</span> <span class="nn">abc</span> <span class="k">import</span> <span class="n">ABCMeta</span><span class="p">,</span> <span class="n">abstractmethod</span>
+<span class="kn">from</span> <span class="nn">enum</span> <span class="k">import</span> <span class="n">Enum</span>
+<span class="kn">from</span> <span class="nn">glob</span> <span class="k">import</span> <span class="n">glob</span>
+
+<span class="kn">from</span> <span class="nn">resync</span> <span class="k">import</span> <span class="n">CapabilityList</span>
+<span class="kn">from</span> <span class="nn">resync</span> <span class="k">import</span> <span class="n">Resource</span>
+<span class="kn">from</span> <span class="nn">resync</span> <span class="k">import</span> <span class="n">SourceDescription</span>
+<span class="kn">from</span> <span class="nn">resync.list_base_with_index</span> <span class="k">import</span> <span class="n">ListBaseWithIndex</span>
+<span class="kn">from</span> <span class="nn">resync.sitemap</span> <span class="k">import</span> <span class="n">Sitemap</span>
+<span class="kn">from</span> <span class="nn">rspub.core.rs_enum</span> <span class="k">import</span> <span class="n">Capability</span>
+<span class="kn">from</span> <span class="nn">rspub.core.rs_paras</span> <span class="k">import</span> <span class="n">RsParameters</span>
+<span class="kn">from</span> <span class="nn">rspub.pluggable.gate</span> <span class="k">import</span> <span class="n">ResourceGateBuilder</span>
+<span class="kn">from</span> <span class="nn">rspub.util</span> <span class="k">import</span> <span class="n">defaults</span>
+<span class="kn">from</span> <span class="nn">rspub.util.gates</span> <span class="k">import</span> <span class="n">PluggedInGateBuilder</span><span class="p">,</span> <span class="n">gate</span>
+<span class="kn">from</span> <span class="nn">rspub.util.observe</span> <span class="k">import</span> <span class="n">Observable</span><span class="p">,</span> <span class="n">ObserverInterruptException</span>
+
+<span class="n">LOG</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+<span class="n">WELL_KNOWN_PATH</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;.well-known&quot;</span><span class="p">,</span> <span class="s2">&quot;resourcesync&quot;</span><span class="p">)</span>
+<span class="n">CLASS_NAME_RESOURCE_GATE_BUILDER</span> <span class="o">=</span> <span class="s2">&quot;ResourceGateBuilder&quot;</span>
+
+
+<div class="viewcode-block" id="ExecutorEvent"><a class="viewcode-back" href="../../../rst/rspub.core.executors.html#rspub.core.executors.ExecutorEvent">[docs]</a><span class="k">class</span> <span class="nc">ExecutorEvent</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :samp:`Events fired by {Executors}`</span>
+
+<span class="sd">    There are information events (``inform``) and confirmation events (``confirm``). If an</span>
+<span class="sd">    :class:`~rspub.util.observe.Observer` overrides the method :func:`~rspub.util.observe.Observer.confirm`</span>
+<span class="sd">    and returns ``False`` on a ``confirm`` event,</span>
+<span class="sd">    an :class:`~rspub.util.observe.ObserverInterruptException` is raised.</span>
+
+<span class="sd">    All events are broadcast in the format::</span>
+
+<span class="sd">        [inform][confirm](source, event, **kwargs)</span>
+
+<span class="sd">    where ``source`` is the calling instance, ``event`` is the relevant event and ``**kwargs`` hold relevant</span>
+<span class="sd">    information about the event.</span>
+
+<span class="sd">    .. note:: All events are numbered, although numbers may not show in generated documentation.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># # information events</span>
+    <span class="c1"># common low-level events</span>
+    <span class="n">rejected_file</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    ``1`` ``inform`` :samp:`File rejected by resource gate`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">start_file_search</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    ``2`` ``inform`` :samp:`File search was started`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">created_resource</span> <span class="o">=</span> <span class="mi">3</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    ``3`` ``inform`` :samp:`The metadata for a resource was created`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># common mid-level events</span>
+    <span class="n">completed_document</span> <span class="o">=</span> <span class="mi">10</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    ``10`` ``inform`` :samp:`A sitemap document was completed`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># common high-level events</span>
+    <span class="n">found_changes</span> <span class="o">=</span> <span class="mi">20</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    ``20`` ``inform`` :samp:`Resources that changed were found`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">execution_start</span> <span class="o">=</span> <span class="mi">30</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    ``30`` ``inform`` :samp:`Execution of resource synchronization started`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">execution_end</span> <span class="o">=</span> <span class="mi">31</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    ``31`` ``inform`` :samp:`Execution of resource synchronization did end`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># # confirmation events</span>
+    <span class="n">clear_metadata_directory</span> <span class="o">=</span> <span class="mi">100</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    ``100`` ``confirm`` :samp:`Files in metadata directory will be erased`</span>
+<span class="sd">    &quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="SitemapData"><a class="viewcode-back" href="../../../rst/rspub.core.executors.html#rspub.core.executors.SitemapData">[docs]</a><span class="k">class</span> <span class="nc">SitemapData</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :samp:`Holds metadata about sitemaps`</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="SitemapData.__init__"><a class="viewcode-back" href="../../../rst/rspub.core.executors.html#rspub.core.executors.SitemapData.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">resource_count</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">ordinal</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">uri</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">capability_name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">document_saved</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :samp:`Initialization`</span>
+
+<span class="sd">        :param int resource_count: the amount of records in the sitemap</span>
+<span class="sd">        :param int ordinal: the ordinal number as reflected in the sitemap filename and url</span>
+<span class="sd">        :param str uri: the url of the sitemap</span>
+<span class="sd">        :param str path: the local path of the sitemap</span>
+<span class="sd">        :param str capability_name: the capability of the sitemap</span>
+<span class="sd">        :param bool document_saved: True if the sitemap was saved to disk, False otherwise</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">resource_count</span> <span class="o">=</span> <span class="n">resource_count</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ordinal</span> <span class="o">=</span> <span class="n">ordinal</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">uri</span> <span class="o">=</span> <span class="n">uri</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">capability_name</span> <span class="o">=</span> <span class="n">capability_name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">document_saved</span> <span class="o">=</span> <span class="n">document_saved</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">doc_start</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">doc_end</span> <span class="o">=</span> <span class="n">defaults</span><span class="o">.</span><span class="n">w3c_now</span><span class="p">()</span></div>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">, resource_count: </span><span class="si">%d</span><span class="s2">, ordinal: </span><span class="si">%d</span><span class="s2">, saved: </span><span class="si">%s</span><span class="se">\n\t</span><span class="s2">  uri: </span><span class="si">%s</span><span class="se">\n\t</span><span class="s2"> path: </span><span class="si">%s</span><span class="s2">&quot;</span> \
+               <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">capability_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">resource_count</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ordinal</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">document_saved</span><span class="p">),</span>
+                  <span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Executor"><a class="viewcode-back" href="../../../rst/rspub.core.executors.html#rspub.core.executors.Executor">[docs]</a><span class="k">class</span> <span class="nc">Executor</span><span class="p">(</span><span class="n">Observable</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">ABCMeta</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :samp:`Abstract base class for ResourceSync execution`</span>
+
+<span class="sd">    There are 6 ``build steps`` that concrete subclasses may override (or 7 if they want to completely take over</span>
+<span class="sd">    the execution). Two steps are mandatory for subclasses to implement: :func:`generate_rs_documents`</span>
+<span class="sd">    and :func:`create_index`. Steps :func:`create_capabilitylist` and :func:`update_resource_sync` are not abstract -</span>
+<span class="sd">    they can safely be done by this :class:`Executor`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<div class="viewcode-block" id="Executor.__init__"><a class="viewcode-back" href="../../../rst/rspub.core.executors.html#rspub.core.executors.Executor.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rs_parameters</span><span class="p">:</span> <span class="n">RsParameters</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :samp:`Initialization`</span>
+
+<span class="sd">        If no :class:`~rspub.core.rs_paras.RsParameters` were given will construct</span>
+<span class="sd">        new :class:`~rspub.core.rs_paras.RsParameters` from</span>
+<span class="sd">        configuration found under :func:`~rspub.core.config.Configurations.current_configuration_name`.</span>
+
+<span class="sd">        :param rs_parameters: :class:`~rspub.core.rs_paras.RsParameters` for execution</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">Observable</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">para</span> <span class="o">=</span> <span class="n">rs_parameters</span> <span class="k">if</span> <span class="n">rs_parameters</span> <span class="k">else</span> <span class="n">RsParameters</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">passes_resource_gate</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">date_start_processing</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">date_end_processing</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="Executor.resource_gate"><a class="viewcode-back" href="../../../rst/rspub.core.executors.html#rspub.core.executors.Executor.resource_gate">[docs]</a>    <span class="k">def</span> <span class="nf">resource_gate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :samp:`Construct or return the resource gate`</span>
+
+<span class="sd">        :return: resource gate</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">passes_resource_gate</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">default_builder</span> <span class="o">=</span> <span class="n">ResourceGateBuilder</span><span class="p">(</span><span class="n">resource_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">para</span><span class="o">.</span><span class="n">resource_dir</span><span class="p">,</span>
+                                                  <span class="n">metadata_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">para</span><span class="o">.</span><span class="n">abs_metadata_dir</span><span class="p">(),</span>
+                                                  <span class="n">plugin_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">para</span><span class="o">.</span><span class="n">plugin_dir</span><span class="p">)</span>
+            <span class="n">gate_builder</span> <span class="o">=</span> <span class="n">PluggedInGateBuilder</span><span class="p">(</span><span class="n">CLASS_NAME_RESOURCE_GATE_BUILDER</span><span class="p">,</span> <span class="n">default_builder</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">para</span><span class="o">.</span><span class="n">plugin_dir</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">passes_resource_gate</span> <span class="o">=</span> <span class="n">gate_builder</span><span class="o">.</span><span class="n">build_gate</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">passes_resource_gate</span></div>
+
+<div class="viewcode-block" id="Executor.execute"><a class="viewcode-back" href="../../../rst/rspub.core.executors.html#rspub.core.executors.Executor.execute">[docs]</a>    <span class="k">def</span> <span class="nf">execute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filenames</span><span class="p">:</span> <span class="nb">iter</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        ``build step 0`` :samp:`Publish ResourceSync documents`</span>
+
+<span class="sd">        Publish ResourceSync documents under conditions of</span>
+<span class="sd">        current :class:`~rspub.core.rs_paras.RsParameters`.</span>
+
+<span class="sd">        :param filenames: iter of filenames and/or directories to scan</span>
+<span class="sd">        :return: list of :class:`SitemapData` of generated sitemaps</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">date_start_processing</span> <span class="o">=</span> <span class="n">defaults</span><span class="o">.</span><span class="n">w3c_now</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">observers_inform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ExecutorEvent</span><span class="o">.</span><span class="n">execution_start</span><span class="p">,</span> <span class="n">date_start_processing</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">date_start_processing</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">para</span><span class="o">.</span><span class="n">abs_metadata_dir</span><span class="p">()):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">para</span><span class="o">.</span><span class="n">abs_metadata_dir</span><span class="p">())</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">prepare_metadata_dir</span><span class="p">()</span>
+        <span class="n">sitemap_data_iter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_rs_documents</span><span class="p">(</span><span class="n">filenames</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">post_process_documents</span><span class="p">(</span><span class="n">sitemap_data_iter</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">date_end_processing</span> <span class="o">=</span> <span class="n">defaults</span><span class="o">.</span><span class="n">w3c_now</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">create_index</span><span class="p">(</span><span class="n">sitemap_data_iter</span><span class="p">)</span>
+
+        <span class="n">capabilitylist_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_capabilitylist</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_resource_sync</span><span class="p">(</span><span class="n">capabilitylist_data</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">observers_inform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ExecutorEvent</span><span class="o">.</span><span class="n">execution_end</span><span class="p">,</span> <span class="n">date_end_processing</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">date_end_processing</span><span class="p">,</span>
+                              <span class="n">new_sitemaps</span><span class="o">=</span><span class="n">sitemap_data_iter</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">sitemap_data_iter</span></div>
+
+    <span class="c1"># # Execution steps - start</span>
+<div class="viewcode-block" id="Executor.prepare_metadata_dir"><a class="viewcode-back" href="../../../rst/rspub.core.executors.html#rspub.core.executors.Executor.prepare_metadata_dir">[docs]</a>    <span class="k">def</span> <span class="nf">prepare_metadata_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        ``build step 1`` :samp:`Does nothing`</span>
+
+<span class="sd">        Subclasses that want to prepare metadata directory before generating new documents may override.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+    <span class="nd">@abstractmethod</span>
+<div class="viewcode-block" id="Executor.generate_rs_documents"><a class="viewcode-back" href="../../../rst/rspub.core.executors.html#rspub.core.executors.Executor.generate_rs_documents">[docs]</a>    <span class="k">def</span> <span class="nf">generate_rs_documents</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filenames</span><span class="p">:</span> <span class="nb">iter</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">[</span><span class="n">SitemapData</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        ``build step 2`` :samp:`Raises {NotImplementedError}`</span>
+
+<span class="sd">        Subclasses must walk resources found in ``filenames`` and, if appropriate, generate sitemaps</span>
+<span class="sd">        and produce sitemap data.</span>
+
+<span class="sd">        :param filenames: list of filenames and/or directories to scan</span>
+<span class="sd">        :return: list of :class:`SitemapData` of generated sitemaps</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="Executor.post_process_documents"><a class="viewcode-back" href="../../../rst/rspub.core.executors.html#rspub.core.executors.Executor.post_process_documents">[docs]</a>    <span class="k">def</span> <span class="nf">post_process_documents</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sitemap_data_iter</span><span class="p">:</span> <span class="nb">iter</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        ``build step 3`` :samp:`Does nothing`</span>
+
+<span class="sd">        Subclasses that want to post proces the documents in metadata directory may override.</span>
+
+<span class="sd">        :param sitemap_data_iter: iter over :class:`SitemapData` of sitemaps generated in build step 2</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">pass</span></div>
+
+    <span class="nd">@abstractmethod</span>
+<div class="viewcode-block" id="Executor.create_index"><a class="viewcode-back" href="../../../rst/rspub.core.executors.html#rspub.core.executors.Executor.create_index">[docs]</a>    <span class="k">def</span> <span class="nf">create_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sitemap_data_iter</span><span class="p">:</span> <span class="nb">iter</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        ``build step 4`` :samp:`Raises {NotImplementedError}`</span>
+
+<span class="sd">        Subclasses must create sitemap indexes if appropriate.</span>
+
+<span class="sd">        :param sitemap_data_iter: iter over :class:`SitemapData` of sitemaps generated in build step 2</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="Executor.create_capabilitylist"><a class="viewcode-back" href="../../../rst/rspub.core.executors.html#rspub.core.executors.Executor.create_capabilitylist">[docs]</a>    <span class="k">def</span> <span class="nf">create_capabilitylist</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SitemapData</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        ``build step 5`` :samp:`Create a new capabilitylist over sitemaps found in metadata directory`</span>
+
+<span class="sd">        :return: :class:`SitemapData` over the newly created capabilitylist</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">capabilitylist_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">para</span><span class="o">.</span><span class="n">abs_metadata_path</span><span class="p">(</span><span class="s2">&quot;capabilitylist.xml&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">capabilitylist_path</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">para</span><span class="o">.</span><span class="n">is_saving_sitemaps</span><span class="p">:</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">capabilitylist_path</span><span class="p">)</span>
+
+        <span class="n">doc_types</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;resourcelist&quot;</span><span class="p">,</span> <span class="s2">&quot;changelist&quot;</span><span class="p">,</span> <span class="s2">&quot;resourcedump&quot;</span><span class="p">,</span> <span class="s2">&quot;changedump&quot;</span><span class="p">]</span>
+        <span class="n">capabilitylist</span> <span class="o">=</span> <span class="n">CapabilityList</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">doc_type</span> <span class="ow">in</span> <span class="n">doc_types</span><span class="p">:</span>
+            <span class="n">index_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">para</span><span class="o">.</span><span class="n">abs_metadata_path</span><span class="p">(</span><span class="n">doc_type</span> <span class="o">+</span> <span class="s2">&quot;-index.xml&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">index_path</span><span class="p">):</span>
+                <span class="n">capabilitylist</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Resource</span><span class="p">(</span><span class="n">uri</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">para</span><span class="o">.</span><span class="n">uri_from_path</span><span class="p">(</span><span class="n">index_path</span><span class="p">),</span> <span class="n">capability</span><span class="o">=</span><span class="n">doc_type</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">doc_list_files</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">glob</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">para</span><span class="o">.</span><span class="n">abs_metadata_path</span><span class="p">(</span><span class="n">doc_type</span> <span class="o">+</span> <span class="s2">&quot;_*.xml&quot;</span><span class="p">)))</span>
+                <span class="k">for</span> <span class="n">doc_list</span> <span class="ow">in</span> <span class="n">doc_list_files</span><span class="p">:</span>
+                    <span class="n">capabilitylist</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Resource</span><span class="p">(</span><span class="n">uri</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">para</span><span class="o">.</span><span class="n">uri_from_path</span><span class="p">(</span><span class="n">doc_list</span><span class="p">),</span> <span class="n">capability</span><span class="o">=</span><span class="n">doc_type</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">finish_sitemap</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">capabilitylist</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Executor.update_resource_sync"><a class="viewcode-back" href="../../../rst/rspub.core.executors.html#rspub.core.executors.Executor.update_resource_sync">[docs]</a>    <span class="k">def</span> <span class="nf">update_resource_sync</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">capabilitylist_data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        ``build step 6`` :samp:`Update description with newly created capabilitylist`</span>
+
+<span class="sd">        :param capabilitylist_data: :class:`SitemapData` over the newly created capabilitylist</span>
+<span class="sd">        :return: :class:`SitemapData` over updated description</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">src_desc_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">para</span><span class="o">.</span><span class="n">abs_description_path</span><span class="p">()</span>
+        <span class="n">well_known_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">src_desc_path</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">well_known_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">src_description</span> <span class="o">=</span> <span class="n">SourceDescription</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">src_desc_path</span><span class="p">):</span>
+            <span class="n">src_description</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_sitemap</span><span class="p">(</span><span class="n">src_desc_path</span><span class="p">,</span> <span class="n">src_description</span><span class="p">)</span>
+
+        <span class="n">src_description</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Resource</span><span class="p">(</span><span class="n">uri</span><span class="o">=</span><span class="n">capabilitylist_data</span><span class="o">.</span><span class="n">uri</span><span class="p">,</span> <span class="n">capability</span><span class="o">=</span><span class="n">Capability</span><span class="o">.</span><span class="n">capabilitylist</span><span class="o">.</span><span class="n">name</span><span class="p">),</span>
+                            <span class="n">replace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">sitemap_data</span> <span class="o">=</span> <span class="n">SitemapData</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">src_description</span><span class="p">),</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">para</span><span class="o">.</span><span class="n">description_url</span><span class="p">(),</span> <span class="n">src_desc_path</span><span class="p">,</span>
+                                   <span class="n">Capability</span><span class="o">.</span><span class="n">description</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">para</span><span class="o">.</span><span class="n">is_saving_sitemaps</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">save_sitemap</span><span class="p">(</span><span class="n">src_description</span><span class="p">,</span> <span class="n">src_desc_path</span><span class="p">)</span>
+            <span class="n">sitemap_data</span><span class="o">.</span><span class="n">document_saved</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">observers_inform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ExecutorEvent</span><span class="o">.</span><span class="n">completed_document</span><span class="p">,</span> <span class="n">document</span><span class="o">=</span><span class="n">src_description</span><span class="p">,</span> <span class="n">sitemap_data</span><span class="o">=</span><span class="n">sitemap_data</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">sitemap_data</span></div>
+    <span class="c1"># # Execution steps - end</span>
+
+<div class="viewcode-block" id="Executor.clear_metadata_dir"><a class="viewcode-back" href="../../../rst/rspub.core.executors.html#rspub.core.executors.Executor.clear_metadata_dir">[docs]</a>    <span class="k">def</span> <span class="nf">clear_metadata_dir</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">ok</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">observers_confirm</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ExecutorEvent</span><span class="o">.</span><span class="n">clear_metadata_directory</span><span class="p">,</span> <span class="n">metadata_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">para</span><span class="o">.</span><span class="n">abs_metadata_dir</span><span class="p">())</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">ok</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ObserverInterruptException</span><span class="p">(</span><span class="s2">&quot;Process interrupted by observer: event: </span><span class="si">%s</span><span class="s2">, metadata directory: </span><span class="si">%s</span><span class="s2">&quot;</span>
+                                             <span class="o">%</span> <span class="p">(</span><span class="n">ExecutorEvent</span><span class="o">.</span><span class="n">clear_metadata_directory</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">para</span><span class="o">.</span><span class="n">abs_metadata_dir</span><span class="p">()))</span>
+        <span class="n">xml_files</span> <span class="o">=</span> <span class="n">glob</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">para</span><span class="o">.</span><span class="n">abs_metadata_path</span><span class="p">(</span><span class="s2">&quot;*.xml&quot;</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">xml_file</span> <span class="ow">in</span> <span class="n">xml_files</span><span class="p">:</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">xml_file</span><span class="p">)</span>
+
+        <span class="n">wellknown</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">para</span><span class="o">.</span><span class="n">abs_metadata_dir</span><span class="p">(),</span> <span class="n">WELL_KNOWN_PATH</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">wellknown</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">wellknown</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Executor.resource_generator"><a class="viewcode-back" href="../../../rst/rspub.core.executors.html#rspub.core.executors.Executor.resource_generator">[docs]</a>    <span class="k">def</span> <span class="nf">resource_generator</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">iter</span><span class="p">:</span>
+
+        <span class="k">def</span> <span class="nf">generator</span><span class="p">(</span><span class="n">filenames</span><span class="p">:</span> <span class="nb">iter</span><span class="p">,</span> <span class="n">count</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">Resource</span><span class="p">]:</span>
+            <span class="n">passes_gate</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">resource_gate</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">filenames</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                    <span class="n">LOG</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Not a string: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">filename</span><span class="p">)</span>
+                    <span class="n">filename</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+
+                <span class="n">file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">file</span><span class="p">):</span>
+                    <span class="n">LOG</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;File does not exist: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">file</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">file</span><span class="p">):</span>
+                    <span class="k">for</span> <span class="n">cr</span><span class="p">,</span> <span class="n">rsc</span> <span class="ow">in</span> <span class="n">generator</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">walk_directories</span><span class="p">(</span><span class="n">file</span><span class="p">),</span> <span class="n">count</span><span class="o">=</span><span class="n">count</span><span class="p">):</span>
+                        <span class="k">yield</span> <span class="n">cr</span><span class="p">,</span> <span class="n">rsc</span>
+                        <span class="n">count</span> <span class="o">=</span> <span class="n">cr</span>
+                <span class="k">elif</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">file</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">passes_gate</span><span class="p">(</span><span class="n">file</span><span class="p">):</span>
+                        <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
+                        <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">relpath</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">para</span><span class="o">.</span><span class="n">resource_dir</span><span class="p">)</span>
+                        <span class="n">uri</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">para</span><span class="o">.</span><span class="n">url_prefix</span> <span class="o">+</span> <span class="n">defaults</span><span class="o">.</span><span class="n">sanitize_url_path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+                        <span class="n">stat</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+                        <span class="n">resource</span> <span class="o">=</span> <span class="n">Resource</span><span class="p">(</span><span class="n">uri</span><span class="o">=</span><span class="n">uri</span><span class="p">,</span> <span class="n">length</span><span class="o">=</span><span class="n">stat</span><span class="o">.</span><span class="n">st_size</span><span class="p">,</span>
+                                            <span class="n">lastmod</span><span class="o">=</span><span class="n">defaults</span><span class="o">.</span><span class="n">w3c_datetime</span><span class="p">(</span><span class="n">stat</span><span class="o">.</span><span class="n">st_ctime</span><span class="p">),</span>
+                                            <span class="n">md5</span><span class="o">=</span><span class="n">defaults</span><span class="o">.</span><span class="n">md5_for_file</span><span class="p">(</span><span class="n">file</span><span class="p">),</span>
+                                            <span class="n">mime_type</span><span class="o">=</span><span class="n">defaults</span><span class="o">.</span><span class="n">mime_type</span><span class="p">(</span><span class="n">file</span><span class="p">))</span>
+                        <span class="k">yield</span> <span class="n">count</span><span class="p">,</span> <span class="n">resource</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">observers_inform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ExecutorEvent</span><span class="o">.</span><span class="n">created_resource</span><span class="p">,</span> <span class="n">resource</span><span class="o">=</span><span class="n">resource</span><span class="p">,</span>
+                                              <span class="n">count</span><span class="o">=</span><span class="n">count</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">file</span><span class="p">)</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">observers_inform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ExecutorEvent</span><span class="o">.</span><span class="n">rejected_file</span><span class="p">,</span> <span class="n">file</span><span class="o">=</span><span class="n">file</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">LOG</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Not a regular file: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">file</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">generator</span></div>
+
+<div class="viewcode-block" id="Executor.walk_directories"><a class="viewcode-back" href="../../../rst/rspub.core.executors.html#rspub.core.executors.Executor.walk_directories">[docs]</a>    <span class="k">def</span> <span class="nf">walk_directories</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">directories</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+        <span class="k">for</span> <span class="n">directory</span> <span class="ow">in</span> <span class="n">directories</span><span class="p">:</span>
+            <span class="n">abs_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">directory</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">observers_inform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ExecutorEvent</span><span class="o">.</span><span class="n">start_file_search</span><span class="p">,</span> <span class="n">directory</span><span class="o">=</span><span class="n">abs_dir</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">root</span><span class="p">,</span> <span class="n">_directories</span><span class="p">,</span> <span class="n">_filenames</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">abs_dir</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">_filenames</span><span class="p">:</span>
+                    <span class="n">file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+                    <span class="k">yield</span> <span class="n">file</span></div>
+
+<div class="viewcode-block" id="Executor.find_ordinal"><a class="viewcode-back" href="../../../rst/rspub.core.executors.html#rspub.core.executors.Executor.find_ordinal">[docs]</a>    <span class="k">def</span> <span class="nf">find_ordinal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">capability</span><span class="p">):</span>
+        <span class="n">rs_files</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">glob</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">para</span><span class="o">.</span><span class="n">abs_metadata_path</span><span class="p">(</span><span class="n">capability</span> <span class="o">+</span> <span class="s2">&quot;_*.xml&quot;</span><span class="p">)))</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">rs_files</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">rs_files</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">rs_files</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">])</span>
+            <span class="n">digits</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s2">&quot;\d+&quot;</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span>
+            <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">digits</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">digits</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span></div>
+
+<div class="viewcode-block" id="Executor.format_ordinal"><a class="viewcode-back" href="../../../rst/rspub.core.executors.html#rspub.core.executors.Executor.format_ordinal">[docs]</a>    <span class="k">def</span> <span class="nf">format_ordinal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ordinal</span><span class="p">):</span>
+        <span class="c1"># prepends &#39;_&#39; before zfill to distinguish between indexes (*list-index.xml) and regular lists (*list_001.xml)</span>
+        <span class="k">return</span> <span class="s2">&quot;_&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">ordinal</span><span class="p">)</span><span class="o">.</span><span class="n">zfill</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">para</span><span class="o">.</span><span class="n">zero_fill_filename</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Executor.finish_sitemap"><a class="viewcode-back" href="../../../rst/rspub.core.executors.html#rspub.core.executors.Executor.finish_sitemap">[docs]</a>    <span class="k">def</span> <span class="nf">finish_sitemap</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ordinal</span><span class="p">,</span> <span class="n">sitemap</span><span class="p">,</span> <span class="n">doc_start</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">doc_end</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SitemapData</span><span class="p">:</span>
+        <span class="n">capability_name</span> <span class="o">=</span> <span class="n">sitemap</span><span class="o">.</span><span class="n">capability_name</span>
+        <span class="n">file_name</span> <span class="o">=</span> <span class="n">capability_name</span>
+        <span class="k">if</span> <span class="n">sitemap</span><span class="o">.</span><span class="n">sitemapindex</span><span class="p">:</span>
+            <span class="n">file_name</span> <span class="o">+=</span> <span class="s2">&quot;-index&quot;</span>
+        <span class="k">elif</span> <span class="n">ordinal</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">file_name</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">format_ordinal</span><span class="p">(</span><span class="n">ordinal</span><span class="p">)</span>
+
+        <span class="n">file_name</span> <span class="o">+=</span> <span class="s2">&quot;.xml&quot;</span>
+
+        <span class="n">path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">para</span><span class="o">.</span><span class="n">abs_metadata_path</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">para</span><span class="o">.</span><span class="n">uri_from_path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="n">sitemap</span><span class="o">.</span><span class="n">link_set</span><span class="p">(</span><span class="n">rel</span><span class="o">=</span><span class="s2">&quot;up&quot;</span><span class="p">,</span> <span class="n">href</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">current_rel_up_for</span><span class="p">(</span><span class="n">sitemap</span><span class="p">))</span>
+        <span class="n">sitemap_data</span> <span class="o">=</span> <span class="n">SitemapData</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sitemap</span><span class="p">),</span> <span class="n">ordinal</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">capability_name</span><span class="p">)</span>
+        <span class="n">sitemap_data</span><span class="o">.</span><span class="n">doc_start</span> <span class="o">=</span> <span class="n">doc_start</span>
+        <span class="n">sitemap_data</span><span class="o">.</span><span class="n">doc_end</span> <span class="o">=</span> <span class="n">doc_end</span> <span class="k">if</span> <span class="n">doc_end</span> <span class="k">else</span> <span class="n">defaults</span><span class="o">.</span><span class="n">w3c_now</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">para</span><span class="o">.</span><span class="n">is_saving_sitemaps</span><span class="p">:</span>
+            <span class="n">sitemap</span><span class="o">.</span><span class="n">pretty_xml</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">para</span><span class="o">.</span><span class="n">is_saving_pretty_xml</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">save_sitemap</span><span class="p">(</span><span class="n">sitemap</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+            <span class="n">sitemap_data</span><span class="o">.</span><span class="n">document_saved</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">observers_inform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ExecutorEvent</span><span class="o">.</span><span class="n">completed_document</span><span class="p">,</span> <span class="n">document</span><span class="o">=</span><span class="n">sitemap</span><span class="p">,</span> <span class="n">sitemap_data</span><span class="o">=</span><span class="n">sitemap_data</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">sitemap_data</span></div>
+
+<div class="viewcode-block" id="Executor.current_rel_up_for"><a class="viewcode-back" href="../../../rst/rspub.core.executors.html#rspub.core.executors.Executor.current_rel_up_for">[docs]</a>    <span class="k">def</span> <span class="nf">current_rel_up_for</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sitemap</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">sitemap</span><span class="o">.</span><span class="n">capability_name</span> <span class="o">==</span> <span class="n">Capability</span><span class="o">.</span><span class="n">capabilitylist</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">para</span><span class="o">.</span><span class="n">description_url</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">para</span><span class="o">.</span><span class="n">capabilitylist_url</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Executor.update_rel_index"><a class="viewcode-back" href="../../../rst/rspub.core.executors.html#rspub.core.executors.Executor.update_rel_index">[docs]</a>    <span class="k">def</span> <span class="nf">update_rel_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index_url</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+        <span class="n">sitemap</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_sitemap</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="n">sitemap</span><span class="o">.</span><span class="n">link_set</span><span class="p">(</span><span class="n">rel</span><span class="o">=</span><span class="s2">&quot;index&quot;</span><span class="p">,</span> <span class="n">href</span><span class="o">=</span><span class="n">index_url</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">save_sitemap</span><span class="p">(</span><span class="n">sitemap</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Executor.save_sitemap"><a class="viewcode-back" href="../../../rst/rspub.core.executors.html#rspub.core.executors.Executor.save_sitemap">[docs]</a>    <span class="k">def</span> <span class="nf">save_sitemap</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sitemap</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+        <span class="n">sitemap</span><span class="o">.</span><span class="n">pretty_xml</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">para</span><span class="o">.</span><span class="n">is_saving_pretty_xml</span>
+        <span class="c1"># writing the string sitemap.as_xml() to disk results in encoding=ASCII on some systems.</span>
+        <span class="c1"># due to https://docs.python.org/3.4/library/xml.etree.elementtree.html#write</span>
+        <span class="n">sitemap</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">path</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Executor.read_sitemap"><a class="viewcode-back" href="../../../rst/rspub.core.executors.html#rspub.core.executors.Executor.read_sitemap">[docs]</a>    <span class="k">def</span> <span class="nf">read_sitemap</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">sitemap</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">sitemap</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">sitemap</span> <span class="o">=</span> <span class="n">ListBaseWithIndex</span><span class="p">()</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+            <span class="n">sm</span> <span class="o">=</span> <span class="n">Sitemap</span><span class="p">()</span>
+            <span class="n">sm</span><span class="o">.</span><span class="n">parse_xml</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">resources</span><span class="o">=</span><span class="n">sitemap</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">sitemap</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, DANS-KNAW.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../../',
+            VERSION:'1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+  
+     
+    <li><a href="https://github.com/EHRI/rspub-core">rspub-core at GitHub</a></li>
+
+
+</body>
+</html>

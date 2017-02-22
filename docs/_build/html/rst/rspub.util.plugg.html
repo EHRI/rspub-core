@@ -1,0 +1,427 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Light plugin framework &mdash; rspub-core 1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="rspub-core 1 documentation" href="../index.html"/>
+        <link rel="up" title="rspub.util" href="rspub.util.html"/>
+        <link rel="next" title="Defaults" href="rspub.util.defaults.html"/>
+        <link rel="prev" title="Resource filters" href="rspub.util.resourcefilter.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> rspub-core
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="rspub.cli.html">rspub.cli</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rspub.core.html">rspub.core</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rspub.pluggable.html">rspub.pluggable</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="rspub.util.html">rspub.util</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="rspub.util.observe.html">Observable and observers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rspub.util.gates.html">Logical functions and gate builders</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rspub.util.resourcefilter.html">Resource filters</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Light plugin framework</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rspub.util.defaults.html">Defaults</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../index.html">rspub-core</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="rspub.util.html">rspub.util</a> &raquo;</li>
+      
+    <li>Light plugin framework</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/rst/rspub.util.plugg.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="light-plugin-framework">
+<h1>Light plugin framework<a class="headerlink" href="#light-plugin-framework" title="Permalink to this headline">¶</a></h1>
+<p class="rubric">module: rspub.util.plugg</p>
+<span class="target" id="module-rspub.util.plugg"></span><p><code class="samp docutils literal"><span class="pre">Py-module</span> <span class="pre">and</span> <span class="pre">-class</span> <span class="pre">inspector</span></code></p>
+<dl class="data">
+<dt id="rspub.util.plugg.APPLICATION_HOME">
+<code class="descclassname">rspub.util.plugg.</code><code class="descname">APPLICATION_HOME</code><em class="property"> = '/Users/ecco/git/rspub-core'</em><a class="headerlink" href="#rspub.util.plugg.APPLICATION_HOME" title="Permalink to this definition">¶</a></dt>
+<dd><p><code class="samp docutils literal"><span class="pre">The</span> <span class="pre">absolute</span> <span class="pre">path</span> <span class="pre">to</span> <span class="pre">the</span> <span class="pre">directory</span> <span class="pre">that</span> <span class="pre">is</span> <span class="pre">the</span> <span class="pre">application</span> <span class="pre">home</span> <span class="pre">or</span> <span class="pre">root</span> <span class="pre">directory.</span></code></p>
+<p>During run time. So the value shown in documentation is not a constant!</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="rspub.util.plugg.Inspector">
+<em class="property">class </em><code class="descclassname">rspub.util.plugg.</code><code class="descname">Inspector</code><span class="sig-paren">(</span><em>stop_on_error=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/util/plugg.html#Inspector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.util.plugg.Inspector" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p><code class="samp docutils literal"><span class="pre">Find</span> <span class="pre">py-modules</span> <span class="pre">and</span> <span class="pre">-classes</span> <span class="pre">in</span> <span class="pre">directories.</span></code></p>
+<p>This class loads modules during its inspection. What the behavior will be upon encountering an ImportError
+can be set by the constructor parameter <cite>stop_on_error</cite> (boolean). It will then either log the exception
+(default) or raise the exception.</p>
+<dl class="method">
+<dt id="rspub.util.plugg.Inspector.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>stop_on_error=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/util/plugg.html#Inspector.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.util.plugg.Inspector.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p><code class="samp docutils literal"><span class="pre">Initialize</span> <span class="pre">an</span> <em><span class="pre">Inspector</span></em><span class="pre">.</span></code></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>stop_on_error</strong> &#8211; <strong>True</strong> for stop on error, <strong>False</strong> otherwise</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="rspub.util.plugg.Inspector.list_py_files">
+<em class="property">static </em><code class="descname">list_py_files</code><span class="sig-paren">(</span><em>*directories</em><span class="sig-paren">)</span> &rarr; str<a class="reference internal" href="../_modules/rspub/util/plugg.html#Inspector.list_py_files"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.util.plugg.Inspector.list_py_files" title="Permalink to this definition">¶</a></dt>
+<dd><p><code class="samp docutils literal"><span class="pre">Generator</span> <span class="pre">of</span> <span class="pre">py</span> <span class="pre">filenames.</span></code></p>
+<p>Walks the given directories one-by-one recursively and yields each py-file it encounters. A file
+is considered py-file when its filename ends with <cite>.py</cite>.</p>
+<p>Files <cite>__init__.py</cite> and <cite>setup.py</cite> are neglected.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>directories</strong> (<em>str</em>) &#8211; directories to search</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">yields absolute filenames of py-files</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rspub.util.plugg.Inspector.load_modules">
+<code class="descname">load_modules</code><span class="sig-paren">(</span><em>*directories</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/util/plugg.html#Inspector.load_modules"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.util.plugg.Inspector.load_modules" title="Permalink to this definition">¶</a></dt>
+<dd><p><code class="samp docutils literal"><span class="pre">Generator</span> <span class="pre">of</span> <span class="pre">modules.</span></code></p>
+<p>Walks the given directories one-by-one recursively and yields each module it encounters.
+The encountered modules will be imported. What the behavior will be upon encountering an ImportError
+can be set by the constructor parameter <cite>stop_on_error</cite> (boolean).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>directories</strong> (<em>str</em>) &#8211; directories to search</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">yields imported modules</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rspub.util.plugg.Inspector.list_classes">
+<code class="descname">list_classes</code><span class="sig-paren">(</span><em>*directories</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/util/plugg.html#Inspector.list_classes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.util.plugg.Inspector.list_classes" title="Permalink to this definition">¶</a></dt>
+<dd><p><code class="samp docutils literal"><span class="pre">Generator</span> <span class="pre">of</span> <span class="pre">classes.</span></code></p>
+<p>Walks the given directories one-by-one recursively and yields each class it encounters.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>directories</strong> (<em>str</em>) &#8211; directories to search</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">yields encountered classes</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rspub.util.plugg.Inspector.list_classes_filtered">
+<code class="descname">list_classes_filtered</code><span class="sig-paren">(</span><em>predicates=[]</em>, <em>*directories</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/util/plugg.html#Inspector.list_classes_filtered"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.util.plugg.Inspector.list_classes_filtered" title="Permalink to this definition">¶</a></dt>
+<dd><p><code class="samp docutils literal"><span class="pre">Generator</span> <span class="pre">of</span> <span class="pre">filtered</span> <span class="pre">classes.</span></code></p>
+<p>Walks the given directories one-by-one recursively and yields encountered classes <em>if</em> they pass
+all the predicates given in <cite>predicates</cite>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>predicates</strong> (<em>list</em>) &#8211; a list of one-argument predicates that filter classes</li>
+<li><strong>directories</strong> (<em>str</em>) &#8211; directories to search</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">yields encountered classes that pass the predicates</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="rspub.util.plugg.is_subclass_of">
+<code class="descclassname">rspub.util.plugg.</code><code class="descname">is_subclass_of</code><span class="sig-paren">(</span><em>super</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/util/plugg.html#is_subclass_of"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.util.plugg.is_subclass_of" title="Permalink to this definition">¶</a></dt>
+<dd><p><code class="samp docutils literal"><span class="pre">Predicate</span> <span class="pre">for</span> <span class="pre">subclass</span> <span class="pre">detection</span></code></p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">f</span><span class="p">(</span><span class="n">cls</span><span class="p">)</span> <span class="o">=</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="nb">super</span><span class="p">)</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>super</strong> &#8211; the superclass in the detection</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">lambda for class subclass detection</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="rspub.util.plugg.is_qnamed">
+<code class="descclassname">rspub.util.plugg.</code><code class="descname">is_qnamed</code><span class="sig-paren">(</span><em>qname</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/util/plugg.html#is_qnamed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.util.plugg.is_qnamed" title="Permalink to this definition">¶</a></dt>
+<dd><p><code class="samp docutils literal"><span class="pre">Predicate</span> <span class="pre">for</span> <span class="pre">qualified</span> <span class="pre">class-name</span> <span class="pre">detection.</span></code></p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">f</span><span class="p">(</span><span class="n">cls</span><span class="p">)</span> <span class="o">=</span> <span class="n">cls</span><span class="o">.</span><span class="n">qualified_name</span> <span class="o">==</span> <span class="n">qname</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>qname</strong> &#8211; the qualified name in the detection</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">lambda for qualified class-name detection</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="rspub.util.plugg.is_named">
+<code class="descclassname">rspub.util.plugg.</code><code class="descname">is_named</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/util/plugg.html#is_named"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.util.plugg.is_named" title="Permalink to this definition">¶</a></dt>
+<dd><p><code class="samp docutils literal"><span class="pre">Predicate</span> <span class="pre">for</span> <span class="pre">loose</span> <span class="pre">class-name</span> <span class="pre">detection.</span></code></p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">f</span><span class="p">(</span><span class="n">cls</span><span class="p">)</span> <span class="o">=</span> <span class="n">cls</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">name</span> <span class="ow">or</span> <span class="n">cls</span><span class="o">.</span><span class="n">qualified_name</span> <span class="o">==</span> <span class="n">name</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>name</strong> &#8211; the class-name or qualified class-name in the detection</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">lambda for loose class-name detection</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="rspub.util.plugg.from_module">
+<code class="descclassname">rspub.util.plugg.</code><code class="descname">from_module</code><span class="sig-paren">(</span><em>module_name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/util/plugg.html#from_module"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.util.plugg.from_module" title="Permalink to this definition">¶</a></dt>
+<dd><p><code class="samp docutils literal"><span class="pre">Predicate</span> <span class="pre">for</span> <span class="pre">module-name</span> <span class="pre">detection.</span></code></p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">f</span><span class="p">(</span><span class="n">cls</span><span class="p">)</span> <span class="o">=</span> <span class="n">cls</span><span class="o">.</span><span class="n">module_name</span> <span class="o">==</span> <span class="n">module_name</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>module_name</strong> &#8211; the module-name in the detection</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">lambda for module-name detection</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="rspub.util.plugg.has_function">
+<code class="descclassname">rspub.util.plugg.</code><code class="descname">has_function</code><span class="sig-paren">(</span><em>function_name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/util/plugg.html#has_function"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.util.plugg.has_function" title="Permalink to this definition">¶</a></dt>
+<dd><p><code class="samp docutils literal"><span class="pre">Predicate</span> <span class="pre">for</span> <span class="pre">class</span> <span class="pre">function</span> <span class="pre">detection.</span></code></p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">f</span><span class="p">(</span><span class="n">cls</span><span class="p">)</span> <span class="o">=</span> <span class="n">cls</span><span class="o">.</span><span class="n">has_function_name</span><span class="p">(</span><span class="n">function_name</span><span class="p">)</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>function_name</strong> &#8211; the function name in the detection</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">closure for function name detection</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="rspub.util.defaults.html" class="btn btn-neutral float-right" title="Defaults" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="rspub.util.resourcefilter.html" class="btn btn-neutral" title="Resource filters" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, DANS-KNAW.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+  
+     
+    <li><a href="https://github.com/EHRI/rspub-core">rspub-core at GitHub</a></li>
+
+
+</body>
+</html>

@@ -1,0 +1,353 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Selector &mdash; rspub-core 1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="../genindex.html"/>
+        <link rel="search" title="Search" href="../search.html"/>
+    <link rel="top" title="rspub-core 1 documentation" href="../index.html"/>
+        <link rel="up" title="rspub.core" href="rspub.core.html"/>
+        <link rel="next" title="ResourceSync" href="rspub.core.rs.html"/>
+        <link rel="prev" title="Parameters" href="rspub.core.rs_paras.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> rspub-core
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="rspub.cli.html">rspub.cli</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="rspub.core.html">rspub.core</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="rspub.core.config.html">Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rspub.core.rs_paras.html">Parameters</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Selector</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rspub.core.rs.html">ResourceSync</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rspub.core.executors.html">Executors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rspub.core.exe_resourcelist.html">Create resourcelists</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rspub.core.exe_changelist.html">Create changelists</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rspub.core.transport.html">Transport</a></li>
+<li class="toctree-l2"><a class="reference internal" href="rspub.core.rs_enum.html">Enumerations</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="rspub.pluggable.html">rspub.pluggable</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rspub.util.html">rspub.util</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../index.html">rspub-core</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+ 
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="rspub.core.html">rspub.core</a> &raquo;</li>
+      
+    <li>Selector</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/rst/rspub.core.selector.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="selector">
+<h1>Selector<a class="headerlink" href="#selector" title="Permalink to this headline">¶</a></h1>
+<p class="rubric">module: rspub.core.selector</p>
+<span class="target" id="module-rspub.core.selector"></span><dl class="class">
+<dt id="rspub.core.selector.SelectorEvent">
+<em class="property">class </em><code class="descclassname">rspub.core.selector.</code><code class="descname">SelectorEvent</code><a class="reference internal" href="../_modules/rspub/core/selector.html#SelectorEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.selector.SelectorEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">enum.Enum</span></code></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="rspub.core.selector.Selector">
+<em class="property">class </em><code class="descclassname">rspub.core.selector.</code><code class="descname">Selector</code><span class="sig-paren">(</span><em>location=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/selector.html#Selector"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.selector.Selector" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="rspub.util.observe.html#rspub.util.observe.Observable" title="rspub.util.observe.Observable"><code class="xref py py-class docutils literal"><span class="pre">rspub.util.observe.Observable</span></code></a></p>
+<dl class="method">
+<dt id="rspub.core.selector.Selector.__init__">
+<code class="descname">__init__</code><span class="sig-paren">(</span><em>location=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/selector.html#Selector.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.selector.Selector.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="rspub.core.selector.Selector.filter_base_paths">
+<em class="property">static </em><code class="descname">filter_base_paths</code><span class="sig-paren">(</span><em>abs_paths</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/selector.html#Selector.filter_base_paths"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.selector.Selector.filter_base_paths" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="staticmethod">
+<dt id="rspub.core.selector.Selector.is_base_path">
+<em class="property">static </em><code class="descname">is_base_path</code><span class="sig-paren">(</span><em>x</em>, <em>other_paths</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/selector.html#Selector.is_base_path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.selector.Selector.is_base_path" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.core.selector.Selector.include">
+<code class="descname">include</code><span class="sig-paren">(</span><em>*filenames</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/selector.html#Selector.include"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.selector.Selector.include" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.core.selector.Selector.exclude">
+<code class="descname">exclude</code><span class="sig-paren">(</span><em>*filenames</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/selector.html#Selector.exclude"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.selector.Selector.exclude" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.core.selector.Selector.discard_include">
+<code class="descname">discard_include</code><span class="sig-paren">(</span><em>*filenames</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/selector.html#Selector.discard_include"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.selector.Selector.discard_include" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.core.selector.Selector.discard_exclude">
+<code class="descname">discard_exclude</code><span class="sig-paren">(</span><em>*filenames</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/selector.html#Selector.discard_exclude"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.selector.Selector.discard_exclude" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.core.selector.Selector.clear_includes">
+<code class="descname">clear_includes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/selector.html#Selector.clear_includes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.selector.Selector.clear_includes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.core.selector.Selector.clear_excludes">
+<code class="descname">clear_excludes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/selector.html#Selector.clear_excludes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.selector.Selector.clear_excludes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.core.selector.Selector.list_includes">
+<code class="descname">list_includes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/selector.html#Selector.list_includes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.selector.Selector.list_includes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.core.selector.Selector.list_excludes">
+<code class="descname">list_excludes</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/selector.html#Selector.list_excludes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.selector.Selector.list_excludes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.core.selector.Selector.relativize_includes">
+<code class="descname">relativize_includes</code><span class="sig-paren">(</span><em>root_path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/selector.html#Selector.relativize_includes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.selector.Selector.relativize_includes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.core.selector.Selector.relativize_excludes">
+<code class="descname">relativize_excludes</code><span class="sig-paren">(</span><em>root_path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/selector.html#Selector.relativize_excludes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.selector.Selector.relativize_excludes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.core.selector.Selector.get_included_entries">
+<code class="descname">get_included_entries</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/selector.html#Selector.get_included_entries"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.selector.Selector.get_included_entries" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.core.selector.Selector.get_excluded_entries">
+<code class="descname">get_excluded_entries</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/selector.html#Selector.get_excluded_entries"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.selector.Selector.get_excluded_entries" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.core.selector.Selector.is_empty">
+<code class="descname">is_empty</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/selector.html#Selector.is_empty"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.selector.Selector.is_empty" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.core.selector.Selector.read_includes">
+<code class="descname">read_includes</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/selector.html#Selector.read_includes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.selector.Selector.read_includes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.core.selector.Selector.read_excludes">
+<code class="descname">read_excludes</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/selector.html#Selector.read_excludes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.selector.Selector.read_excludes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.core.selector.Selector.write_includes">
+<code class="descname">write_includes</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/selector.html#Selector.write_includes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.selector.Selector.write_includes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.core.selector.Selector.write_excludes">
+<code class="descname">write_excludes</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/selector.html#Selector.write_excludes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.selector.Selector.write_excludes" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.core.selector.Selector.write">
+<code class="descname">write</code><span class="sig-paren">(</span><em>filename=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/selector.html#Selector.write"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.selector.Selector.write" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.core.selector.Selector.read">
+<code class="descname">read</code><span class="sig-paren">(</span><em>filename</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/selector.html#Selector.read"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.selector.Selector.read" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="rspub.core.selector.Selector.abs_location">
+<code class="descname">abs_location</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rspub/core/selector.html#Selector.abs_location"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rspub.core.selector.Selector.abs_location" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="rspub.core.rs.html" class="btn btn-neutral float-right" title="ResourceSync" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="rspub.core.rs_paras.html" class="btn btn-neutral" title="Parameters" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, DANS-KNAW.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+  
+     
+    <li><a href="https://github.com/EHRI/rspub-core">rspub-core at GitHub</a></li>
+
+
+</body>
+</html>
