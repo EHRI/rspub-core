@@ -1,15 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 from setuptools import setup
-
-version = {}
-with open("rspub/version.py") as fp:
-    exec(fp.read(), version)
-# later on we use: version['__version__']
+from rspub import version
 
 setup(
     name='rspub-core',
-    version=version['__version__'],
+    version=version.__version__,
     packages=['rspub.util', 'rspub.pluggable', 'rspub.core', 'rspub.cli'],
     url='https://github.com/EHRI/rspub-core',
     license='Apache License 2.0',
