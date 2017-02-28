@@ -393,12 +393,6 @@ class Configuration(object):
     def set_scp_document_root(self, scp_document_root):
         self.__set_option__(SECTION_CORE, "scp_document_root", scp_document_root)
 
-    def scp_document_path(self, fallback=None):
-        return self.parser.get(SECTION_CORE, "scp_document_path", fallback=fallback)
-
-    def set_scp_document_path(self, scp_document_path):
-        self.__set_option__(SECTION_CORE, "scp_document_path", scp_document_path)
-
     # # zip parameters
     def zip_filename(self, fallback=os.path.join(os.path.expanduser("~"), "resourcesync.zip")):
         return self.parser.get(SECTION_CORE, "zip_filename", fallback=fallback)

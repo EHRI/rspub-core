@@ -66,7 +66,7 @@ class RsParameters(object):
                  history_dir=config, max_items_in_list=config, zero_fill_filename=config, is_saving_pretty_xml=config,
                  is_saving_sitemaps=config, has_wellknown_at_root=config,
                  scp_server=config, scp_port=config, scp_user=config,
-                 scp_document_root=config, scp_document_path=config, zip_filename=config, **kwargs):
+                 scp_document_root=config, zip_filename=config, **kwargs):
         """
         :samp:`Construct an instance of {RsParameters}`
 
@@ -97,7 +97,6 @@ class RsParameters(object):
         :param int scp_port: ``parameter`` :func:`scp_port`
         :param str scp_user: ``parameter`` :func:`scp_user`
         :param str scp_document_root: ``parameter`` :func:`scp_document_root`
-        :param str scp_document_path: ``parameter`` :func:`scp_document_path`
         :param str zip_filename: ``parameter`` :func:`zip_filename`
         :param kwargs: named arguments, same as parameters, but preceded by _
         :raises: :exc:`ValueError` if a parameter is not valid or if the configuration with the given `config_name` is not found
@@ -122,7 +121,6 @@ class RsParameters(object):
             "scp_port": scp_port,
             "scp_user": scp_user,
             "scp_document_root": scp_document_root,
-            "scp_document_path": scp_document_path,
             "zip_filename": zip_filename
         })
         if config_name:
@@ -197,10 +195,6 @@ class RsParameters(object):
         self._scp_document_root = None
         _scp_document_root_ = self.__arg__("_scp_document_root", cfg.scp_document_root(), **kwargs)
         self.scp_document_root = _scp_document_root_
-
-        self._scp_document_path = None
-        _scp_document_path_ = self.__arg__("_scp_document_path", cfg.scp_document_path(), **kwargs)
-        self.scp_document_path = _scp_document_path_
 
         self._zip_filename = None
         _zip_filename_ = self.__arg__("_zip_filename", cfg.zip_filename(), **kwargs)
@@ -621,17 +615,7 @@ class RsParameters(object):
             value = value[:-1]
         if value == "":
             raise ValueError("Invalid value for scp_document_root: path should not be empty")
-        if not value.endswith("/"):
-            value += "/"
         self._scp_document_root = value
-
-    @property
-    def scp_document_path(self):
-        return self._scp_document_path
-
-    @scp_document_path.setter
-    def scp_document_path(self, value):
-        self._scp_document_path = value
 
     @property
     def zip_filename(self):
@@ -684,7 +668,6 @@ class RsParameters(object):
         cfg.set_scp_port(self.scp_port)
         cfg.set_scp_user(self.scp_user)
         cfg.set_scp_document_root(self.scp_document_root)
-        cfg.set_scp_document_path(self.scp_document_path)
         #
         cfg.set_zip_filename(self.zip_filename)
 
@@ -748,6 +731,15 @@ class RsParameters(object):
         """
         r = urllib.parse.urlsplit(self.url_prefix)
         return urllib.parse.urlunsplit([r[0], r[1], "", "", ""])
+
+    def server_path(self):
+        """
+        ``derived`` :samp:`The server path as derived from {url_prefix}`
+
+        :return: server path
+        """
+        r = urllib.parse.urlsplit(self.url_prefix)
+        return urllib.parse.urlunsplit(["", "", r[2], "", ""])
 
     def description_url(self):
         """
@@ -867,7 +859,6 @@ class RsParameters(object):
             #[True, "scp_port", self.scp_port],
             #[True, "scp_user", self.scp_user],
             #[True, "scp_document_root", self.scp_document_root],
-            #[True, "scp_document_path", self.scp_document_path],
             #[True, "zip_filename", self.zip_filename]
         ]
         if as_string:

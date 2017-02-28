@@ -410,29 +410,16 @@ class TestRsParameters(unittest.TestCase):
         # defaults to configuration defaults
         Configuration().core_clear()
         rsp = RsParameters()
-        self.assertEquals("/var/www/html/", rsp.scp_document_root)
+        self.assertEquals("/var/www/html", rsp.scp_document_root)
 
         # contamination test
-        rsp.scp_document_root = "/opt/rs"
+        rsp.scp_document_root = "/opt/rs/"
         rsp2 = RsParameters(**rsp.__dict__)
-        self.assertEquals("/opt/rs/", rsp2.scp_document_root)
+        self.assertEquals("/opt/rs", rsp2.scp_document_root)
 
         rsp.scp_document_root = "/var/www/html/ehri/rs"
         rsp3 = RsParameters(**rsp.__dict__)
-        self.assertEquals("/var/www/html/ehri/rs/", rsp3.scp_document_root)
-
-        self.save_configuration_test(rsp)
-
-    def test_scp_document_path(self):
-        # defaults to configuration defaults
-        Configuration().core_clear()
-        rsp = RsParameters()
-        self.assertIsNone(rsp.scp_document_path)
-
-        # contamination test
-        rsp.scp_document_path = "rs/resources"
-        rsp2 = RsParameters(**rsp.__dict__)
-        self.assertEqual("rs/resources", rsp2.scp_document_path)
+        self.assertEquals("/var/www/html/ehri/rs", rsp3.scp_document_root)
 
         self.save_configuration_test(rsp)
 
@@ -474,6 +461,15 @@ class TestRsParameters(unittest.TestCase):
         rsp.url_prefix = "http://www.example.com"
         self.assertEquals(rsp.server_root(), "http://www.example.com")
 
+    def test_server_path(self):
+        rsp = RsParameters(url_prefix="http://example.com/bla/foo/bar")
+        self.assertEquals("http://example.com/bla/foo/bar/", rsp.url_prefix)
+        self.assertEquals("/bla/foo/bar/", rsp.server_path())
+
+        rsp.url_prefix = "http://www.example.com"
+        self.assertEquals("http://www.example.com/", rsp.url_prefix)
+        self.assertEquals("/", rsp.server_path())
+
     def test_current_description_url(self):
         rsp = RsParameters(url_prefix="http://example.com/bla/foo/bar")
         rsp.has_wellknown_at_root = True
@@ -504,6 +500,8 @@ class TestRsParameters(unittest.TestCase):
         name = "metadata_dir"
         x = getattr(rsp, name)
         print(x)
+
+
 
 
 

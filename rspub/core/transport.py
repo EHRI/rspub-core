@@ -141,7 +141,7 @@ class Transport(Observable):
 
         def generator():
             for resource in self.all_resources():
-                path, relpath = self.__extract_paths(resource)
+                path, relpath = self.extract_paths(resource)
                 yield path, relpath
 
         return  generator
@@ -157,7 +157,7 @@ class Transport(Observable):
                         sm.parse_xml(lb_file, resources=listbase)
                     for resource in listbase.resources:
                         if resource.change is None or not resource.change == "deleted":
-                            path, relpath = self.__extract_paths(resource.uri)
+                            path, relpath = self.extract_paths(resource.uri)
                             yield path, relpath
                 else:
                     LOG.warning("Unable to read sitemap: %s" % file_name)
@@ -166,13 +166,14 @@ class Transport(Observable):
 
         return generator
 
-    def __extract_paths(self, resource):
+    def extract_paths(self, resource):
         relpath = os.path.relpath(resource, self.paras.url_prefix)
         relpath = urllib.parse.unquote(relpath)
         path = os.path.join(self.paras.resource_dir, relpath)
         return path, relpath
 
     def __copy_file(self, relpath, src, tmpdirname):
+        # LOG.debug("Copy file. relpath=%s src=%s" % (relpath, src))
         dest = os.path.join(tmpdirname, relpath)
         dirs = os.path.dirname(dest)
         os.makedirs(dirs, exist_ok=True)
@@ -275,7 +276,7 @@ class Transport(Observable):
                 # sudo chmod -R  a=rwx .well-known
                 # or if only one user copies to .well-known
                 # sudo chown user:group .well-known/
-                remote_path = self.paras.scp_document_root + ".well-known"
+                remote_path = self.paras.scp_document_root + "/.well-known"
                 try:
                     self.scp_put(files, remote_path)
                     self.count_sitemaps += 1
@@ -320,7 +321,7 @@ class Transport(Observable):
     def __function_scp(self, tmpdirname):
         if self.count_resources + self.count_sitemaps > 0:
             files = tmpdirname + os.sep
-            remote_path = self.paras.scp_document_root + self.paras.scp_document_path
+            remote_path = self.paras.scp_document_root + self.paras.server_path()
             self.scp_put(files, remote_path)
             LOG.info("Secure copied resources and metadata")
         else:

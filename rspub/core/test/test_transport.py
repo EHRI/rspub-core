@@ -31,7 +31,7 @@ def precondition_remote_server_config(as_string=False):
     else:
         return msg == "Ok"
 
-
+@unittest.skip("Run only when configuration DEFAULT has been properly executed.")
 class TestTransport(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -53,6 +53,14 @@ class TestTransport(unittest.TestCase):
     def pauze_execution(self, tmpdirname):
         print(tmpdirname)
         time.sleep(60)
+
+    def test_extract_paths(self):
+        paras = RsParameters(config_name="DEFAULT")
+        trans = Transport(paras)
+        resource = "http://zandbak11.dans.knaw.nl/ehri2/directory_1/document_1.txt"
+        path, relpath = trans.extract_paths(resource)
+        print(path, " | ", relpath)
+
 
     def test_zip_resources(self):
         paras = RsParameters(config_name="DEFAULT")
