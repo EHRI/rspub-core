@@ -26,7 +26,7 @@ from rspub.core.rs_paras import RsParameters
 
 # scp -P 2222 test_data.zip user@localhost:/home/user
 # on server: unzip -u test_data.zip
-from rspub.util.observe import Observable
+from rspub.util.observe import Observable, ObserverInterruptException
 
 LOG = logging.getLogger(__name__)
 
@@ -49,6 +49,10 @@ class TransportEvent(Enum):
     copy_sitemap = 2
     """
     ``2`` ``inform`` :samp:`A sitemap was copied to a temporary location`
+    """
+    copy_file = 3
+    """
+    ``3`` ``confirm`` "samp:`Copy file confirm message with interrupt`
     """
     resource_not_found = 10
     """
@@ -73,6 +77,10 @@ class TransportEvent(Enum):
     scp_exception = 23
     """
     ``23`` ``inform`` :samp:`Encountered exception while transferring files with scp`
+    """
+    scp_progress = 24
+    """
+    ``24`` ``inform`` :samp:`Progress as defined by SCPClient`
     """
     transport_start = 30
     """
@@ -174,6 +182,8 @@ class Transport(Observable):
 
     def __copy_file(self, relpath, src, tmpdirname):
         # LOG.debug("Copy file. relpath=%s src=%s" % (relpath, src))
+        if not self.observers_confirm(self, TransportEvent.copy_file, filename=src):
+            raise ObserverInterruptException("Process interrupted on TransportEvent.copy_file")
         dest = os.path.join(tmpdirname, relpath)
         dirs = os.path.dirname(dest)
         os.makedirs(dirs, exist_ok=True)
@@ -334,7 +344,7 @@ class Transport(Observable):
         LOG.info("%s >>>> %s" % (files, remote_path))
         if self.sshClient is None:
             raise RuntimeError("Missing ssh client: see Transport.create_ssh_client(password).")
-        scp = SCPClient(self.sshClient.get_transport())
+        scp = SCPClient(transport=self.sshClient.get_transport(), progress=self.progress)
         preserve_times = True
         recursive = True  # Can be used both for sending a single file and a directory
         msg = "scp -P %d -r [files] %s@%s:%s" % (self.paras.scp_port, self.paras.scp_user,
@@ -347,4 +357,13 @@ class Transport(Observable):
             LOG.exception("Error while transferring files")
             self.count_errors += 1
             self.observers_inform(self, TransportEvent.scp_exception, exception=str(err))
+
+    def progress(self, filename, size, sent):
+        # @param progress: callback - called with (filename, size, sent) during transfers
+        # @type progress: function(string, int, int)
+        # b'Draaiboek Hilvarenbeek Gelderakkers.doc' 241664 0
+        # b'Draaiboek Hilvarenbeek Gelderakkers.doc' 241664 16384
+        # ...
+        # b'Draaiboek Hilvarenbeek Gelderakkers.doc' 241664 241664
+        self.observers_inform(self, TransportEvent.scp_progress, filename=filename.decode(), size=size, sent=sent)
 
