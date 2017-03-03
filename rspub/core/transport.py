@@ -52,7 +52,11 @@ class TransportEvent(Enum):
     """
     copy_file = 3
     """
-    ``3`` ``confirm`` "samp:`Copy file confirm message with interrupt`
+    ``3`` ``confirm`` :samp:`Copy file confirm message with interrupt`
+    """
+    transfer_file = 4
+    """
+    ``4`` ``confirm`` :samp:`Transfer file confirm message with interrupt`
     """
     resource_not_found = 10
     """
@@ -61,6 +65,10 @@ class TransportEvent(Enum):
     site_map_not_found = 11
     """
     ``11`` inform`` :samp:`A sitemap was not found`
+    """
+    start_copy_to_temp = 15
+    """
+    ``15`` ``inform`` :samp:`Start copy resources and sitemaps to temporary directory`
     """
     zip_resources = 20
     """
@@ -81,6 +89,10 @@ class TransportEvent(Enum):
     scp_progress = 24
     """
     ``24`` ``inform`` :samp:`Progress as defined by SCPClient`
+    """
+    scp_transfer_complete = 25
+    """
+    ``25`` ``inform`` :samp:`Transfer of one file complete`
     """
     transport_start = 30
     """
@@ -105,9 +117,11 @@ class Transport(Observable):
         self.sshClient = None
         self.count_resources = 0
         self.count_sitemaps = 0
+        self.count_transfers = 0
         self.count_errors = 0
 
     def handle_resources(self, function, all_resources=False, include_description=True):
+        self.observers_inform(self, TransportEvent.start_copy_to_temp)
         with tempfile.TemporaryDirectory(prefix="rspub.core.transport_") as tmpdirname:
             LOG.info("Created temporary directory: %s" % tmpdirname)
             self.__copy_resources(tmpdirname, all_resources)
@@ -223,6 +237,7 @@ class Transport(Observable):
 
     def __copy_description(self, tmpdirname):
         desc_file = self.paras.abs_description_path()
+        self.count_sitemaps += 1
         if not self.paras.has_wellknown_at_root:
             # description goes in metadata_dir
             dest = os.path.join(tmpdirname, self.paras.metadata_dir, ".well-known", "resourcesync")
@@ -233,7 +248,6 @@ class Transport(Observable):
         os.makedirs(dirs, exist_ok=True)
         try:
             shutil.copy2(desc_file, dest)
-            self.count_sitemaps += 1
             self.observers_inform(self, TransportEvent.copy_sitemap, file=desc_file,
                                   count_sitemaps=self.count_sitemaps)
         except FileNotFoundError:
@@ -244,6 +258,7 @@ class Transport(Observable):
     def __reset_counts(self):
         self.count_resources = 0
         self.count_sitemaps = 0
+        self.count_transfers = 0
         self.count_errors = 0
 
     #############
@@ -255,7 +270,7 @@ class Transport(Observable):
         #
         self.observers_inform(self, TransportEvent.transport_end, mode="zip sources",
                               count_resources=self.count_resources, count_sitemaps=self.count_sitemaps,
-                              count_errors=self.count_errors)
+                              count_transfers=self.count_transfers, count_errors=self.count_errors)
 
     def __function_zip(self, tmpdirname):
         if self.count_resources + self.count_sitemaps > 0:
@@ -276,28 +291,40 @@ class Transport(Observable):
         self.observers_inform(self, TransportEvent.transport_start, mode="scp sources", all_resources=all_resources)
         self.create_ssh_client(password)
         #
-        if self.sshClient:
-            self.handle_resources(self.__function_scp, all_resources,
-                                  include_description=not self.paras.has_wellknown_at_root)
-            if self.paras.has_wellknown_at_root:
-                files = self.paras.abs_description_path()
-                # .well-known directory can only be made by root.
-                # sudo mkdir .well-known
-                # sudo chmod -R  a=rwx .well-known
-                # or if only one user copies to .well-known
-                # sudo chown user:group .well-known/
-                remote_path = self.paras.scp_document_root + "/.well-known"
-                try:
-                    self.scp_put(files, remote_path)
+        try:
+            if self.sshClient:
+                if self.paras.has_wellknown_at_root:
+                    include_description = False
                     self.count_sitemaps += 1
-                except FileNotFoundError:
-                    LOG.exception("Unable to send file %s", files)
-                    self.count_errors += 1
-                    self.observers_inform(self, TransportEvent.site_map_not_found, file=files)
+                else:
+                    include_description = True
 
-        self.observers_inform(self, TransportEvent.transport_end, mode="scp sources",
-                              count_resources=self.count_resources, count_sitemaps=self.count_sitemaps,
-                              count_errors=self.count_errors)
+                self.handle_resources(self.__function_scp, all_resources, include_description=include_description)
+                if self.paras.has_wellknown_at_root:
+                    self.__send_wellknown()
+        except Exception as err:
+            LOG.exception("Error while transfering files with scp")
+            self.count_errors += 1
+            self.observers_inform(self, TransportEvent.scp_exception, exception=str(err))
+        finally:
+            self.observers_inform(self, TransportEvent.transport_end, mode="scp sources",
+                                  count_resources=self.count_resources, count_sitemaps=self.count_sitemaps,
+                                  count_transfers=self.count_transfers, count_errors=self.count_errors)
+
+    def __send_wellknown(self):
+        files = self.paras.abs_description_path()
+        # .well-known directory can only be made by root.
+        # sudo mkdir .well-known
+        # sudo chmod -R  a=rwx .well-known
+        # or if only one user copies to .well-known
+        # sudo chown user:group .well-known/
+        remote_path = self.paras.scp_document_root + "/.well-known"
+        try:
+            self.scp_put(files, remote_path)
+        except FileNotFoundError:
+            LOG.exception("Unable to send file %s", files)
+            self.count_errors += 1
+            self.observers_inform(self, TransportEvent.site_map_not_found, file=files)
 
     def create_ssh_client(self, password):
         if self.sshClient is None:
@@ -365,5 +392,17 @@ class Transport(Observable):
         # b'Draaiboek Hilvarenbeek Gelderakkers.doc' 241664 16384
         # ...
         # b'Draaiboek Hilvarenbeek Gelderakkers.doc' 241664 241664
-        self.observers_inform(self, TransportEvent.scp_progress, filename=filename.decode(), size=size, sent=sent)
+        filestr = filename.decode()
+        if size == sent:
+            self.count_transfers += 1
+            self.observers_inform(self, TransportEvent.scp_transfer_complete,
+                                  filename=filestr,
+                                  count_resources=self.count_resources,
+                                  count_sitemaps=self.count_sitemaps,
+                                  count_transfers=self.count_transfers,
+                                  percentage = self.count_transfers / (self.count_resources + self.count_sitemaps))
 
+            if not self.observers_confirm(self, TransportEvent.transfer_file, filename=filename):
+                raise ObserverInterruptException("Process interrupted on TransportEvent.transfer_file")
+
+        self.observers_inform(self, TransportEvent.scp_progress, filename=filestr, size=size, sent=sent)
