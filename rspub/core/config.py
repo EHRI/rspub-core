@@ -368,30 +368,30 @@ class Configuration(object):
     def set_last_sitemaps(self, sitemaplist):
         self.__set_list__(SECTION_CORE, "last_sitemaps", sitemaplist)
 
-    # # scp parameters
-    def scp_server(self, fallback="example.com"):
-        return self.parser.get(SECTION_CORE, "scp_server", fallback=fallback)
+    # # scp parameters for exporting to remote web server
+    def exp_scp_server(self, fallback="example.com"):
+        return self.parser.get(SECTION_CORE, "exp_scp_server", fallback=fallback)
 
-    def set_scp_server(self, scp_server):
-        self.__set_option__(SECTION_CORE, "scp_server", scp_server)
+    def set_exp_scp_server(self, exp_scp_server):
+        self.__set_option__(SECTION_CORE, "exp_scp_server", exp_scp_server)
 
-    def scp_port(self, fallback=22):
-        return self.__get_int__(SECTION_CORE, "scp_port", fallback=fallback)
+    def exp_scp_port(self, fallback=22):
+        return self.__get_int__(SECTION_CORE, "exp_scp_port", fallback=fallback)
 
-    def set_scp_port(self, scp_port):
-        self.__set_int__(SECTION_CORE, "scp_port", scp_port)
+    def set_exp_scp_port(self, exp_scp_port):
+        self.__set_int__(SECTION_CORE, "exp_scp_port", exp_scp_port)
 
-    def scp_user(self, fallback="username"):
-        return self.parser.get(SECTION_CORE, "scp_user", fallback=fallback)
+    def exp_scp_user(self, fallback="username"):
+        return self.parser.get(SECTION_CORE, "exp_scp_user", fallback=fallback)
 
-    def set_scp_user(self, scp_user):
-        self.__set_option__(SECTION_CORE, "scp_user", scp_user)
+    def set_exp_scp_user(self, exp_scp_user):
+        self.__set_option__(SECTION_CORE, "exp_scp_user", exp_scp_user)
 
-    def scp_document_root(self, fallback="/var/www/html/"):
-        return self.parser.get(SECTION_CORE, "scp_document_root", fallback=fallback)
+    def exp_scp_document_root(self, fallback="/var/www/html/"):
+        return self.parser.get(SECTION_CORE, "exp_scp_document_root", fallback=fallback)
 
-    def set_scp_document_root(self, scp_document_root):
-        self.__set_option__(SECTION_CORE, "scp_document_root", scp_document_root)
+    def set_exp_scp_document_root(self, exp_scp_document_root):
+        self.__set_option__(SECTION_CORE, "exp_scp_document_root", exp_scp_document_root)
 
     # # zip parameters
     def zip_filename(self, fallback=os.path.join(os.path.expanduser("~"), "resourcesync.zip")):
@@ -399,3 +399,34 @@ class Configuration(object):
 
     def set_zip_filename(self, zip_filename):
         return self.__set_option__(SECTION_CORE, "zip_filename", zip_filename)
+
+    # # scp parameters for importing (resources) from remote server
+    def imp_scp_server(self, fallback="example.com"):
+        return self.parser.get(SECTION_CORE, "imp_scp_server", fallback=fallback)
+
+    def set_imp_scp_server(self, imp_scp_server):
+        self.__set_option__(SECTION_CORE, "imp_scp_server", imp_scp_server)
+
+    def imp_scp_port(self, fallback=22):
+        return self.__get_int__(SECTION_CORE, "imp_scp_port", fallback=fallback)
+
+    def set_imp_scp_port(self, imp_scp_port):
+        self.__set_int__(SECTION_CORE, "imp_scp_port", imp_scp_port)
+
+    def imp_scp_user(self, fallback="username"):
+        return self.parser.get(SECTION_CORE, "imp_scp_user", fallback=fallback)
+
+    def set_imp_scp_user(self, imp_scp_user):
+        self.__set_option__(SECTION_CORE, "imp_scp_user", imp_scp_user)
+
+    def imp_scp_remote_path(self, fallback="~"):
+        return self.parser.get(SECTION_CORE, "imp_scp_remote_path", fallback=fallback)
+
+    def set_imp_scp_remote_path(self, imp_scp_remote_path):
+        self.__set_option__(SECTION_CORE, "imp_scp_remote_path", imp_scp_remote_path)
+
+    def imp_scp_local_path(self, fallback=os.path.expanduser("~")):
+        return self.parser.get(SECTION_CORE, "imp_scp_local_path", fallback=fallback)
+
+    def set_imp_scp_local_path(self, imp_scp_local_path):
+        self.__set_option__(SECTION_CORE, "imp_scp_local_path", imp_scp_local_path)

@@ -65,8 +65,11 @@ class RsParameters(object):
                  simple_select_file=config, select_mode=config, plugin_dir=config,
                  history_dir=config, max_items_in_list=config, zero_fill_filename=config, is_saving_pretty_xml=config,
                  is_saving_sitemaps=config, has_wellknown_at_root=config,
-                 scp_server=config, scp_port=config, scp_user=config,
-                 scp_document_root=config, zip_filename=config, **kwargs):
+                 exp_scp_server=config, exp_scp_port=config, exp_scp_user=config,
+                 exp_scp_document_root=config, zip_filename=config,
+                 imp_scp_server=config, imp_scp_port=config, imp_scp_user=config,
+                 imp_scp_remote_path=config, imp_scp_local_path=config,
+                 **kwargs):
         """
         :samp:`Construct an instance of {RsParameters}`
 
@@ -93,11 +96,16 @@ class RsParameters(object):
         :param bool is_saving_pretty_xml: ``parameter`` :func:`is_saving_pretty_xml`
         :param bool is_saving_sitemaps: ``parameter`` :func:`is_saving_sitemaps`
         :param bool has_wellknown_at_root: ``parameter`` :func:`has_wellknown_at_root`
-        :param str scp_server: ``parameter`` :func:`scp_server`
-        :param int scp_port: ``parameter`` :func:`scp_port`
-        :param str scp_user: ``parameter`` :func:`scp_user`
-        :param str scp_document_root: ``parameter`` :func:`scp_document_root`
+        :param str exp_scp_server: ``parameter`` :func:`exp_scp_server`
+        :param int exp_scp_port: ``parameter`` :func:`exp_scp_port`
+        :param str exp_scp_user: ``parameter`` :func:`exp_scp_user`
+        :param str exp_scp_document_root: ``parameter`` :func:`exp_scp_document_root`
         :param str zip_filename: ``parameter`` :func:`zip_filename`
+        :param str imp_scp_server: ``parameter`` :func:`imp_scp_server`
+        :param int imp_scp_port: ``parameter`` :func:`imp_scp_port`
+        :param str imp_scp_user: ``parameter`` :func:`imp_scp_user`
+        :param str imp_scp_remote_path: ``parameter`` :func:`imp_scp_remote_path`
+        :param str imp_scp_local_path: ``parameter`` :func:`imp_scp_local_path`
         :param kwargs: named arguments, same as parameters, but preceded by _
         :raises: :exc:`ValueError` if a parameter is not valid or if the configuration with the given `config_name` is not found
         """
@@ -117,11 +125,16 @@ class RsParameters(object):
             "is_saving_pretty_xml": is_saving_pretty_xml,
             "is_saving_sitemaps": is_saving_sitemaps,
             "has_wellknown_at_root": has_wellknown_at_root,
-            "scp_server": scp_server,
-            "scp_port": scp_port,
-            "scp_user": scp_user,
-            "scp_document_root": scp_document_root,
-            "zip_filename": zip_filename
+            "exp_scp_server": exp_scp_server,
+            "exp_scp_port": exp_scp_port,
+            "exp_scp_user": exp_scp_user,
+            "exp_scp_document_root": exp_scp_document_root,
+            "zip_filename": zip_filename,
+            "imp_scp_server": imp_scp_server,
+            "imp_scp_port": imp_scp_port,
+            "imp_scp_user": imp_scp_user,
+            "imp_scp_remote_path": imp_scp_remote_path,
+            "imp_scp_local_path": imp_scp_local_path,
         })
         if config_name:
             cfg = Configurations.load_configuration(config_name)
@@ -180,25 +193,45 @@ class RsParameters(object):
         self._is_saving_sitemaps = self.__arg__("_is_saving_sitemaps", cfg.is_saving_sitemaps(), **kwargs)
         self._has_wellknown_at_root = self.__arg__("_has_wellknown_at_root", cfg.has_wellknown_at_root(), **kwargs)
 
-        self._scp_server = None
-        _scp_server_ = self.__arg__("_scp_server", cfg.scp_server(), **kwargs)
-        self.scp_server = _scp_server_
+        self._exp_scp_server = None
+        _exp_scp_server_ = self.__arg__("_exp_scp_server", cfg.exp_scp_server(), **kwargs)
+        self.exp_scp_server = _exp_scp_server_
 
-        self._scp_port = None
-        _scp_port_ = self.__arg__("_scp_port", cfg.scp_port(), **kwargs)
-        self.scp_port = _scp_port_
+        self._exp_scp_port = None
+        _exp_scp_port_ = self.__arg__("_exp_scp_port", cfg.exp_scp_port(), **kwargs)
+        self.exp_scp_port = _exp_scp_port_
 
-        self._scp_user = None
-        _scp_user_ = self.__arg__("_scp_user", cfg.scp_user(), **kwargs)
-        self.scp_user = _scp_user_
+        self._exp_scp_user = None
+        _exp_scp_user_ = self.__arg__("_exp_scp_user", cfg.exp_scp_user(), **kwargs)
+        self.exp_scp_user = _exp_scp_user_
 
-        self._scp_document_root = None
-        _scp_document_root_ = self.__arg__("_scp_document_root", cfg.scp_document_root(), **kwargs)
-        self.scp_document_root = _scp_document_root_
+        self._exp_scp_document_root = None
+        _exp_scp_document_root_ = self.__arg__("_exp_scp_document_root", cfg.exp_scp_document_root(), **kwargs)
+        self.exp_scp_document_root = _exp_scp_document_root_
 
         self._zip_filename = None
         _zip_filename_ = self.__arg__("_zip_filename", cfg.zip_filename(), **kwargs)
         self.zip_filename = _zip_filename_
+
+        self._imp_scp_server = None
+        _imp_scp_server_ = self.__arg__("_imp_scp_server", cfg.imp_scp_server(), **kwargs)
+        self.imp_scp_server = _imp_scp_server_
+
+        self._imp_scp_port = None
+        _imp_scp_port_ = self.__arg__("_imp_scp_port", cfg.imp_scp_port(), **kwargs)
+        self.imp_scp_port = _imp_scp_port_
+
+        self._imp_scp_user = None
+        _imp_scp_user_ = self.__arg__("_imp_scp_user", cfg.imp_scp_user(), **kwargs)
+        self.imp_scp_user = _imp_scp_user_
+
+        self._imp_scp_remote_path = None
+        _imp_scp_remote_path_ = self.__arg__("_imp_scp_remote_path", cfg.imp_scp_remote_path(), **kwargs)
+        self.imp_scp_remote_path = _imp_scp_remote_path_
+
+        self._imp_scp_local_path = None
+        _imp_scp_local_path_ = self.__arg__("_imp_scp_local_path", cfg.imp_scp_local_path(), **kwargs)
+        self.imp_scp_local_path = _imp_scp_local_path_
 
         self.last_execution = self.__arg__("last_execution", cfg.last_excution(), **kwargs)
         self.last_strategy = self.__arg__("last_strategy", cfg.last_strategy(), **kwargs)
@@ -556,38 +589,38 @@ class RsParameters(object):
         self._has_wellknown_at_root = at_root
 
     @property
-    def scp_server(self):
-        return self._scp_server
+    def exp_scp_server(self):
+        return self._exp_scp_server
 
-    @scp_server.setter
-    def scp_server(self, server):
+    @exp_scp_server.setter
+    def exp_scp_server(self, server):
         if server is None or server == "":
-            raise ValueError("Invalid value for scp_server: server name should not be empty")
-        self._scp_server = server
+            raise ValueError("Invalid value for exp_scp_server: server name should not be empty")
+        self._exp_scp_server = server
 
     @property
-    def scp_port(self):
-        return self._scp_port
+    def exp_scp_port(self):
+        return self._exp_scp_port
 
-    @scp_port.setter
-    def scp_port(self, port):
-        self._assert_number(port, 1, 65535, "scp_port")
-        self._scp_port = port
+    @exp_scp_port.setter
+    def exp_scp_port(self, port):
+        self._assert_number(port, 1, 65535, "exp_scp_port")
+        self._exp_scp_port = port
 
     @property
-    def scp_user(self):
-        return self._scp_user
+    def exp_scp_user(self):
+        return self._exp_scp_user
 
-    @scp_user.setter
-    def scp_user(self, user):
+    @exp_scp_user.setter
+    def exp_scp_user(self, user):
         if user is None or user == "":
-            raise ValueError("Invalid value for scp_user: name should not be empty")
-        self._scp_user = user
+            raise ValueError("Invalid value for exp_scp_user: name should not be empty")
+        self._exp_scp_user = user
 
     @property
-    def scp_document_root(self):
+    def exp_scp_document_root(self):
         """
-        ``parameter`` :samp:`The directory from which the server will serve files` (str)
+        ``parameter`` :samp:`The directory from which the web server will serve files` (str)
 
         Example. Paths to resources are relative to the server host::
 
@@ -607,15 +640,15 @@ class RsParameters(object):
 
         ``default:`` '/var/www/html/'
         """
-        return self._scp_document_root
+        return self._exp_scp_document_root
 
-    @scp_document_root.setter
-    def scp_document_root(self, value):
+    @exp_scp_document_root.setter
+    def exp_scp_document_root(self, value):
         if value.endswith("/"):
             value = value[:-1]
         if value == "":
             raise ValueError("Invalid value for scp_document_root: path should not be empty")
-        self._scp_document_root = value
+        self._exp_scp_document_root = value
 
     @property
     def zip_filename(self):
@@ -631,6 +664,62 @@ class RsParameters(object):
         if ext == ".":
             value += "zip"
         self._zip_filename = value
+
+    @property
+    def imp_scp_server(self):
+        return self._imp_scp_server
+
+    @imp_scp_server.setter
+    def imp_scp_server(self, server):
+        if server is None or server == "":
+            raise ValueError("Invalid value for imp_scp_server: server name should not be empty")
+        self._imp_scp_server = server
+
+    @property
+    def imp_scp_port(self):
+        return self._imp_scp_port
+
+    @imp_scp_port.setter
+    def imp_scp_port(self, port):
+        self._assert_number(port, 1, 65535, "imp_scp_port")
+        self._imp_scp_port = port
+
+    @property
+    def imp_scp_user(self):
+        return self._imp_scp_user
+
+    @imp_scp_user.setter
+    def imp_scp_user(self, user):
+        if user is None or user == "":
+            raise ValueError("Invalid value for imp_scp_user: name should not be empty")
+        self._imp_scp_user = user
+
+    @property
+    def imp_scp_remote_path(self):
+        """
+        ``parameter`` :samp:`The directory at the remote server from which to import files` (str)
+
+        ``default:`` '~'
+        """
+        return self._imp_scp_remote_path
+
+    @imp_scp_remote_path.setter
+    def imp_scp_remote_path(self, value):
+        if value.endswith("/"):
+            value = value[:-1]
+        if value == "":
+            raise ValueError("Invalid value for imp_scp_remote_path: path should not be empty")
+        self._imp_scp_remote_path = value
+
+    @property
+    def imp_scp_local_path(self):
+        return self._imp_scp_local_path
+
+    @imp_scp_local_path.setter
+    def imp_scp_local_path(self, value):
+        if value == "":
+            raise ValueError("Invalid value for imp_scp_local_path: path should not be empty")
+        self._imp_scp_local_path = value
 
     def save_configuration(self, on_disk=True):
         """
@@ -664,12 +753,18 @@ class RsParameters(object):
         cfg.set_last_strategy(self.last_strategy)
         cfg.set_last_sitemaps(self.last_sitemaps)
         #
-        cfg.set_scp_server(self.scp_server)
-        cfg.set_scp_port(self.scp_port)
-        cfg.set_scp_user(self.scp_user)
-        cfg.set_scp_document_root(self.scp_document_root)
+        cfg.set_exp_scp_server(self.exp_scp_server)
+        cfg.set_exp_scp_port(self.exp_scp_port)
+        cfg.set_exp_scp_user(self.exp_scp_user)
+        cfg.set_exp_scp_document_root(self.exp_scp_document_root)
         #
         cfg.set_zip_filename(self.zip_filename)
+        #
+        cfg.set_imp_scp_server(self.imp_scp_server)
+        cfg.set_imp_scp_port(self.imp_scp_port)
+        cfg.set_imp_scp_user(self.imp_scp_user)
+        cfg.set_imp_scp_remote_path(self.imp_scp_remote_path)
+        cfg.set_imp_scp_local_path(self.imp_scp_local_path)
 
         if on_disk:
             cfg.persist()
@@ -725,7 +820,7 @@ class RsParameters(object):
 
     def server_root(self):
         """
-        ``derived`` :samp:`The server root as derived from {url_prefix}`
+        ``derived`` :samp:`The server root (of the web server) as derived from {url_prefix}`
 
         :return: server root
         """
@@ -852,14 +947,9 @@ class RsParameters(object):
             [True, "is_saving_sitemaps", self.is_saving_sitemaps],
             #
             [False, "last_execution", self.last_execution],
-            [False, "last_strategy", self.last_strategy],
-            [False, "last_sitemaps_count", len(self.last_sitemaps)]
+            #[False, "last_strategy", self.last_strategy],
+            #[False, "last_sitemaps_count", len(self.last_sitemaps)]
             #
-            #[True, "scp_server", self.scp_server],
-            #[True, "scp_port", self.scp_port],
-            #[True, "scp_user", self.scp_user],
-            #[True, "scp_document_root", self.scp_document_root],
-            #[True, "zip_filename", self.zip_filename]
         ]
         if as_string:
             f = "{:" + str(fill) + "s}"

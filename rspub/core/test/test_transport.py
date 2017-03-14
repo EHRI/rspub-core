@@ -31,7 +31,8 @@ def precondition_remote_server_config(as_string=False):
     else:
         return msg == "Ok"
 
-@unittest.skip("Run only when configuration DEFAULT has been properly executed.")
+
+unittest.skip("Run only when configuration DEFAULT has been properly executed.")
 class TestTransport(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -60,7 +61,6 @@ class TestTransport(unittest.TestCase):
         resource = "http://zandbak11.dans.knaw.nl/ehri2/directory_1/document_1.txt"
         path, relpath = trans.extract_paths(resource)
         print(path, " | ", relpath)
-
 
     def test_zip_resources(self):
         paras = RsParameters(config_name="DEFAULT")
@@ -99,11 +99,11 @@ class TestTransport(unittest.TestCase):
         with open(cfg_file) as cfg:
             line = cfg.readline()
         spup = line.split(",")
-        paras.scp_server = spup[0]
-        paras.scp_port = int(spup[1])
-        paras.scp_user = spup[2]
+        paras.exp_scp_server = spup[0]
+        paras.exp_scp_port = int(spup[1])
+        paras.exp_scp_user = spup[2]
         password = spup[3]
-        paras.scp_document_root = spup[4]
+        paras.exp_scp_document_root = spup[4]
         paras.scp_document_path = spup[5].strip()
         return paras, password
 

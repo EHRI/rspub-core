@@ -46,66 +46,76 @@ class TransportEvent(Enum):
     """
     ``1`` ``inform`` :samp:`A resource was copied to a temporary location`
     """
+
     copy_sitemap = 2
     """
     ``2`` ``inform`` :samp:`A sitemap was copied to a temporary location`
     """
+
     copy_file = 3
     """
     ``3`` ``confirm`` :samp:`Copy file confirm message with interrupt`
     """
+
     transfer_file = 4
     """
     ``4`` ``confirm`` :samp:`Transfer file confirm message with interrupt`
     """
+
     resource_not_found = 10
     """
     ``10`` ``inform`` :samp:`A resource was not found`
     """
+
     site_map_not_found = 11
     """
     ``11`` inform`` :samp:`A sitemap was not found`
     """
+
     start_copy_to_temp = 15
     """
     ``15`` ``inform`` :samp:`Start copy resources and sitemaps to temporary directory`
     """
+
     zip_resources = 20
     """
     ``20`` ``inform`` :samp:`Start packaging resources and sitemaps`
     """
+
     scp_resources = 21
     """
     ``21`` ``inform`` :samp:`Start transfer of files with scp`
     """
+
     ssh_client_creation = 22
     """
     ``22`` ``inform`` :samp:`Trying to create ssh client`
     """
+
     scp_exception = 23
     """
     ``23`` ``inform`` :samp:`Encountered exception while transferring files with scp`
     """
+
     scp_progress = 24
     """
     ``24`` ``inform`` :samp:`Progress as defined by SCPClient`
     """
+
     scp_transfer_complete = 25
     """
     ``25`` ``inform`` :samp:`Transfer of one file complete`
     """
+
     transport_start = 30
     """
     ``30`` ``inform`` :samp:`Transport started`
     """
+
     transport_end = 31
     """
     ``31`` ``inform`` :samp:`Transport ended`
     """
-
-
-class TransportException(Exception):
-    pass
 
 
 class Transport(Observable):
@@ -318,7 +328,7 @@ class Transport(Observable):
         # sudo chmod -R  a=rwx .well-known
         # or if only one user copies to .well-known
         # sudo chown user:group .well-known/
-        remote_path = self.paras.scp_document_root + "/.well-known"
+        remote_path = self.paras.exp_scp_document_root + "/.well-known"
         try:
             self.scp_put(files, remote_path)
         except FileNotFoundError:
@@ -329,16 +339,16 @@ class Transport(Observable):
     def create_ssh_client(self, password):
         if self.sshClient is None:
             LOG.debug("Creating ssh client: server=%s, port=%d, user=%s" %
-                      (self.paras.scp_server, self.paras.scp_port, self.paras.scp_user))
+                      (self.paras.exp_scp_server, self.paras.exp_scp_port, self.paras.exp_scp_user))
             self.observers_inform(self, TransportEvent.ssh_client_creation,
-                                  server=self.paras.scp_server,
-                                  port=self.paras.scp_port,
-                                  user=self.paras.scp_user)
+                                  server=self.paras.exp_scp_server,
+                                  port=self.paras.exp_scp_port,
+                                  user=self.paras.exp_scp_user)
             self.sshClient = paramiko.SSHClient()
             self.sshClient.load_system_host_keys()
             self.sshClient.set_missing_host_key_policy(paramiko.AutoAddPolicy())
             try:
-                self.sshClient.connect(self.paras.scp_server, self.paras.scp_port, self.paras.scp_user, password)
+                self.sshClient.connect(self.paras.exp_scp_server, self.paras.exp_scp_port, self.paras.exp_scp_user, password)
             except paramiko.ssh_exception.AuthenticationException as err:
                 LOG.exception("Not authorized")
                 self.count_errors += 1
@@ -358,7 +368,7 @@ class Transport(Observable):
     def __function_scp(self, tmpdirname):
         if self.count_resources + self.count_sitemaps > 0:
             files = tmpdirname + os.sep
-            remote_path = self.paras.scp_document_root + self.paras.server_path()
+            remote_path = self.paras.exp_scp_document_root + self.paras.server_path()
             self.scp_put(files, remote_path)
             LOG.info("Secure copied resources and metadata")
         else:
@@ -374,8 +384,8 @@ class Transport(Observable):
         scp = SCPClient(transport=self.sshClient.get_transport(), progress=self.progress)
         preserve_times = True
         recursive = True  # Can be used both for sending a single file and a directory
-        msg = "scp -P %d -r [files] %s@%s:%s" % (self.paras.scp_port, self.paras.scp_user,
-                                                                    self.paras.scp_server, remote_path)
+        msg = "scp -P %d -r [files] %s@%s:%s" % (self.paras.exp_scp_port, self.paras.exp_scp_user,
+                                                 self.paras.exp_scp_server, remote_path)
         LOG.debug("Sending files: " + msg)
         self.observers_inform(self, TransportEvent.scp_resources, command=msg)
         try:
@@ -393,7 +403,11 @@ class Transport(Observable):
         # ...
         # b'Draaiboek Hilvarenbeek Gelderakkers.doc' 241664 241664
         filestr = filename.decode()
-        if size == sent:
+        self.observers_inform(self, TransportEvent.scp_progress, filename=filestr, size=size, sent=sent)
+        if sent == 0:
+            if not self.observers_confirm(self, TransportEvent.transfer_file, filename=filename):
+                raise ObserverInterruptException("Process interrupted on TransportEvent.transfer_file")
+        if sent == size:
             self.count_transfers += 1
             self.observers_inform(self, TransportEvent.scp_transfer_complete,
                                   filename=filestr,
@@ -402,7 +416,6 @@ class Transport(Observable):
                                   count_transfers=self.count_transfers,
                                   percentage = self.count_transfers / (self.count_resources + self.count_sitemaps))
 
-            if not self.observers_confirm(self, TransportEvent.transfer_file, filename=filename):
-                raise ObserverInterruptException("Process interrupted on TransportEvent.transfer_file")
 
-        self.observers_inform(self, TransportEvent.scp_progress, filename=filestr, size=size, sent=sent)
+
+

@@ -9,6 +9,7 @@ from rspub.core.rs_paras import RsParameters
 
 
 class TestRsParameters(unittest.TestCase):
+    maxDiff = None
 
     def setUp(self):
         Configuration._set_configuration_filename("test_rs_paras.cfg")
@@ -355,71 +356,158 @@ class TestRsParameters(unittest.TestCase):
 
         self.save_configuration_test(rsp)
 
-    def test_scp_server(self):
+    def test_exp_scp_server(self):
         # defaults to configuration defaults
         Configuration().core_clear()
         rsp = RsParameters()
-        self.assertEquals("example.com", rsp.scp_server)
+        self.assertEquals("example.com", rsp.exp_scp_server)
 
         # contamination test
-        rsp.scp_server = "server.name.com"
+        rsp.exp_scp_server = "server.name.com"
         rsp2 = RsParameters(**rsp.__dict__)
-        self.assertEquals("server.name.com", rsp2.scp_server)
+        self.assertEquals("server.name.com", rsp2.exp_scp_server)
 
-        rsp.scp_server = "server.name.nl"
+        rsp.exp_scp_server = "server.name.nl"
         rsp3 = RsParameters(**rsp.__dict__)
-        self.assertEquals("server.name.nl", rsp3.scp_server)
+        self.assertEquals("server.name.nl", rsp3.exp_scp_server)
 
         self.save_configuration_test(rsp)
 
-    def test_scp_port(self):
+    def test_exp_scp_port(self):
         # defaults to configuration defaults
         Configuration().core_clear()
         rsp = RsParameters()
-        self.assertEquals(22, rsp.scp_port)
+        self.assertEquals(22, rsp.exp_scp_port)
 
         # contamination test
-        rsp.scp_port = 2222
+        rsp.exp_scp_port = 2222
         rsp2 = RsParameters(**rsp.__dict__)
-        self.assertEquals(2222, rsp2.scp_port)
+        self.assertEquals(2222, rsp2.exp_scp_port)
 
-        rsp.scp_port = 1234
+        rsp.exp_scp_port = 1234
         rsp3 = RsParameters(**rsp.__dict__)
-        self.assertEquals(1234, rsp3.scp_port)
+        self.assertEquals(1234, rsp3.exp_scp_port)
 
         self.save_configuration_test(rsp)
 
-    def test_scp_user(self):
+    def test_exp_scp_user(self):
         # defaults to configuration defaults
         Configuration().core_clear()
         rsp = RsParameters()
-        self.assertEquals("username", rsp.scp_user)
+        self.assertEquals("username", rsp.exp_scp_user)
 
         # contamination test
-        rsp.scp_user = "jan"
+        rsp.exp_scp_user = "jan"
         rsp2 = RsParameters(**rsp.__dict__)
-        self.assertEquals("jan", rsp2.scp_user)
+        self.assertEquals("jan", rsp2.exp_scp_user)
 
-        rsp.scp_user = "wim"
+        rsp.exp_scp_user = "wim"
         rsp3 = RsParameters(**rsp.__dict__)
-        self.assertEquals("wim", rsp3.scp_user)
+        self.assertEquals("wim", rsp3.exp_scp_user)
 
         self.save_configuration_test(rsp)
 
-    def test_scp_document_root(self):
+    def test_exp_scp_document_root(self):
         # defaults to configuration defaults
         Configuration().core_clear()
         rsp = RsParameters()
-        self.assertEquals("/var/www/html", rsp.scp_document_root)
+        self.assertEquals("/var/www/html", rsp.exp_scp_document_root)
 
         # contamination test
-        rsp.scp_document_root = "/opt/rs/"
+        rsp.exp_scp_document_root = "/opt/rs/"
         rsp2 = RsParameters(**rsp.__dict__)
-        self.assertEquals("/opt/rs", rsp2.scp_document_root)
+        self.assertEquals("/opt/rs", rsp2.exp_scp_document_root)
 
-        rsp.scp_document_root = "/var/www/html/ehri/rs"
+        rsp.exp_scp_document_root = "/var/www/html/ehri/rs"
         rsp3 = RsParameters(**rsp.__dict__)
-        self.assertEquals("/var/www/html/ehri/rs", rsp3.scp_document_root)
+        self.assertEquals("/var/www/html/ehri/rs", rsp3.exp_scp_document_root)
+
+        self.save_configuration_test(rsp)
+
+    def test_imp_scp_server(self):
+        # defaults to configuration defaults
+        Configuration().core_clear()
+        rsp = RsParameters()
+        self.assertEquals("example.com", rsp.imp_scp_server)
+
+        # contamination test
+        rsp.imp_scp_server = "imp.server.name.com"
+        rsp2 = RsParameters(**rsp.__dict__)
+        self.assertEquals("imp.server.name.com", rsp2.imp_scp_server)
+
+        rsp.imp_scp_server = "imp.server.name.nl"
+        rsp3 = RsParameters(**rsp.__dict__)
+        self.assertEquals("imp.server.name.nl", rsp3.imp_scp_server)
+
+        self.save_configuration_test(rsp)
+
+    def test_imp_scp_port(self):
+        # defaults to configuration defaults
+        Configuration().core_clear()
+        rsp = RsParameters()
+        self.assertEquals(22, rsp.imp_scp_port)
+
+        # contamination test
+        rsp.imp_scp_port = 2222
+        rsp2 = RsParameters(**rsp.__dict__)
+        self.assertEquals(2222, rsp2.imp_scp_port)
+
+        rsp.imp_scp_port = 1234
+        rsp3 = RsParameters(**rsp.__dict__)
+        self.assertEquals(1234, rsp3.imp_scp_port)
+
+        self.save_configuration_test(rsp)
+
+    def test_imp_scp_user(self):
+        # defaults to configuration defaults
+        Configuration().core_clear()
+        rsp = RsParameters()
+        self.assertEquals("username", rsp.imp_scp_user)
+
+        # contamination test
+        rsp.imp_scp_user = "kees"
+        rsp2 = RsParameters(**rsp.__dict__)
+        self.assertEquals("kees", rsp2.imp_scp_user)
+
+        rsp.imp_scp_user = "joe"
+        rsp3 = RsParameters(**rsp.__dict__)
+        self.assertEquals("joe", rsp3.imp_scp_user)
+
+        self.save_configuration_test(rsp)
+
+    def test_imp_scp_remote_path(self):
+        # defaults to configuration defaults
+        Configuration().core_clear()
+        rsp = RsParameters()
+        self.assertEquals("~", rsp.imp_scp_remote_path)
+
+        # contamination test
+        rsp.imp_scp_remote_path = "/var/rs/"
+        rsp2 = RsParameters(**rsp.__dict__)
+        self.assertEquals("/var/rs", rsp2.imp_scp_remote_path)
+
+        rsp.imp_scp_remote_path = "/opt/ehri/rs"
+        rsp3 = RsParameters(**rsp.__dict__)
+        self.assertEquals("/opt/ehri/rs", rsp3.imp_scp_remote_path)
+
+        self.save_configuration_test(rsp)
+
+    def test_imp_scp_local_path(self):
+        # defaults to configuration defaults
+        user_home = os.path.expanduser("~")
+
+        Configuration().core_clear()
+        rsp = RsParameters()
+        self.assertEquals(user_home, rsp.imp_scp_local_path)
+
+        # contamination test
+        rsp.imp_scp_local_path = os.path.join(user_home, "local", "rs")
+        rsp2 = RsParameters(**rsp.__dict__)
+        self.assertEquals(os.path.join(user_home, "local", "rs"), rsp2.imp_scp_local_path)
+
+        rsp.imp_scp_local_path = os.path.join(user_home, "rs", "local")
+        rsp3 = RsParameters(**rsp.__dict__)
+        self.assertEquals(os.path.join(user_home, "rs", "local"), rsp3.imp_scp_local_path)
 
         self.save_configuration_test(rsp)
 
