@@ -114,7 +114,7 @@ class Importer(Observable):
                                       recursive=recursive)
                 scp.get(self.paras.imp_scp_remote_path, self.paras.imp_scp_local_path, recursive=recursive,
                         preserve_times=preserve_times)
-        except SCPException as err:
+        except Exception as err:
             LOG.exception("Error while importing files")
             self.count_errors += 1
             self.observers_inform(self, ImportEvent.scp_exception, exception=str(err))
