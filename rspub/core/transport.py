@@ -21,11 +21,6 @@ from resync.sitemap import Sitemap
 from scp import SCPClient, SCPException
 
 from rspub.core.rs_paras import RsParameters
-
-# See also http://httpd.apache.org/docs/2.4/urlmapping.html
-
-# scp -P 2222 test_data.zip user@localhost:/home/user
-# on server: unzip -u test_data.zip
 from rspub.util.observe import Observable, ObserverInterruptException
 
 LOG = logging.getLogger(__name__)
@@ -37,7 +32,7 @@ class TransportEvent(Enum):
 
     All events are broadcast in the format::
 
-        [inform](source, event, **kwargs)
+        [inform][confirm](source, event, **kwargs)
 
     where ``source`` is the calling instance, ``event`` is the relevant event and ``**kwargs`` hold relevant
     information about the event.
@@ -65,11 +60,6 @@ class TransportEvent(Enum):
     resource_not_found = 10
     """
     ``10`` ``inform`` :samp:`A resource was not found`
-    """
-
-    site_map_not_found = 11
-    """
-    ``11`` inform`` :samp:`A sitemap was not found`
     """
 
     start_copy_to_temp = 15
@@ -118,27 +108,30 @@ class TransportEvent(Enum):
     """
 
 
-class Transport(Observable):
+class ResourceAuditorEvent(Enum):
+    """
+    :samp:`Events fired by {Transport}`
+
+    All events are broadcast in the format::
+
+        [inform](source, event, **kwargs)
+
+    where ``source`` is the calling instance, ``event`` is the relevant event and ``**kwargs`` hold relevant
+    information about the event.
+    """
+    site_map_not_found = 11
+    """
+    ``11`` inform`` :samp:`A sitemap was not found`
+    """
+
+
+class ResourceAuditor(Observable):
 
     def __init__(self, paras):
         Observable.__init__(self)
         assert isinstance(paras, RsParameters)
         self.paras = paras
-        self.sshClient = None
-        self.count_resources = 0
-        self.count_sitemaps = 0
-        self.count_transfers = 0
         self.count_errors = 0
-
-    def handle_resources(self, function, all_resources=False, include_description=True):
-        self.observers_inform(self, TransportEvent.start_copy_to_temp)
-        with tempfile.TemporaryDirectory(prefix="rspub.core.transport_") as tmpdirname:
-            LOG.info("Created temporary directory: %s" % tmpdirname)
-            self.__copy_resources(tmpdirname, all_resources)
-            self.__copy_metadata(tmpdirname)
-            if include_description:
-                self.__copy_description(tmpdirname)
-            function(tmpdirname)
 
     def all_resources(self):
         all_resources = {}
@@ -167,16 +160,16 @@ class Transport(Observable):
                 elif resource.change == "deleted" and resource.uri in all_resources:
                     del all_resources[resource.uri]
 
-        return  all_resources
+        return all_resources
 
     def all_resources_generator(self):
 
         def generator():
             for resource in self.all_resources():
                 path, relpath = self.extract_paths(resource)
-                yield path, relpath
+                yield resource, path, relpath
 
-        return  generator
+        return generator
 
     def last_resources_generator(self):
 
@@ -190,11 +183,11 @@ class Transport(Observable):
                     for resource in listbase.resources:
                         if resource.change is None or not resource.change == "deleted":
                             path, relpath = self.extract_paths(resource.uri)
-                            yield path, relpath
+                            yield resource, path, relpath
                 else:
                     LOG.warning("Unable to read sitemap: %s" % file_name)
                     self.count_errors += 1
-                    self.observers_inform(self, TransportEvent.site_map_not_found, file=file_name)
+                    self.observers_inform(self, ResourceAuditorEvent.site_map_not_found, file=file_name)
 
         return generator
 
@@ -202,7 +195,37 @@ class Transport(Observable):
         relpath = os.path.relpath(resource, self.paras.url_prefix)
         relpath = urllib.parse.unquote(relpath)
         path = os.path.join(self.paras.resource_dir, relpath)
+
         return path, relpath
+
+    def get_generator(self, all_resources):
+        if all_resources:
+            LOG.debug("Creating generator for all resources.")
+            generator = self.all_resources_generator()
+        else:
+            LOG.debug("Creating generator for last resources.")
+            generator = self.last_resources_generator()
+        return generator
+
+
+class Transport(ResourceAuditor):
+
+    def __init__(self, paras):
+        ResourceAuditor.__init__(self, paras)
+        self.sshClient = None
+        self.count_resources = 0
+        self.count_sitemaps = 0
+        self.count_transfers = 0
+
+    def handle_resources(self, function, all_resources=False, include_description=True):
+        self.observers_inform(self, TransportEvent.start_copy_to_temp)
+        with tempfile.TemporaryDirectory(prefix="rspub.core.transport_") as tmpdirname:
+            LOG.info("Created temporary directory: %s" % tmpdirname)
+            self.__copy_resources(tmpdirname, all_resources)
+            self.__copy_metadata(tmpdirname)
+            if include_description:
+                self.__copy_description(tmpdirname)
+            function(tmpdirname)
 
     def __copy_file(self, relpath, src, tmpdirname):
         # LOG.debug("Copy file. relpath=%s src=%s" % (relpath, src))
@@ -214,13 +237,8 @@ class Transport(Observable):
         shutil.copy2(src, dest)
 
     def __copy_resources(self, tmpdirname, all_resources=False):
-        if all_resources:
-            LOG.debug("Creating generator for all resources.")
-            generator = self.all_resources_generator()
-        else:
-            LOG.debug("Creating generator for last resources.")
-            generator = self.last_resources_generator()
-        for src, relpath in generator():
+        generator = self.get_generator(all_resources)
+        for resource, src, relpath in generator():
             try:
                 self.__copy_file(relpath, src, tmpdirname)
                 self.count_resources += 1
@@ -229,7 +247,7 @@ class Transport(Observable):
             except FileNotFoundError:
                 LOG.exception("Unable to copy file %s", src)
                 self.count_errors += 1
-                self.observers_inform(self, TransportEvent.resource_not_found, file=src)
+                self.observers_inform(self, ResourceAuditorEvent.resource_not_found, file=src)
 
     def __copy_metadata(self, tmpdirname):
         xml_files = glob(self.paras.abs_metadata_path("*.xml"))
@@ -243,7 +261,7 @@ class Transport(Observable):
             except FileNotFoundError:
                 LOG.exception("Unable to copy file %s", xml_file)
                 self.count_errors += 1
-                self.observers_inform(self, TransportEvent.site_map_not_found, file=xml_file)
+                self.observers_inform(self, ResourceAuditorEvent.site_map_not_found, file=xml_file)
 
     def __copy_description(self, tmpdirname):
         desc_file = self.paras.abs_description_path()
@@ -263,7 +281,7 @@ class Transport(Observable):
         except FileNotFoundError:
             LOG.exception("Unable to copy file %s", desc_file)
             self.count_errors += 1
-            self.observers_inform(self, TransportEvent.site_map_not_found, file=desc_file)
+            self.observers_inform(self, ResourceAuditorEvent.site_map_not_found, file=desc_file)
 
     def __reset_counts(self):
         self.count_resources = 0
@@ -334,7 +352,7 @@ class Transport(Observable):
         except FileNotFoundError:
             LOG.exception("Unable to send file %s", files)
             self.count_errors += 1
-            self.observers_inform(self, TransportEvent.site_map_not_found, file=files)
+            self.observers_inform(self, ResourceAuditorEvent.site_map_not_found, file=files)
 
     def create_ssh_client(self, password):
         if self.sshClient is None:

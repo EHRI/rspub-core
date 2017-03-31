@@ -32,7 +32,7 @@ def precondition_remote_server_config(as_string=False):
         return msg == "Ok"
 
 
-unittest.skip("Run only when configuration DEFAULT has been properly executed.")
+@unittest.skip("Run only when configuration DEFAULT has been properly executed.")
 class TestTransport(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -44,16 +44,6 @@ class TestTransport(unittest.TestCase):
         formatter = logging.Formatter('%(asctime)s - %(levelname)s - [%(filename)s:%(lineno)d] - %(message)s')
         ch.setFormatter(formatter)
         root.addHandler(ch)
-
-    @unittest.skip("Half-way implementation test")
-    def test_handle_resources(self):
-        paras = RsParameters(config_name="DEFAULT")
-        trans = Transport(paras)
-        trans.handle_resources(self.pauze_execution)
-
-    def pauze_execution(self, tmpdirname):
-        print(tmpdirname)
-        time.sleep(60)
 
     def test_extract_paths(self):
         paras = RsParameters(config_name="DEFAULT")
