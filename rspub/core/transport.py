@@ -165,8 +165,8 @@ class ResourceAuditor(Observable):
     def all_resources_generator(self):
 
         def generator():
-            for resource in self.all_resources():
-                path, relpath = self.extract_paths(resource)
+            for resource in self.all_resources().values():
+                path, relpath = self.extract_paths(resource.uri)
                 yield resource, path, relpath
 
         return generator
@@ -191,8 +191,8 @@ class ResourceAuditor(Observable):
 
         return generator
 
-    def extract_paths(self, resource):
-        relpath = os.path.relpath(resource, self.paras.url_prefix)
+    def extract_paths(self, uri):
+        relpath = os.path.relpath(uri, self.paras.url_prefix)
         relpath = urllib.parse.unquote(relpath)
         path = os.path.join(self.paras.resource_dir, relpath)
 

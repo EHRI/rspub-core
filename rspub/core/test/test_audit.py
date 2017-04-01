@@ -6,12 +6,15 @@ import logging
 
 import sys
 
+from resync import Resource
+
 from rspub.core.audit import Audit
 from rspub.core.rs_paras import RsParameters
+from rspub.core.transport import ResourceAuditor
 
 
 @unittest.skip("Run only when configuration DEFAULT has been properly executed.")
-class TestAudit(unittest.TestCase):
+class TestResourceAuditor(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         # logging:
@@ -27,3 +30,14 @@ class TestAudit(unittest.TestCase):
         paras = RsParameters(config_name="DEFAULT")
         audit = Audit(paras)
         audit.run_audit()
+
+    def test_generators(self):
+        paras = RsParameters(config_name="DEFAULT")
+        raud = ResourceAuditor(paras)
+        generator = raud.get_generator(all_resources=False)
+        for resource, src, relpath in generator():
+            self.assertEquals(Resource, type(resource))
+
+        generator = raud.get_generator(all_resources=True)
+        for resource, src, relpath in generator():
+            self.assertEquals(Resource, type(resource))
