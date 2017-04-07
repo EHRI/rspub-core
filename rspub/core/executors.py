@@ -386,10 +386,8 @@ class Executor(Observable, metaclass=ABCMeta):
         self.save_sitemap(sitemap, path)
 
     def save_sitemap(self, sitemap, path):
-        sitemap.pretty_xml = self.para.is_saving_pretty_xml
         # writing the string sitemap.as_xml() to disk results in encoding=ASCII on some systems.
         # due to https://docs.python.org/3.4/library/xml.etree.elementtree.html#write
-        #sitemap.write(path)
         with open(path, "wb") as f:
             s = Sitemap(pretty_xml=self.para.is_saving_pretty_xml)
             s.resources_as_xml(sitemap, sitemapindex=sitemap.sitemapindex, fh=f)
