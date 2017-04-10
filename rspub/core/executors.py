@@ -380,22 +380,21 @@ class Executor(Observable, metaclass=ABCMeta):
         else:
             return self.para.capabilitylist_url()
 
-    def update_rel_index(self, index_url, path):
-        sitemap = self.read_sitemap(path)
+    def update_rel_index(self, index_url, path, sitemap_instance):
+        sitemap = self.read_sitemap(path, sitemap_instance)
         sitemap.link_set(rel="index", href=index_url)
         self.save_sitemap(sitemap, path)
 
     def save_sitemap(self, sitemap, path):
         # writing the string sitemap.as_xml() to disk results in encoding=ASCII on some systems.
         # due to https://docs.python.org/3.4/library/xml.etree.elementtree.html#write
+        sitemap.capability = sitemap.capability_name
         with open(path, "wb") as f:
             s = Sitemap(pretty_xml=self.para.is_saving_pretty_xml)
             s.resources_as_xml(sitemap, sitemapindex=sitemap.sitemapindex, fh=f)
 
-    def read_sitemap(self, path, sitemap=None):
-        if sitemap is None:
-            sitemap = ListBaseWithIndex()
+    def read_sitemap(self, path, sitemap_instance):
         with open(path, "r", encoding="utf-8") as file:
             sm = Sitemap()
-            sm.parse_xml(file, resources=sitemap)
-        return sitemap
+            sm.parse_xml(file, resources=sitemap_instance)
+        return sitemap_instance

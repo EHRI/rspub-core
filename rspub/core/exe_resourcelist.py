@@ -47,7 +47,7 @@ class ResourceListExecutor(Executor):
                 resourcelist_index.add(Resource(uri=sitemap_data.uri, md_at=sitemap_data.doc_start,
                                       md_completed=sitemap_data.doc_end))
                 if sitemap_data.document_saved:
-                    self.update_rel_index(index_url, sitemap_data.path)
+                    self.update_rel_index(index_url, sitemap_data.path, ResourceList())
 
             self.finish_sitemap(-1, resourcelist_index)
 
